@@ -12,8 +12,15 @@
     </nav>
     <router-view></router-view>
   </div>
+  
+  <br>
+
+  <navbar></navbar>
+
 </template>
 
-<script setup></script>
+<script setup>
+  import navbar from './components/NavBar.vue';
+</script>
 
 <style></style>
