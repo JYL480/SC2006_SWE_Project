@@ -19,7 +19,6 @@
   
   <br>
 
-  <navbar></navbar>
 
 </template>
 
