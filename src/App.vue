@@ -19,11 +19,14 @@
   
   <br>
 
+  <searchbar></searchbar>
+
 
 </template>
 
 <script setup>
   import navbar from './components/NavBar.vue';
+  import searchbar from './components/SearchBar.vue';
 </script>
 
 <style></style>
