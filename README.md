@@ -1,5 +1,10 @@
 # map_app_2006
 
+## Install Bootstrap
+```
+npm install bootstrap@5.3.3
+```
+
 ## Project setup
 ```
 npm install
