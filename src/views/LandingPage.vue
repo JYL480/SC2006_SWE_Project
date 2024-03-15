@@ -1,6 +1,16 @@
-<template></template>
+<template>
+  <Map></Map>
+</template>
+
 <script setup>
-// This page is the home default page!!
+import Map from "../components/Map.vue";
+import "/node_modules/mapbox-gl/dist/mapbox-gl.css";
 </script>
 
-<style></style>
+<style>
+#layout {
+  flex: 1;
+  display: flex;
+  position: relative;
+}
+</style>
