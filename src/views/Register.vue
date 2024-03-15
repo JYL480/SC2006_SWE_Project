@@ -8,7 +8,7 @@
         <form action="#">
           <div class="field input-field">
             <input
-              type="email"
+              type="username"
               placeholder="Username"
               class="input"
               v-model="inputUserName.username"
@@ -47,21 +47,9 @@
       </div>
       <div class="line"></div>
       <div class="media-options">
-        <a href="#" class="field facebook">
-          <font-awesome-icon
-            icon="fa-brands fa-facebook"
-            class="bx bxl-facebook facebook-icon"
-          />
-          <span>Login with Facebook</span>
-        </a>
-      </div>
-      <div class="media-options">
         <a href="#" class="field google">
-          <font-awesome-icon
-            icon="fa-brands fa-google"
-            class="bx bxl-facebook facebook-icon"
-          />
-          <span>Login with Google</span>
+          <img src="../assets/googleIcon.png" class="google-img" />
+          <span @click="signInWithGoogle">Login with Google</span>
         </a>
       </div>
     </div>
@@ -76,10 +64,10 @@ import {
   updateProfile,
   onAuthStateChanged,
   getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 import { useRouter } from "vue-router";
-import database from "../firebase/firebase";
-
 // Register
 const inputUserName = reactive({
   username: "",
@@ -94,33 +82,33 @@ const router = useRouter();
 const auth = getAuth();
 
 const Register = () => {
-  if (
-    inputUserName.username == "" ||
-    inputEmail.email == "" ||
-    password.password == ""
-  ) {
-    alert("Please fill in all fields");
-  } else {
-    createUserWithEmailAndPassword(
-      auth,
-      inputEmail.email,
-      password.password
-    ).then((cred) => {
+  createUserWithEmailAndPassword(auth, inputEmail.email, password.password)
+    .then((data) => {
       // alert('User Created')
-      const user = cred.user;
-      console.log(user.uid);
-      console.log("user created", inputUserName.username);
-      alert("User Created!");
+      console.log("User Created");
       router.push("/Login");
+      con;
+    })
+    .catch((error) => {
+      console.log(error.message);
+      alert(error.message);
     });
-  }
+};
+
+// Google sign in
+const signInWithGoogle = () => {
+  const provider = new GoogleAuthProvider();
+  signInWithPopup(getAuth(), provider).then((result) => {
+    console.log(result.user);
+    router.push("/LandingPage");
+  });
 };
 
 // Debugging
 onUpdated(() => {
-  // console.log("Username: ", inputUserName.username);
-  // console.log("Email: ", inputEmail.email);
-  // console.log("Password: ", password.password);
+  console.log("Username: ", inputUserName.username);
+  console.log("Email: ", inputEmail.email);
+  console.log("Password: ", password.password);
 });
 </script>
 
