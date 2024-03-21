@@ -1,0 +1,27 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [103.82287200000002, 1.3649170000000002]
+      },
+      "properties": {
+        "title": "Mapbox",
+        "description": "FML"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [103.6831, 1.3483]
+      },
+      "properties": {
+        "title": "Mapbox",
+        "description": "NTU"
+      }
+    }
+  ]
+}

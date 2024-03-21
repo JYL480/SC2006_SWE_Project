@@ -3,30 +3,162 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import {
+  ref,
+  onMounted,
+  onUpdated,
+  onUnmounted,
+  computed,
+  onBeforeMount,
+} from "vue";
 import { MapboxMap, MapboxGeolocateControl } from "@studiometa/vue-mapbox-gl";
 import mapboxgl from "mapbox-gl"; // or "const mapboxgl = require('mapbox-gl');"
-const mapCenter = ref([103.82287200000002, 1.3649170000000002]);
 
+// const process.env.MAPBOX_TOKEN;
 mapboxgl.accessToken =
   "pk.eyJ1IjoibGp5NDgwIiwiYSI6ImNsdGY4a2F1MjBtNzEyam45MzV5bXl1NG8ifQ.e1MgohLQEySFfrautJ_7lQ";
 
-onMounted(() => {
-  const map = new mapboxgl.Map({
-    container: "map-container", // container ID
-    center: mapCenter.value, // starting position [lng, lat]
-    style: "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
-    zoom: 10, // starting zoom
+// Define a ref to hold the map instance
+
+const geojsonFeaturesERP = ref([]);
+const geojsonFeaturesCarPark = ref([]);
+const mapCenter = ref([103.82287200000002, 1.3649170000000002]);
+
+let map = null;
+const createMapInstance = () => {
+  map = new mapboxgl.Map({
+    container: "map-container",
+    style: "mapbox://styles/mapbox/streets-v12", // Replace with your preferred map style
+    center: [103.82287200000002, 1.3649170000000002],
+    zoom: 11,
+  });
+  return map;
+};
+
+// To get the person location?
+const accessJsonERP = async () => {
+  try {
+    const response = await fetch("ERPTEST.geoJson");
+    if (!response.ok) {
+      throw new Error("Failed to fetch JSON data");
+    }
+    const jsonData = await response.json();
+    geojsonFeaturesERP.value = jsonData.features;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const accessJsonCar = async () => {
+  try {
+    const response = await fetch("geoJsonCar.geoJson");
+    if (!response.ok) {
+      throw new Error("Failed to fetch JSON data");
+    }
+    const jsonData = await response.json();
+    geojsonFeaturesCarPark.value = jsonData;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const addERPMarkers = () => {
+  const coor = geojsonFeaturesERP.value;
+
+  let properties_name = null;
+  let properties_price = null;
+  for (let i = 0; i < coor.length; i++) {
+    // console.log(
+    //   coor[i].geometry.coordinates[0][0],
+    //   coor[i].geometry.coordinates[1][1]
+    // );
+    properties_name = coor[i].properties.Name;
+    properties_price = coor[i].properties.price;
+    new mapboxgl.Marker({
+      color: "blue",
+    })
+      .setLngLat([
+        coor[i].geometry.coordinates[0][0],
+        coor[i].geometry.coordinates[1][1],
+      ])
+      .setPopup(
+        // console.log()
+        new mapboxgl.Popup().setHTML(
+          `<h3>${properties_name}</h3><p>$ ${properties_price}</p>`
+        )
+      ) // Customize popup content
+      .addTo(map);
+  }
+};
+
+const addCarParkMarkers = () => {
+  const arraysCarPark = geojsonFeaturesCarPark.value;
+  console.log(arraysCarPark[0].car_park_no);
+  let properties_name = null;
+  let properties_price = null;
+  console.log(arraysCarPark[0].Longitude);
+  console.log(arraysCarPark[0].Latitude);
+
+  for (let i = 0; i < arraysCarPark.length; i++) {
+    properties_name = arraysCarPark[0].car_park_no;
+    // properties_price = arraysCarPark[0];
+    new mapboxgl.Marker({
+      color: "red",
+    })
+      .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
+      .setPopup(
+        // console.log()
+        new mapboxgl.Popup().setHTML(`<h3>dfdfg</h3><p>$ sdf</p>`)
+      ) // Customize popup content
+      .addTo(map);
+  }
+};
+
+onMounted(async () => {
+  createMapInstance();
+  await accessJsonERP();
+  await accessJsonCar();
+  addERPMarkers();
+  addCarParkMarkers();
+  map.addLayer({
+    id: "places",
+    type: "symbol",
+    source: {
+      type: "geojson",
+      data: geojsonFeaturesERP.value,
+    },
+    layout: {
+      "icon-image": "marker-15",
+      "icon-allow-overlap": true,
+    },
   });
 });
+
+onUnmounted(() => {
+  if (map) {
+    map.remove();
+  }
+});
+// "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
 </script>
 
 <style>
 #map-container {
   width: 100%;
-  height: 500px;
+  height: 600px;
 }
 .map-container {
   flex: 1;
 }
+
+.marker {
+  background-image: ("../assets/googleIcon.png");
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+}
 </style>
+
+<!-- Rather than doing this, I will create a JSON file, and parsr thrufh!! -->
