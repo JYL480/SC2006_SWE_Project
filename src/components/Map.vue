@@ -13,6 +13,7 @@ import {
 } from "vue";
 import { MapboxMap, MapboxGeolocateControl } from "@studiometa/vue-mapbox-gl";
 import mapboxgl from "mapbox-gl"; // or "const mapboxgl = require('mapbox-gl');"
+import GeolocateControl from "mapbox-gl";
 
 // const process.env.MAPBOX_TOKEN;
 mapboxgl.accessToken =
@@ -23,6 +24,9 @@ mapboxgl.accessToken =
 const geojsonFeaturesERP = ref([]);
 const geojsonFeaturesCarPark = ref([]);
 const mapCenter = ref([103.82287200000002, 1.3649170000000002]);
+let userLocation = ref([]);
+let centerLat = null;
+let centerLng = null;
 
 let map = null;
 const createMapInstance = () => {
@@ -64,7 +68,6 @@ const accessJsonCar = async () => {
 
 const addERPMarkers = () => {
   const coor = geojsonFeaturesERP.value;
-
   let properties_name = null;
   let properties_price = null;
   for (let i = 0; i < coor.length; i++) {
@@ -89,15 +92,29 @@ const addERPMarkers = () => {
       ) // Customize popup content
       .addTo(map);
   }
+  // map.addSource("places", {
+  //   type: "geojson",
+  //   data: "../assets/ERPTEST.geoJson",
+  // });
+
+  // map.addLayer({
+  //   id: "places",
+  //   type: "symbol",
+  //   source: "places",
+  //   layout: {
+  //     "icon-image": "marker-15",
+  //     "icon-allow-overlap": true,
+  //   },
+  // });
 };
 
 const addCarParkMarkers = () => {
   const arraysCarPark = geojsonFeaturesCarPark.value;
-  console.log(arraysCarPark[0].car_park_no);
+  // console.log(arraysCarPark[0].car_park_no);
   let properties_name = null;
   let properties_price = null;
-  console.log(arraysCarPark[0].Longitude);
-  console.log(arraysCarPark[0].Latitude);
+  // console.log(arraysCarPark[0].Longitude);
+  // console.log(arraysCarPark[0].Latitude);
 
   for (let i = 0; i < arraysCarPark.length; i++) {
     properties_name = arraysCarPark[0].car_park_no;
@@ -114,24 +131,47 @@ const addCarParkMarkers = () => {
   }
 };
 
+// To get the person's location now!!
+const getUserLocation = (e) => {
+  const geolocateControl = map.addControl(
+    new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      trackUserLocation: true,
+      showUserHeading: true,
+    })
+  );
+  navigator.geolocation.getCurrentPosition((position) => {
+    userLocation.value = [position.coords.longitude, position.coords.latitude];
+    centerLat = position.coords.latitude;
+    centerLng = position.coords.longitude;
+    console.log(userLocation.value);
+  });
+};
+
+// I want to show the markers within a certain bound of the user location!!!
+
+const showMarkersWithinBounds = () => {
+  // Below will be 1km radius around the person!
+
+  const latOffset = 0.009; // For 1km radius at any latitude
+  const lngOffset = latOffset / Math.cos((centerLat * Math.PI) / 180);
+
+  const bounds = new mapboxgl.LngLatBounds(
+    [centerLng - lngOffset, centerLat - latOffset], // Southwest coordinates
+    [centerLng + lngOffset, centerLat + latOffset] // Northeast coordinates
+  );
+};
+
 onMounted(async () => {
   createMapInstance();
+  await getUserLocation();
   await accessJsonERP();
   await accessJsonCar();
+  showMarkersWithinBounds();
   addERPMarkers();
-  addCarParkMarkers();
-  map.addLayer({
-    id: "places",
-    type: "symbol",
-    source: {
-      type: "geojson",
-      data: geojsonFeaturesERP.value,
-    },
-    layout: {
-      "icon-image": "marker-15",
-      "icon-allow-overlap": true,
-    },
-  });
+  // addCarParkMarkers();
 });
 
 onUnmounted(() => {
