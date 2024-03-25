@@ -1,5 +1,9 @@
 <template>
   <div id="map-container"></div>
+  <!-- <div id="sidebar">Longitude: -71.224518 | Latitude: 42.213995 | Zoom: 9</div>
+   -->
+
+  <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
 </template>
 
 <script setup>
@@ -14,12 +18,15 @@ import {
 import { MapboxMap, MapboxGeolocateControl } from "@studiometa/vue-mapbox-gl";
 import mapboxgl from "mapbox-gl"; // or "const mapboxgl = require('mapbox-gl');"
 import GeolocateControl from "mapbox-gl";
+import ToggleERPorCarpark from "./ToggleERPorCarpark.vue";
+import { confirmPasswordReset } from "firebase/auth";
 
 // const process.env.MAPBOX_TOKEN;
 mapboxgl.accessToken =
   "pk.eyJ1IjoibGp5NDgwIiwiYSI6ImNsdGY4a2F1MjBtNzEyam45MzV5bXl1NG8ifQ.e1MgohLQEySFfrautJ_7lQ";
 
 // Define a ref to hold the map instance
+// All the variables
 
 const geojsonFeaturesERP = ref([]);
 const geojsonFeaturesCarPark = ref([]);
@@ -27,8 +34,12 @@ const mapCenter = ref([103.82287200000002, 1.3649170000000002]);
 let userLocation = ref([]);
 let centerLat = null;
 let centerLng = null;
-
 let map = null;
+let CurrentMarkersCar = [];
+let CurrentMarkersERP = [];
+
+// All the functions
+
 const createMapInstance = () => {
   map = new mapboxgl.Map({
     container: "map-container",
@@ -66,68 +77,89 @@ const accessJsonCar = async () => {
   }
 };
 
-const addERPMarkers = () => {
+const addERPMarkers = (remove) => {
   const coor = geojsonFeaturesERP.value;
+  let marker = null;
   let properties_name = null;
   let properties_price = null;
-  for (let i = 0; i < coor.length; i++) {
-    // console.log(
-    //   coor[i].geometry.coordinates[0][0],
-    //   coor[i].geometry.coordinates[1][1]
-    // );
-    properties_name = coor[i].properties.Name;
-    properties_price = coor[i].properties.price;
-    new mapboxgl.Marker({
-      color: "blue",
-    })
-      .setLngLat([
-        coor[i].geometry.coordinates[0][0],
-        coor[i].geometry.coordinates[1][1],
-      ])
-      .setPopup(
-        // console.log()
-        new mapboxgl.Popup().setHTML(
-          `<h3>${properties_name}</h3><p>$ ${properties_price}</p>`
-        )
-      ) // Customize popup content
-      .addTo(map);
+  if (remove == true) {
+    for (let i = 0; i < coor.length; i++) {
+      // console.log(
+      //   coor[i].geometry.coordinates[0][0],
+      //   coor[i].geometry.coordinates[1][1]
+      // );
+      // console.log("here1");
+      properties_name = coor[i].properties.Name;
+      properties_price = coor[i].properties.price;
+
+      marker = new mapboxgl.Marker({
+        color: "blue",
+      })
+        .setLngLat([
+          coor[i].geometry.coordinates[0][0],
+          coor[i].geometry.coordinates[1][1],
+        ])
+        .setPopup(
+          // console.log()
+          new mapboxgl.Popup().setHTML(
+            `<h3>${properties_name}</h3><p>$ ${properties_price}</p>`
+          )
+        ) // Customize popup content
+        .addTo(map);
+      CurrentMarkersERP.push(marker);
+    }
+  } else {
+    for (let i = 0; i < CurrentMarkersERP.length; i++) {
+      CurrentMarkersERP[i].remove();
+    }
   }
-  // map.addSource("places", {
-  //   type: "geojson",
-  //   data: "../assets/ERPTEST.geoJson",
-  // });
-
-  // map.addLayer({
-  //   id: "places",
-  //   type: "symbol",
-  //   source: "places",
-  //   layout: {
-  //     "icon-image": "marker-15",
-  //     "icon-allow-overlap": true,
-  //   },
-  // });
 };
+// map.addSource("places", {
+//   type: "geojson",
+//   data: "../assets/ERPTEST.geoJson",
+// });
 
-const addCarParkMarkers = () => {
+// map.addLayer({
+//   id: "places",
+//   type: "symbol",
+//   source: "places",
+//   layout: {
+//     "icon-image": "marker-15",
+//     "icon-allow-overlap": true,
+//   },
+// });
+
+const addCarParkMarkers = (remove) => {
   const arraysCarPark = geojsonFeaturesCarPark.value;
   // console.log(arraysCarPark[0].car_park_no);
   let properties_name = null;
   let properties_price = null;
+  let marker = null;
   // console.log(arraysCarPark[0].Longitude);
   // console.log(arraysCarPark[0].Latitude);
 
-  for (let i = 0; i < arraysCarPark.length; i++) {
-    properties_name = arraysCarPark[0].car_park_no;
-    // properties_price = arraysCarPark[0];
-    new mapboxgl.Marker({
-      color: "red",
-    })
-      .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
-      .setPopup(
-        // console.log()
-        new mapboxgl.Popup().setHTML(`<h3>dfdfg</h3><p>$ sdf</p>`)
-      ) // Customize popup content
-      .addTo(map);
+  // This if it to remove all the markers, so if true, then add, false then remove.
+  // I created 2 currentERP and Carpark arrays. That can save the markers inside.
+  // So if need be i can for loop the whole thing and remove.
+  if (remove == true) {
+    for (let i = 0; i < arraysCarPark.length; i++) {
+      properties_name = arraysCarPark[0].car_park_no;
+      // properties_price = arraysCarPark[0];
+      marker = new mapboxgl.Marker({
+        color: "red",
+      })
+        .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
+        .setPopup(
+          // console.log()
+          new mapboxgl.Popup().setHTML(`<h3>dfdfg</h3><p>$ sdf</p>`)
+        ) // Customize popup content
+        .addTo(map);
+      CurrentMarkersCar.push(marker);
+    }
+  } else {
+    for (let i = 0; i < CurrentMarkersCar.length; i++) {
+      CurrentMarkersCar[i].remove();
+    }
   }
 };
 
@@ -150,6 +182,16 @@ const getUserLocation = (e) => {
   });
 };
 
+// This is toggle between car parks and erp
+// Get value from child
+const ERPorCarpark = (value) => {
+  console.log(value);
+  // clearMarkers();
+  ERPorCarpark.value = value;
+
+  addERPMarkers(!value);
+  addCarParkMarkers(value);
+};
 // I want to show the markers within a certain bound of the user location!!!
 
 const showMarkersWithinBounds = () => {
@@ -164,14 +206,31 @@ const showMarkersWithinBounds = () => {
   );
 };
 
+// When toggle update the map accordingly
+
 onMounted(async () => {
   createMapInstance();
   await getUserLocation();
   await accessJsonERP();
   await accessJsonCar();
-  showMarkersWithinBounds();
-  addERPMarkers();
-  // addCarParkMarkers();
+  // showMarkersWithinBounds();
+  // addERPMarkers();
+  addCarParkMarkers(true);
+  map.on("load", () => {
+    map.addSource("places", {
+      type: "geojson",
+      data: geojsonFeaturesERP.value,
+    });
+    map.addLayer({
+      id: "places",
+      type: "symbol",
+      source: "places",
+      layout: {
+        "icon-image": "marker-15",
+        "icon-allow-overlap": true,
+      },
+    });
+  });
 });
 
 onUnmounted(() => {
@@ -182,7 +241,7 @@ onUnmounted(() => {
 // "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
 </script>
 
-<style>
+<style scoped>
 #map-container {
   width: 100%;
   height: 600px;
