@@ -2,7 +2,8 @@
   <Map></Map>
   Landing page here
     
-    <navbar></navbar>
+  <navbar></navbar>
+
 </template>
 
 <script setup>

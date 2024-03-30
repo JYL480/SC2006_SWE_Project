@@ -4,6 +4,7 @@
    -->
 
   <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
+  <Searchbar @selected-dest="selectedDestination"/>
 </template>
 
 <script setup>
@@ -19,6 +20,7 @@ import { MapboxMap, MapboxGeolocateControl } from "@studiometa/vue-mapbox-gl";
 import mapboxgl from "mapbox-gl"; // or "const mapboxgl = require('mapbox-gl');"
 import GeolocateControl from "mapbox-gl";
 import ToggleERPorCarpark from "./ToggleERPorCarpark.vue";
+import Searchbar from '../components/SearchBar.vue';
 import { confirmPasswordReset } from "firebase/auth";
 
 // const process.env.MAPBOX_TOKEN;
@@ -27,6 +29,11 @@ mapboxgl.accessToken =
 
 // Define a ref to hold the map instance
 // All the variables
+
+const destMarker = new mapboxgl.Marker({
+    color: "#4F7FF0",
+    draggable: true,
+});
 
 const geojsonFeaturesERP = ref([]);
 const geojsonFeaturesCarPark = ref([]);
@@ -207,6 +214,24 @@ const showMarkersWithinBounds = () => {
 };
 
 // When toggle update the map accordingly
+
+/**
+ * Called by Searchbar child component (signal "selected-dest") when user selects a destination
+ * @param {Array} dest In the format (lng, lat)
+ * @returns undefined
+ */
+function selectedDestination(coords) {
+    const ZOOM_LEVEL = 16;
+
+    destMarker
+        .setLngLat(coords)
+        .addTo(map);
+
+    map.flyTo({
+        center: coords,
+        zoom: ZOOM_LEVEL,
+    });
+}
 
 onMounted(async () => {
   createMapInstance();

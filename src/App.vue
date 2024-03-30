@@ -21,9 +21,6 @@
   
   <br>
 
-  <searchbar></searchbar>
-
-
 </template>
 
 <script setup>
@@ -52,7 +49,6 @@ const handleSignOut = () => {
   });
 };
   import navbar from './components/NavBar.vue';
-  import searchbar from './components/SearchBar.vue';
 </script>
 
 <style></style>
