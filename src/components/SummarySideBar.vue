@@ -14,29 +14,40 @@
       </div>
       <i class="toggle" @click="toggleButton"></i>
     </header>
-
+{{ carparkArray }}
     <div class="menu-bar">
       <div class="menu">
 
         <div v-show="!istoggle" class="card">
             <div class="card-details">
-                <div class="locationBox">
+                <div v-show="carparkErpSelection" class="locationBox">
                     <div class="location"> location </div> 
                     <div class="slotsBox"> slots </div>           
                 </div>
-                <div class="messageBox1"> 
-                    <span><b>Price</b></span>
+
+                <div v-show="!carparkErpSelection" class="locationBox">
+                    <div>ERP name</div>         
+                </div>
+
+                <div v-show="!carparkErpSelection" class="messageBox1"> 
+                    <span><b>ERP Rate</b></span>
                     <br>
                     <span>$12</span>
-
                 </div>
-                <div v-show=false class="messageBox2"> 
+
+                <div v-show="carparkErpSelection" class="messageBox1"> 
+                    <span><b>Parking Price</b></span>
+                    <br>
+                    <span>$12</span>
+                </div>
+
+                <div v-show="!carparkErpSelection" class="messageBox2"> 
                     <span><b>Operating Hours</b></span>
                     <br>
                     <span>10am-7pm</span>
                 </div>
 
-                <div class="messageBox3"> 
+                <div v-show="carparkErpSelection" class="messageBox3"> 
                     <span><b>Slots</b></span>
                     <br>
                     <span>7</span>
@@ -46,68 +57,8 @@
                     
             </div>
         </div>
-        
-
-
-
-        <!--
-        <ul class="menu-links">
-          <li class="nav-link">
-            <a href="#">
-              <i class='bx bx-home-alt icon'></i>
-              <span class="text nav-text">Dashboard</span>
-            </a>
-          </li>
-
-          <li class="nav-link">
-            <a href="#">
-              <i class='bx bx-bar-chart-alt-2 icon'></i>
-              <span class="text nav-text">Revenue</span>
-            </a>
-          </li>
-
-          <li class="nav-link">
-            <a href="#">
-              <i class='bx bx-bell icon'></i>
-              <span class="text nav-text">Notifications</span>
-            </a>
-          </li>
-
-          <li class="nav-link">
-            <a href="#">
-              <i class='bx bx-pie-chart-alt icon'></i>
-              <span class="text nav-text">Analytics</span>
-            </a>
-          </li>
-
-          <li class="nav-link">
-            <a href="#">
-              <i class='bx bx-heart icon'></i>
-              <span class="text nav-text">Likes</span>
-            </a>
-          </li>
-
-          <li class="nav-link">
-            <a href="#">
-              <i class='bx bx-wallet icon'></i>
-              <span class="text nav-text">Wallets</span>
-            </a>
-          </li>
-
-        </ul>
-        -->
+ 
       </div>
-      <!--
-      <div class="bottom-content">
-        <li class="">
-          <a href="#">
-            <i class='bx bx-log-out icon'></i>
-            <span class="text nav-text">Logout</span>
-          </a>
-        </li>
-
-      </div>
-      -->
     </div>
 
   </nav>
@@ -120,35 +71,18 @@
 <script setup>
 import {ref, onMounted} from 'vue'
 
+const props = defineProps({
+  carparkArray: Array,
+  erpArray: Array,
+  carparkErpSelection: Boolean //True means show carpark, False means show ERP
+})
+
 var istoggle = ref(false)
 
 function toggleButton(){
     istoggle.value = !istoggle.value;
 } 
-/*onMounted(() => {
-    const body = document.querySelector('body'),
-      sidebar = body.querySelector('nav'),
-      toggle = body.querySelector(".toggle"),
-      searchBtn = body.querySelector(".search-box"),
-      modeSwitch = body.querySelector(".toggle-switch"),
-      modeText = body.querySelector(".mode-text"); 
-    toggle.addEventListener("click", () => {
-      sidebar.classList.toggle("close");
-      console.log("test toggle")
-    })
-    console.log(searchBtn)
-    searchBtn.addEventListener("click", () => {
-      sidebar.classList.remove("close");
-    })
-    modeSwitch.addEventListener("click", () => {
-      body.classList.toggle("dark");
-      if (body.classList.contains("dark")) {
-        modeText.innerText = "Light mode";
-      } else {
-        modeText.innerText = "Dark mode";
-      }
-    });
-})*/
+
 
 </script>
 

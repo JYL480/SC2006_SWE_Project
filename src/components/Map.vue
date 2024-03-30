@@ -2,7 +2,7 @@
   <div id="map-container"></div>
   <!-- <div id="sidebar">Longitude: -71.224518 | Latitude: 42.213995 | Zoom: 9</div>
    -->
-   <SummarySideBar/>
+   <SummarySideBar :carparkArray="CurrentMarkersCar" :erpArray="CurrentMarkersERP" :carparkErpSelection="boolCarorERP"/>
   <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
   <Searchbar @selected-dest="selectedDestination" />
   <button @click="getUserLocation">Get User Location</button>
