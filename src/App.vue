@@ -18,15 +18,15 @@
     </nav>
     <router-view></router-view>
   </div>
-  
-  <br>
+  <br />
 
   <searchbar></searchbar>
 
-
+  <br />
 </template>
 
 <script setup>
+import searchbar from "./components/SearchBar.vue";
 import { onMounted, ref } from "vue";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "vue-router";
@@ -51,8 +51,7 @@ const handleSignOut = () => {
     router.push("/LandingPage");
   });
 };
-  import navbar from './components/NavBar.vue';
-  import searchbar from './components/SearchBar.vue';
+import navbar from "./components/NavBar.vue";
 </script>
 
 <style></style>

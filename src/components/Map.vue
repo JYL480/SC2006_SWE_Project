@@ -1,9 +1,8 @@
 <template>
   <div id="map-container"></div>
-  <!-- <div id="sidebar">Longitude: -71.224518 | Latitude: 42.213995 | Zoom: 9</div>
-   -->
 
   <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
+  <button @click="myLocation">My Location</button>
 </template>
 
 <script setup>
@@ -21,6 +20,9 @@ import GeolocateControl from "mapbox-gl";
 import ToggleERPorCarpark from "./ToggleERPorCarpark.vue";
 import { confirmPasswordReset } from "firebase/auth";
 
+// import turf things?
+import * as turf from "@turf/turf";
+
 // const process.env.MAPBOX_TOKEN;
 mapboxgl.accessToken =
   "pk.eyJ1IjoibGp5NDgwIiwiYSI6ImNsdGY4a2F1MjBtNzEyam45MzV5bXl1NG8ifQ.e1MgohLQEySFfrautJ_7lQ";
@@ -32,11 +34,18 @@ const geojsonFeaturesERP = ref([]);
 const geojsonFeaturesCarPark = ref([]);
 const mapCenter = ref([103.82287200000002, 1.3649170000000002]);
 let userLocation = ref([]);
+let userCoor = ref([]);
 let centerLat = null;
 let centerLng = null;
 let map = null;
 let CurrentMarkersCar = [];
 let CurrentMarkersERP = [];
+
+// The radius variables:
+// Define the radius of the circle in kilometers
+const radiusInKm = 1;
+let circleLayerId = "circle";
+const options = { steps: 50, units: "kilometers" };
 
 // All the functions
 
@@ -50,7 +59,6 @@ const createMapInstance = () => {
   return map;
 };
 
-// To get the person location?
 const accessJsonERP = async () => {
   try {
     const response = await fetch("ERPTEST.geoJson");
@@ -84,11 +92,6 @@ const addERPMarkers = (remove) => {
   let properties_price = null;
   if (remove == true) {
     for (let i = 0; i < coor.length; i++) {
-      // console.log(
-      //   coor[i].geometry.coordinates[0][0],
-      //   coor[i].geometry.coordinates[1][1]
-      // );
-      // console.log("here1");
       properties_name = coor[i].properties.Name;
       properties_price = coor[i].properties.price;
 
@@ -100,7 +103,6 @@ const addERPMarkers = (remove) => {
           coor[i].geometry.coordinates[1][1],
         ])
         .setPopup(
-          // console.log()
           new mapboxgl.Popup().setHTML(
             `<h3>${properties_name}</h3><p>$ ${properties_price}</p>`
           )
@@ -114,47 +116,33 @@ const addERPMarkers = (remove) => {
     }
   }
 };
-// map.addSource("places", {
-//   type: "geojson",
-//   data: "../assets/ERPTEST.geoJson",
-// });
-
-// map.addLayer({
-//   id: "places",
-//   type: "symbol",
-//   source: "places",
-//   layout: {
-//     "icon-image": "marker-15",
-//     "icon-allow-overlap": true,
-//   },
-// });
 
 const addCarParkMarkers = (remove) => {
   const arraysCarPark = geojsonFeaturesCarPark.value;
-  // console.log(arraysCarPark[0].car_park_no);
   let properties_name = null;
   let properties_price = null;
   let marker = null;
-  // console.log(arraysCarPark[0].Longitude);
-  // console.log(arraysCarPark[0].Latitude);
+  const circle = turf.circle([103.833, 1.4173], radiusInKm, options);
 
   // This if it to remove all the markers, so if true, then add, false then remove.
   // I created 2 currentERP and Carpark arrays. That can save the markers inside.
   // So if need be i can for loop the whole thing and remove.
   if (remove == true) {
     for (let i = 0; i < arraysCarPark.length; i++) {
-      properties_name = arraysCarPark[0].car_park_no;
-      // properties_price = arraysCarPark[0];
-      marker = new mapboxgl.Marker({
-        color: "red",
-      })
-        .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
-        .setPopup(
-          // console.log()
-          new mapboxgl.Popup().setHTML(`<h3>dfdfg</h3><p>$ sdf</p>`)
-        ) // Customize popup content
-        .addTo(map);
-      CurrentMarkersCar.push(marker);
+      let pt = turf.point([
+        arraysCarPark[i].Longitude,
+        arraysCarPark[i].Latitude,
+      ]);
+      if (turf.booleanPointInPolygon(pt, circle)) {
+        properties_name = arraysCarPark[0].car_park_no;
+        marker = new mapboxgl.Marker({
+          color: "red",
+        })
+          .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
+          .setPopup(new mapboxgl.Popup().setHTML(`<h3>dfdfg</h3><p>$ sdf</p>`)) // Customize popup content
+          .addTo(map);
+        CurrentMarkersCar.push(marker);
+      }
     }
   } else {
     for (let i = 0; i < CurrentMarkersCar.length; i++) {
@@ -164,21 +152,44 @@ const addCarParkMarkers = (remove) => {
 };
 
 // To get the person's location now!!
-const getUserLocation = (e) => {
-  const geolocateControl = map.addControl(
-    new mapboxgl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true,
-      },
-      trackUserLocation: true,
-      showUserHeading: true,
-    })
-  );
+const getUserLocation = () => {
   navigator.geolocation.getCurrentPosition((position) => {
     userLocation.value = [position.coords.longitude, position.coords.latitude];
     centerLat = position.coords.latitude;
     centerLng = position.coords.longitude;
-    console.log(userLocation.value);
+    console.log("HELP ME", userLocation.value);
+  });
+};
+
+const myLocation = () => {
+  getUserLocation();
+  map.flyTo({
+    center: userLocation.value,
+    zoom: 14,
+    trackUserLocation: true,
+    showUserHeading: true,
+    positionOptions: {
+      enableHighAccuracy: true,
+    },
+  });
+  const circle = turf.circle(userLocation.value, radiusInKm, options);
+  console.log("HEloo2");
+  map.on("load", () => {
+    map.addSource("circle-source", {
+      type: "geojson",
+      data: circle,
+    });
+
+    map.addLayer({
+      id: circleLayerId,
+      type: "fill",
+      source: "circle-source",
+      layout: {},
+      paint: {
+        "fill-color": "blue",
+        "fill-opacity": 0.1,
+      },
+    });
   });
 };
 
@@ -192,45 +203,20 @@ const ERPorCarpark = (value) => {
   addERPMarkers(!value);
   addCarParkMarkers(value);
 };
-// I want to show the markers within a certain bound of the user location!!!
-
-const showMarkersWithinBounds = () => {
-  // Below will be 1km radius around the person!
-
-  const latOffset = 0.009; // For 1km radius at any latitude
-  const lngOffset = latOffset / Math.cos((centerLat * Math.PI) / 180);
-
-  const bounds = new mapboxgl.LngLatBounds(
-    [centerLng - lngOffset, centerLat - latOffset], // Southwest coordinates
-    [centerLng + lngOffset, centerLat + latOffset] // Northeast coordinates
-  );
-};
-
-// When toggle update the map accordingly
 
 onMounted(async () => {
   createMapInstance();
   await getUserLocation();
   await accessJsonERP();
   await accessJsonCar();
-  // showMarkersWithinBounds();
-  // addERPMarkers();
+
+  // Must add this for the load in page thing to show
   addCarParkMarkers(true);
-  map.on("load", () => {
-    map.addSource("places", {
-      type: "geojson",
-      data: geojsonFeaturesERP.value,
-    });
-    map.addLayer({
-      id: "places",
-      type: "symbol",
-      source: "places",
-      layout: {
-        "icon-image": "marker-15",
-        "icon-allow-overlap": true,
-      },
-    });
-  });
+
+  // Calculate the circle using Turf.js
+
+  // showMarkersWithinBounds();
+  console.log("FKK", CurrentMarkersCar);
 });
 
 onUnmounted(() => {
