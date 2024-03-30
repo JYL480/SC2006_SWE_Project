@@ -23,6 +23,7 @@ import mapboxgl from "mapbox-gl"; // or "const mapboxgl = require('mapbox-gl');"
 import GeolocateControl from "mapbox-gl";
 import ToggleERPorCarpark from "./ToggleERPorCarpark.vue";
 import Searchbar from "../components/SearchBar.vue";
+
 import SummarySideBar from "./SummarySideBar.vue";
 import { confirmPasswordReset } from "firebase/auth";
 
@@ -52,7 +53,7 @@ const geojsonFeaturesCarPark = ref([]);
 const mapCenter = ref([103.82287200000002, 1.3649170000000002]);
 const defaultLocation = [103.851784, 1.287953];
 // Im guessing this user Location will keep changing!!!
-let userLocation = ref([103.851784, 1.287953]);
+let userLocation = ref([103.82287200000002, 1.3649170000000002]);
 let centerLat = null;
 let centerLng = null;
 let map = null;
@@ -62,8 +63,6 @@ let CurrentMarkersERP = [];
 // By default == true,
 // True = carpark display, False, = ERP display
 let boolCarorERP = ref(true);
-
-let boolRemoveWhenCoorChange = ref(false);
 
 let circle = null;
 
@@ -130,7 +129,6 @@ const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
             coor[i].geometry.coordinates[1][1],
           ])
           .setPopup(
-            // console.log()
             new mapboxgl.Popup().setHTML(
               `<h3>${properties_name}</h3><p>$ ${properties_price}</p>`
             )
@@ -146,7 +144,7 @@ const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
   }
 };
 
-const addCarParkMarkers = (remove, boolRemoveWhenCoorChange) => {
+const addCarParkMarkers = (remove) => {
   const arraysCarPark = geojsonFeaturesCarPark.value;
   let properties_name = null;
   let properties_price = null;
@@ -157,19 +155,32 @@ const addCarParkMarkers = (remove, boolRemoveWhenCoorChange) => {
   // I created 2 currentERP and Carpark arrays. That can save the markers inside.
   // So if need be i can for loop the whole thing and remove.
   if (remove == true) {
-    console.log("why not changing?", userLocation.value);
     for (let i = 0; i < arraysCarPark.length; i++) {
       let pt = turf.point([
         arraysCarPark[i].Longitude,
         arraysCarPark[i].Latitude,
       ]);
+      const carPark = arraysCarPark[i]; // Current car park object
+      const popupContent = `
+        <h3>${carPark.car_park_no}</h3>
+        <p><strong>Address:</strong> ${carPark.address}</p>
+        <p><strong>Car Park Type:</strong> ${carPark.car_park_type}</p>
+        <p><strong>Parking System:</strong> ${carPark.type_of_parking_system}</p>
+        <p><strong>Short Term Parking:</strong> ${carPark.short_term_parking}</p>
+        <p><strong>Free Parking:</strong> ${carPark.free_parking}</p>
+        <p><strong>Night Parking:</strong> ${carPark.night_parking}</p>
+        <p><strong>Car Park Decks:</strong> ${carPark.car_park_decks}</p>
+        <p><strong>Gantry Height:</strong> ${carPark.gantry_height}</p>
+        <p><strong>Basement:</strong> ${carPark.car_park_basement}</p>
+        <p><strong>Rates:</strong> ${carPark.rates}</p>
+    `;
       if (turf.booleanPointInPolygon(pt, circle)) {
         properties_name = arraysCarPark[0].car_park_no;
         marker = new mapboxgl.Marker({
           color: "red",
         })
           .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
-          .setPopup(new mapboxgl.Popup().setHTML(`<h3>dfdfg</h3><p>$ sdf</p>`)) // Customize popup content
+          .setPopup(new mapboxgl.Popup().setHTML(popupContent)) // Customize popup content
           .addTo(map);
         CurrentMarkersCar.push(marker);
       }
@@ -182,35 +193,41 @@ const addCarParkMarkers = (remove, boolRemoveWhenCoorChange) => {
 };
 
 // To get the person's location now!!
-const getUserLocation = (e) => {
-  navigator.geolocation.getCurrentPosition((position) => {
+const getUserLocation = async () => {
+  try {
+    const position = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+
+    // Update userLocation and other variables
     userLocation.value = [position.coords.longitude, position.coords.latitude];
     centerLat = position.coords.latitude;
     centerLng = position.coords.longitude;
-    console.log("HELP", userLocation.value);
-  });
-  map.flyTo({
-    center: userLocation.value,
-    zoom: 14,
-    trackUserLocation: true,
 
-    positionOptions: {
-      enableHighAccuracy: true,
-    },
-  });
-  destMarker.setLngLat(userLocation.value).addTo(map);
+    // Now that we have the user's location, fly to it and set the marker
+    map.flyTo({
+      center: userLocation.value,
+      zoom: 14,
+      trackUserLocation: true,
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+    });
+    destMarker.setLngLat(userLocation.value).addTo(map);
+  } catch (error) {
+    console.error("Error getting user location:", error);
+  }
 };
 
 // This is toggle between car parks and erp
 // Get value from child
 const ERPorCarpark = (value) => {
-  console.log(value);
   boolCarorERP.value = value;
   // clearMarkers();
   ERPorCarpark.value = value;
 
-  addERPMarkers(value, boolRemoveWhenCoorChange);
-  addCarParkMarkers(value, boolRemoveWhenCoorChange);
+  addERPMarkers(value);
+  addCarParkMarkers(value);
 };
 
 // When toggle update the map accordingly
@@ -230,8 +247,6 @@ function selectedDestination(coords) {
     zoom: ZOOM_LEVEL,
   });
   userLocation.value = coords;
-
-  console.log("Searcvh bar chaging?", typeof coords, typeof userLocation);
 }
 
 onMounted(async () => {
@@ -246,9 +261,8 @@ onMounted(async () => {
 
   map.flyTo({
     center: userLocation.value,
-    zoom: 14,
+    zoom: 11,
   });
-  destMarker.setLngLat(userLocation.value).addTo(map);
 });
 
 onUnmounted(() => {
@@ -259,11 +273,21 @@ onUnmounted(() => {
 
 // When the values of ERP or Carpark coordinates changes, update the map accordingly
 watch(userLocation, (newValue, oldValue) => {
-  console.log("So we know?", boolCarorERP.value);
-  boolRemoveWhenCoorChange.value = true;
-  // console.log("User location changed:", newValue, oldValue);
-  addCarParkMarkers(boolCarorERP.value, boolRemoveWhenCoorChange);
-  addERPMarkers(boolCarorERP.value, boolRemoveWhenCoorChange);
+  // console.log("Frist", newValue, "Sec", oldValue);
+  // console.log(newValue[] == oldValue);
+  // if (newValue != oldValue) {
+
+  if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
+    for (let i = 0; i < CurrentMarkersCar.length; i++) {
+      CurrentMarkersCar[i].remove();
+    }
+    for (let i = 0; i < CurrentMarkersERP.length; i++) {
+      CurrentMarkersERP[i].remove();
+    }
+    addCarParkMarkers(boolCarorERP.value);
+    addERPMarkers(boolCarorERP.value);
+  }
+  // }
 });
 
 // "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
