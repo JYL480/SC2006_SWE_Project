@@ -2,7 +2,7 @@
   <div id="map-container"></div>
   <!-- <div id="sidebar">Longitude: -71.224518 | Latitude: 42.213995 | Zoom: 9</div>
    -->
-
+   <SummarySideBar/>
   <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
   <Searchbar @selected-dest="selectedDestination" />
   <button @click="getUserLocation">Get User Location</button>
@@ -23,6 +23,7 @@ import mapboxgl from "mapbox-gl"; // or "const mapboxgl = require('mapbox-gl');"
 import GeolocateControl from "mapbox-gl";
 import ToggleERPorCarpark from "./ToggleERPorCarpark.vue";
 import Searchbar from "../components/SearchBar.vue";
+import SummarySideBar from "./SummarySideBar.vue";
 import { confirmPasswordReset } from "firebase/auth";
 
 // import turf things?
