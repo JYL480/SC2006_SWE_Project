@@ -14,7 +14,6 @@
       </div>
       <i class="toggle" @click="toggleButton"></i>
     </header>
-{{ carparkArray }}
     <div class="menu-bar">
       <div class="menu">
 
