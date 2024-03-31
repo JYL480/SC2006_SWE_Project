@@ -49,7 +49,7 @@ const options = { steps: 50, units: "kilometers" };
 
 const destMarker = new mapboxgl.Marker({
   color: "#4F7FF0",
-  draggable: false,
+  draggable: true,
 });
 
 const geojsonFeaturesERP = ref([]);
@@ -277,6 +277,20 @@ onUnmounted(() => {
   }
 });
 
+destMarker.on("dragend", () => {
+  // Get the updated lngLat of the marker
+  const lngLat = destMarker.getLngLat();
+
+  // Update the latitude and longitude values
+  const updatedLatitude = lngLat.lat;
+  const updatedLongitude = lngLat.lng;
+
+  // Log or use the updated latitude and longitude values as needed
+  // console.log("Updated Latitude:", updatedLatitude);
+  // console.log("Updated Longitude:", updatedLongitude);
+  userLocation.value = [updatedLongitude, updatedLatitude];
+});
+
 // When the values of ERP or Carpark coordinates changes, update the map accordingly
 watch(userLocation, (newValue, oldValue) => {
   // console.log("Frist", newValue, "Sec", oldValue);
@@ -284,11 +298,11 @@ watch(userLocation, (newValue, oldValue) => {
   // if (newValue != oldValue) {
 
   if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
-    for (let i = 0; i < CurrentMarkersCar.length; i++) {
-      CurrentMarkersCar[i].remove();
+    for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+      CurrentMarkersCar.value[i].remove();
     }
-    for (let i = 0; i < CurrentMarkersERP.length; i++) {
-      CurrentMarkersERP[i].remove();
+    for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+      CurrentMarkersERP.value[i].remove();
     }
     addCarParkMarkers(boolCarorERP.value);
     addERPMarkers(boolCarorERP.value);
