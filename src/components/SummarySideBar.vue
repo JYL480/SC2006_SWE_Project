@@ -19,13 +19,13 @@
 
         <div v-show="!istoggle" class="card">
             <div class="card-details">
-                <div v-show="carparkErpSelection" class="locationBox">
+                <div v-show="carparkErpSelection" v-for="(carpark,index) in carparkArray" class="locationBox">
+                  {{ carpark.value }}
                     <div class="location"> location </div> 
                     <div class="slotsBox"> slots </div>           
                 </div>
-
-                <div v-show="!carparkErpSelection" class="locationBox">
-                    <div>ERP name</div>         
+                <div v-show="!carparkErpSelection" v-for="(erp,index) in erpArray" class="locationBox">
+                    <div>erp.value</div>         
                 </div>
 
                 <div v-show="!carparkErpSelection" class="messageBox1"> 
