@@ -269,10 +269,12 @@ onUnmounted(() => {
 <style scoped>
 #map-container {
   width: 100%;
-  height: 600px;
+  height: 100vh;
 }
 .map-container {
   flex: 1;
+  display: flex;
+  position: relative;
 }
 
 .marker {
