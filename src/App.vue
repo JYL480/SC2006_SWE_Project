@@ -1,6 +1,5 @@
 <template>
   <div>
-    App.vue
     <nav>
       <ul>
         <router-link to="/LandingPage">Home Help me</router-link>
@@ -10,7 +9,6 @@
         <router-link to="/Login">Login</router-link>
         |
         <button @click="handleSignOut" v-if="isLoggedIn">Logout</button>
-        |
         <router-link to="/ProfilePage">Profile</router-link>
         |
         <router-link to="BookmarkPage">Bookmark</router-link>
@@ -18,6 +16,8 @@
     </nav>
     <router-view></router-view>
   </div>
+
+  
   
   <br>
 
@@ -51,4 +51,6 @@ const handleSignOut = () => {
   import navbar from './components/NavBar.vue';
 </script>
 
-<style></style>
+<style>
+
+</style>

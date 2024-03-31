@@ -22,15 +22,16 @@ const ERPorCarpark = () => {
 
 <style scoped>
 .checkbox {
+  position: fixed;
+  z-index: 1;
+  bottom: 20px;
+  left: 20px;
   width: 223px;
   height: 60px;
-  background-color: #d0d0d0;
+  background-color: #25232350;
   border-radius: 30px;
-  position: relative;
   color: black;
   overflow: hidden;
-  z-index: 1;
-  bottom: 580px;
 }
 
 #checkbox_toggle {
@@ -44,9 +45,9 @@ const ERPorCarpark = () => {
   border-radius: 30px;
   left: 5px;
   cursor: pointer;
-  background: linear-gradient(40deg, #ff0080, #ff8c00 70%);
+  background: linear-gradient(40deg, #fc0404, #fa4f00d2 70%);
   transition: 0.4s;
-  box-shadow: 0px 0px 3px rgb(255, 255, 20), 0px 0px 5px rgb(255, 255, 20);
+  box-shadow: 0px 0px 3px rgb(243, 236, 224), 0px 0px 5px rgb(236, 236, 227);
 }
 
 .checkbox .slide {
@@ -73,12 +74,13 @@ const ERPorCarpark = () => {
 }
 
 .check:checked + .checkbox .slide {
-  background-color: #0a1929;
-  color: #fff;
+  background-color: #0a192900;
+  color: #050133;
 }
+
 .text1 {
   margin-right: 90px;
-  z-index: 2;
+  z-index: 100;
   font-size: 16px;
   font-weight: 700;
 }

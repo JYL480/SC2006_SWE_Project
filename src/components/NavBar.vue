@@ -37,15 +37,20 @@
     .button-container {
     display: flex;
     background-color: rgb(245, 47, 25);
-    width: 150px;
-    height: 40px;
+    width: 200px;
+    height: 55px;
     align-items: center;
     justify-content: space-around;
     border-radius: 10px;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px,
         rgba(0, 73, 144, 0.5) 5px 10px 15px;
     transition: all 0.5s;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     }
+
     .button-container:hover {
     width: 200px;
     transition: all 0.5s;
@@ -71,7 +76,7 @@
     }
 
     .icon {
-    font-size: 20px;
+    font-size: 100px;
     }
 
 </style>
