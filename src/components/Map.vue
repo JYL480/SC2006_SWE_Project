@@ -2,7 +2,11 @@
   <div id="map-container"></div>
   <!-- <div id="sidebar">Longitude: -71.224518 | Latitude: 42.213995 | Zoom: 9</div>
    -->
-   <SummarySideBar :carparkArray="CurrentMarkersCar" :erpArray="CurrentMarkersERP" :carparkErpSelection="boolCarorERP"/>
+  <SummarySideBar
+    :carparkArray="CurrentMarkersCar"
+    :erpArray="CurrentMarkersERP"
+    :carparkErpSelection="boolCarorERP"
+  />
   <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
   <Searchbar @selected-dest="selectedDestination" />
   <button @click="getUserLocation">Get User Location</button>
@@ -57,8 +61,8 @@ let userLocation = ref([103.82287200000002, 1.3649170000000002]);
 let centerLat = null;
 let centerLng = null;
 let map = null;
-let CurrentMarkersCar = [];
-let CurrentMarkersERP = [];
+let CurrentMarkersCar = ref([]);
+let CurrentMarkersERP = ref([]);
 
 // By default == true,
 // True = carpark display, False, = ERP display
@@ -134,12 +138,12 @@ const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
             )
           ) // Customize popup content
           .addTo(map);
-        CurrentMarkersERP.push(marker);
+        CurrentMarkersERP.value.push(marker);
       }
     }
   } else {
-    for (let i = 0; i < CurrentMarkersERP.length; i++) {
-      CurrentMarkersERP[i].remove();
+    for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+      CurrentMarkersERP.value[i].remove();
     }
   }
 };
@@ -182,12 +186,14 @@ const addCarParkMarkers = (remove) => {
           .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
           .setPopup(new mapboxgl.Popup().setHTML(popupContent)) // Customize popup content
           .addTo(map);
-        CurrentMarkersCar.push(marker);
+        CurrentMarkersCar.value.push(marker);
       }
     }
   } else {
-    for (let i = 0; i < CurrentMarkersCar.length; i++) {
-      CurrentMarkersCar[i].remove();
+    // console.log(CurrentMarkersCar.value[1]);
+    for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+      // console.log(CurrentMarkersCar[i].value);
+      CurrentMarkersCar.value[i].remove();
     }
   }
 };
