@@ -48,7 +48,7 @@ let circleLayerId = "circle";
 const options = { steps: 50, units: "kilometers" };
 
 const destMarker = new mapboxgl.Marker({
-  color: "#4F7FF0",
+  color: "#008000",
   draggable: true,
 });
 
@@ -138,13 +138,14 @@ const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
             )
           ) // Customize popup content
           .addTo(map);
-        CurrentMarkersERP.value.push(marker);
+        CurrentMarkersERP.value.push([marker, coor[i]]);
       }
     }
   } else {
     for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
-      CurrentMarkersERP.value[i].remove();
+      CurrentMarkersERP.value[i][0].remove();
     }
+    CurrentMarkersERP.value = [];
   }
 };
 
@@ -186,15 +187,16 @@ const addCarParkMarkers = (remove) => {
           .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
           .setPopup(new mapboxgl.Popup().setHTML(popupContent)) // Customize popup content
           .addTo(map);
-        CurrentMarkersCar.value.push(marker);
+        CurrentMarkersCar.value.push([marker, arraysCarPark[i]]);
       }
     }
   } else {
     // console.log(CurrentMarkersCar.value[1]);
     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
       // console.log(CurrentMarkersCar[i].value);
-      CurrentMarkersCar.value[i].remove();
+      CurrentMarkersCar.value[i][0].remove();
     }
+    CurrentMarkersCar.value = [];
   }
 };
 
@@ -299,15 +301,19 @@ watch(userLocation, (newValue, oldValue) => {
 
   if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
-      CurrentMarkersCar.value[i].remove();
+      CurrentMarkersCar.value[i][0].remove();
     }
     for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
-      CurrentMarkersERP.value[i].remove();
+      CurrentMarkersERP.value[i][0].remove();
     }
+    CurrentMarkersCar.value = [];
+    CurrentMarkersERP.value = [];
     addCarParkMarkers(boolCarorERP.value);
     addERPMarkers(boolCarorERP.value);
   }
   // }
+  console.log(CurrentMarkersCar.value);
+  console.log(CurrentMarkersERP.value);
 });
 
 // "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
