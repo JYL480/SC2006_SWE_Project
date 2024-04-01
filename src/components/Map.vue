@@ -2,10 +2,28 @@
   <div id="map-container"></div>
   <!-- <div id="sidebar">Longitude: -71.224518 | Latitude: 42.213995 | Zoom: 9</div>
    -->
-
+  
+  <SummarySideBar
+    :carparkArray="CurrentMarkersCar"
+    :erpArray="CurrentMarkersERP"
+    :carparkErpSelection="boolCarorERP"
+  />
+  
+  <div id="searchbar">
+    <Searchbar @selected-dest="selectedDestination" />
+  </div>
   <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
-  <Searchbar @selected-dest="selectedDestination" />
-  <button @click="getUserLocation">Get User Location</button>
+  <button id = "button" class="pushable" @click="getUserLocation">
+      <span class="shadow"></span>
+      <span class="edge"></span>
+      <span class="front">
+        User Location
+      </span>
+  </button>
+  <div id="slide">
+    <Slider @sliderValue="sliderValue"></Slider>
+  </div>
+  
 </template>
 
 <script setup>
@@ -23,6 +41,9 @@ import mapboxgl from "mapbox-gl"; // or "const mapboxgl = require('mapbox-gl');"
 import GeolocateControl from "mapbox-gl";
 import ToggleERPorCarpark from "./ToggleERPorCarpark.vue";
 import Searchbar from "../components/SearchBar.vue";
+
+import SummarySideBar from "./SummarySideBar.vue";
+import Slider from "./Slider.vue";
 import { confirmPasswordReset } from "firebase/auth";
 
 // import turf things?
@@ -37,13 +58,13 @@ mapboxgl.accessToken =
 
 // The radius variables:
 // Define the radius of the circle in kilometers
-const radiusInKm = 1;
+const radiusInKm = ref(1);
 let circleLayerId = "circle";
 const options = { steps: 50, units: "kilometers" };
 
 const destMarker = new mapboxgl.Marker({
-  color: "#4F7FF0",
-  draggable: false,
+  color: "#008000",
+  draggable: true,
 });
 
 const geojsonFeaturesERP = ref([]);
@@ -51,18 +72,16 @@ const geojsonFeaturesCarPark = ref([]);
 const mapCenter = ref([103.82287200000002, 1.3649170000000002]);
 const defaultLocation = [103.851784, 1.287953];
 // Im guessing this user Location will keep changing!!!
-let userLocation = ref([103.851784, 1.287953]);
+let userLocation = ref([103.82287200000002, 1.3649170000000002]);
 let centerLat = null;
 let centerLng = null;
 let map = null;
-let CurrentMarkersCar = [];
-let CurrentMarkersERP = [];
+let CurrentMarkersCar = ref([]);
+let CurrentMarkersERP = ref([]);
 
 // By default == true,
 // True = carpark display, False, = ERP display
 let boolCarorERP = ref(true);
-
-let boolRemoveWhenCoorChange = ref(false);
 
 let circle = null;
 
@@ -110,8 +129,10 @@ const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
   let marker = null;
   let properties_name = null;
   let properties_price = null;
-  const circle = turf.circle(userLocation.value, radiusInKm, options);
+  const circle = turf.circle(userLocation.value, radiusInKm.value, options);
+  const from = turf.point(userLocation.value);
   if (remove == false) {
+    const from = turf.point(userLocation.value);
     for (let i = 0; i < coor.length; i++) {
       let pt = turf.point([
         coor[i].geometry.coordinates[0][0],
@@ -120,6 +141,7 @@ const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
       if (turf.booleanPointInPolygon(pt, circle)) {
         properties_name = coor[i].properties.Name;
         properties_price = coor[i].properties.price;
+        const distance = turf.distance(from, pt, { units: "kilometers" });
 
         marker = new mapboxgl.Marker({
           color: "blue",
@@ -129,87 +151,113 @@ const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
             coor[i].geometry.coordinates[1][1],
           ])
           .setPopup(
-            // console.log()
             new mapboxgl.Popup().setHTML(
               `<h3>${properties_name}</h3><p>$ ${properties_price}</p>`
             )
           ) // Customize popup content
           .addTo(map);
-        CurrentMarkersERP.push(marker);
+        CurrentMarkersERP.value.push([marker, coor[i], distance]);
       }
     }
   } else {
-    for (let i = 0; i < CurrentMarkersERP.length; i++) {
-      CurrentMarkersERP[i].remove();
+    for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+      CurrentMarkersERP.value[i][0].remove();
     }
+    CurrentMarkersERP.value = [];
   }
 };
 
-const addCarParkMarkers = (remove, boolRemoveWhenCoorChange) => {
+const addCarParkMarkers = (remove) => {
   const arraysCarPark = geojsonFeaturesCarPark.value;
   let properties_name = null;
   let properties_price = null;
   let marker = null;
-  const circle = turf.circle(userLocation.value, radiusInKm, options);
+  const circle = turf.circle(userLocation.value, radiusInKm.value, options);
+  const from = turf.point(userLocation.value);
 
   // This if it to remove all the markers, so if true, then add, false then remove.
   // I created 2 currentERP and Carpark arrays. That can save the markers inside.
   // So if need be i can for loop the whole thing and remove.
   if (remove == true) {
-    console.log("why not changing?", userLocation.value);
     for (let i = 0; i < arraysCarPark.length; i++) {
       let pt = turf.point([
         arraysCarPark[i].Longitude,
         arraysCarPark[i].Latitude,
       ]);
+
+      const carPark = arraysCarPark[i]; // Current car park object
+      const popupContent = `
+        <h3>${carPark.car_park_no}</h3>
+        <p><strong>Address:</strong> ${carPark.address}</p>
+        <p><strong>Car Park Type:</strong> ${carPark.car_park_type}</p>
+        <p><strong>Parking System:</strong> ${carPark.type_of_parking_system}</p>
+        <p><strong>Short Term Parking:</strong> ${carPark.short_term_parking}</p>
+        <p><strong>Free Parking:</strong> ${carPark.free_parking}</p>
+        <p><strong>Night Parking:</strong> ${carPark.night_parking}</p>
+        <p><strong>Car Park Decks:</strong> ${carPark.car_park_decks}</p>
+        <p><strong>Gantry Height:</strong> ${carPark.gantry_height}</p>
+        <p><strong>Basement:</strong> ${carPark.car_park_basement}</p>
+        <p><strong>Rates:</strong> ${carPark.rates}</p>
+    `;
       if (turf.booleanPointInPolygon(pt, circle)) {
+        // Get the distance between my location to the marker
+        const distance = turf.distance(from, pt, { units: "kilometers" });
         properties_name = arraysCarPark[0].car_park_no;
         marker = new mapboxgl.Marker({
           color: "red",
         })
           .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
-          .setPopup(new mapboxgl.Popup().setHTML(`<h3>dfdfg</h3><p>$ sdf</p>`)) // Customize popup content
+          .setPopup(new mapboxgl.Popup().setHTML(popupContent)) // Customize popup content
           .addTo(map);
-        CurrentMarkersCar.push(marker);
+        CurrentMarkersCar.value.push([marker, arraysCarPark[i], distance]);
       }
     }
   } else {
-    for (let i = 0; i < CurrentMarkersCar.length; i++) {
-      CurrentMarkersCar[i].remove();
+    // console.log(CurrentMarkersCar.value[1]);
+    for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+      // console.log(CurrentMarkersCar[i].value);
+      CurrentMarkersCar.value[i][0].remove();
     }
+    CurrentMarkersCar.value = [];
   }
 };
 
 // To get the person's location now!!
-const getUserLocation = (e) => {
-  navigator.geolocation.getCurrentPosition((position) => {
+const getUserLocation = async () => {
+  try {
+    const position = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+
+    // Update userLocation and other variables
     userLocation.value = [position.coords.longitude, position.coords.latitude];
     centerLat = position.coords.latitude;
     centerLng = position.coords.longitude;
-    console.log("HELP", userLocation.value);
-  });
-  map.flyTo({
-    center: userLocation.value,
-    zoom: 14,
-    trackUserLocation: true,
 
-    positionOptions: {
-      enableHighAccuracy: true,
-    },
-  });
-  destMarker.setLngLat(userLocation.value).addTo(map);
+    // Now that we have the user's location, fly to it and set the marker
+    map.flyTo({
+      center: userLocation.value,
+      zoom: 14,
+      trackUserLocation: true,
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+    });
+    destMarker.setLngLat(userLocation.value).addTo(map);
+  } catch (error) {
+    console.error("Error getting user location:", error);
+  }
 };
 
 // This is toggle between car parks and erp
 // Get value from child
 const ERPorCarpark = (value) => {
-  console.log(value);
   boolCarorERP.value = value;
   // clearMarkers();
   ERPorCarpark.value = value;
 
-  addERPMarkers(value, boolRemoveWhenCoorChange);
-  addCarParkMarkers(value, boolRemoveWhenCoorChange);
+  addERPMarkers(value);
+  addCarParkMarkers(value);
 };
 
 // When toggle update the map accordingly
@@ -229,25 +277,29 @@ function selectedDestination(coords) {
     zoom: ZOOM_LEVEL,
   });
   userLocation.value = coords;
-
-  console.log("Searcvh bar chaging?", typeof coords, typeof userLocation);
 }
+
+// Get the slider value
+const sliderValue = (value) => {
+  console.log(value);
+  radiusInKm.value = value;
+  addCircle();
+};
 
 onMounted(async () => {
   createMapInstance();
   await accessJsonERP();
   await accessJsonCar();
-  // showMarkersWithinBounds();
-  // addERPMarkers();
   addCarParkMarkers(boolCarorERP.value);
 
-  //Default zoom in when loaded
-
+  // Default zoom in when loaded
   map.flyTo({
     center: userLocation.value,
-    zoom: 14,
+    zoom: 11,
   });
-  destMarker.setLngLat(userLocation.value).addTo(map);
+
+  // Add the circle representing the radius around the user's location
+  // addCircle();
 });
 
 onUnmounted(() => {
@@ -256,14 +308,138 @@ onUnmounted(() => {
   }
 });
 
-// When the values of ERP or Carpark coordinates changes, update the map accordingly
-watch(userLocation, (newValue, oldValue) => {
-  console.log("So we know?", boolCarorERP.value);
-  boolRemoveWhenCoorChange.value = true;
-  // console.log("User location changed:", newValue, oldValue);
-  addCarParkMarkers(boolCarorERP.value, boolRemoveWhenCoorChange);
-  addERPMarkers(boolCarorERP.value, boolRemoveWhenCoorChange);
+destMarker.on("dragend", () => {
+  // Get the updated lngLat of the marker
+  const lngLat = destMarker.getLngLat();
+
+  // Update the latitude and longitude values
+  const updatedLatitude = lngLat.lat;
+  const updatedLongitude = lngLat.lng;
+
+  // Log or use the updated latitude and longitude values as needed
+  // console.log("Updated Latitude:", updatedLatitude);
+  // console.log("Updated Longitude:", updatedLongitude);
+  userLocation.value = [updatedLongitude, updatedLatitude];
 });
+
+// To add the radius thing
+const addCircle = () => {
+  // Will be updated with the new circle with change coordinates
+  const circle = turf.circle(userLocation.value, radiusInKm.value, options);
+
+  // Add the circle source and layer if they don't exist
+  if (!map.getSource("circle-source")) {
+    map.addSource("circle-source", {
+      type: "geojson",
+      data: circle,
+    });
+
+    map.addLayer({
+      id: circleLayerId,
+      type: "fill",
+      source: "circle-source",
+      layout: {},
+      paint: {
+        "fill-color": "blue",
+        "fill-opacity": 0.1,
+      },
+    });
+  } else {
+    // Update the circle's position
+    map.getSource("circle-source").setData(circle);
+  }
+
+  console.log("circle added");
+};
+
+// When the values of ERP or Carpark coordinates changes, update the map accordingly
+// watch(userLocation, (newValue, oldValue) => {
+//   if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
+//     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+//       CurrentMarkersCar.value[i][0].remove();
+//     }
+//     for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+//       CurrentMarkersERP.value[i][0].remove();
+//     }
+//     CurrentMarkersCar.value = [];
+//     CurrentMarkersERP.value = [];
+//     addCarParkMarkers(boolCarorERP.value);
+//     addERPMarkers(boolCarorERP.value);
+//   }
+//   addCircle();
+//   console.log(CurrentMarkersCar.value);
+//   console.log(CurrentMarkersERP.value);
+// });
+
+// // watch the circle change size, then will chaneg the array accordingly
+// watch(radiusInKm, (newValue, oldValue) => {
+//   if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
+//     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+//       CurrentMarkersCar.value[i][0].remove();
+//     }
+//     for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+//       CurrentMarkersERP.value[i][0].remove();
+//     }
+//     CurrentMarkersCar.value = [];
+//     CurrentMarkersERP.value = [];
+//     addCarParkMarkers(boolCarorERP.value);
+//     addERPMarkers(boolCarorERP.value);
+//   }
+//   addCircle();
+//   console.log(CurrentMarkersCar.value);
+//   console.log(CurrentMarkersERP.value);
+// });
+
+// watch(boolCarorERP, (newValue, oldValue) => {
+//   if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
+//     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+//       CurrentMarkersCar.value[i][0].remove();
+//     }
+//     for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+//       CurrentMarkersERP.value[i][0].remove();
+//     }
+//     CurrentMarkersCar.value = [];
+//     CurrentMarkersERP.value = [];
+//     addCarParkMarkers(boolCarorERP.value);
+//     addERPMarkers(boolCarorERP.value);
+//   }
+//   addCircle();
+//   console.log(CurrentMarkersCar.value);
+//   console.log(CurrentMarkersERP.value);
+// });
+
+// Combine all 3 of the waychers above!!!
+
+watch(
+  [userLocation, radiusInKm, boolCarorERP],
+  (
+    [newUserLocation, newRadius, newBool],
+    [oldUserLocation, oldRadius, oldBool]
+  ) => {
+    if (
+      newUserLocation[0] !== oldUserLocation[0] ||
+      newUserLocation[1] !== oldUserLocation[1] ||
+      newRadius[0] !== oldRadius[0] ||
+      newRadius[1] !== oldRadius[1] ||
+      newBool[0] !== oldBool[0] ||
+      newBool[1] !== oldBool[1]
+    ) {
+      for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+        CurrentMarkersCar.value[i][0].remove();
+      }
+      for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+        CurrentMarkersERP.value[i][0].remove();
+      }
+      CurrentMarkersCar.value = [];
+      CurrentMarkersERP.value = [];
+      addCarParkMarkers(newBool);
+      addERPMarkers(newBool);
+      addCircle();
+    }
+    console.log(CurrentMarkersCar.value);
+    console.log(CurrentMarkersERP.value);
+  }
+);
 
 // "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
 </script>
@@ -271,10 +447,12 @@ watch(userLocation, (newValue, oldValue) => {
 <style scoped>
 #map-container {
   width: 100%;
-  height: 600px;
+  height: 100vh;
 }
 .map-container {
   flex: 1;
+  display: flex;
+  position: relative;
 }
 
 .marker {
@@ -285,6 +463,115 @@ watch(userLocation, (newValue, oldValue) => {
   border-radius: 50%;
   cursor: pointer;
 }
+
+.map-container {
+  flex: 1;
+  display: flex;
+  position: relative;
+}
+#map-container {
+  position: absolute;
+  top: 0;
+  left:0;
+  width: 100%;
+  height: 100vh;
+  z-index: -1; /* lower z-index value than other components */
+}
+
+/* for get user location buttom*/
+#button{
+  position: relative;
+  left: 60vw;
+  top: 82vh;
+}
+.pushable {
+  position: relative;
+  background: transparent;
+  padding: 0px;
+  border: none;
+  cursor: pointer;
+  outline-offset: 4px;
+  outline-color: deeppink;
+  transition: filter 250ms;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: hsl(226, 25%, 69%);
+  border-radius: 8px;
+  filter: blur(2px);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: 8px;
+  background: linear-gradient(
+    to right,
+    hsl(15, 100%, 47%) 0%,
+    hsl(15, 39%, 49%) 8%,
+    hsl(15, 39%, 39%) 92%,
+    hsl(15, 39%, 29%) 100%
+  );
+}
+
+.front {
+  display: block;
+  position: relative;
+  border-radius: 8px;
+  background: hsl(15, 100%, 41%);
+  padding: 16px 32px;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 1rem;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.pushable:hover {
+  filter: brightness(110%);
+}
+
+.pushable:hover .front {
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+}
+
+.pushable:active .front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.pushable:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+}
+
+.pushable:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+.pushable:focus:not(:focus-visible) {
+  outline: none;
+}
+
+
 </style>
 
 <!-- Rather than doing this, I will create a JSON file, and parsr thrufh!! -->

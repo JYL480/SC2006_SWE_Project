@@ -1,5 +1,4 @@
 <template>
-  FKK
   <section class="container forms">
     <div class="form login">
       <div class="form-content">
