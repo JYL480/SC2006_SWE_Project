@@ -17,6 +17,7 @@ const firebaseConfig = {
   messagingSenderId: "623622689953",
   appId: "1:623622689953:web:880d2ad2c3aa03394b8ce0",
   measurementId: "G-FVQ918BFWF",
+  databaseURL: "https://sc2006mapapp-default-rtdb.asia-southeast1.firebasedatabase.app",
 };
 
 import {
@@ -46,9 +47,13 @@ library.add(
   faFacebook
 );
 
-initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
+const database = getDatabase(firebaseApp);  // Firebase Realtime Database (Not FireStore)
+
 const app = createApp(App);
 
 app.component("FontAwesomeIcon", FontAwesomeIcon);
 app.use(router);
 app.mount("#app");
+
+export { database };    // Can be imported from other scripts with something like `import { [var] } from "src/main.js"`
