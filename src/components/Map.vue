@@ -340,42 +340,93 @@ const addCircle = () => {
 };
 
 // When the values of ERP or Carpark coordinates changes, update the map accordingly
-watch(userLocation, (newValue, oldValue) => {
-  if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
-    for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
-      CurrentMarkersCar.value[i][0].remove();
-    }
-    for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
-      CurrentMarkersERP.value[i][0].remove();
-    }
-    CurrentMarkersCar.value = [];
-    CurrentMarkersERP.value = [];
-    addCarParkMarkers(boolCarorERP.value);
-    addERPMarkers(boolCarorERP.value);
-  }
-  addCircle();
-  console.log(CurrentMarkersCar.value);
-  console.log(CurrentMarkersERP.value);
-});
+// watch(userLocation, (newValue, oldValue) => {
+//   if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
+//     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+//       CurrentMarkersCar.value[i][0].remove();
+//     }
+//     for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+//       CurrentMarkersERP.value[i][0].remove();
+//     }
+//     CurrentMarkersCar.value = [];
+//     CurrentMarkersERP.value = [];
+//     addCarParkMarkers(boolCarorERP.value);
+//     addERPMarkers(boolCarorERP.value);
+//   }
+//   addCircle();
+//   console.log(CurrentMarkersCar.value);
+//   console.log(CurrentMarkersERP.value);
+// });
 
-// watch the circle change size, then will chaneg the array accordingly
-watch(radiusInKm, (newValue, oldValue) => {
-  if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
-    for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
-      CurrentMarkersCar.value[i][0].remove();
+// // watch the circle change size, then will chaneg the array accordingly
+// watch(radiusInKm, (newValue, oldValue) => {
+//   if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
+//     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+//       CurrentMarkersCar.value[i][0].remove();
+//     }
+//     for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+//       CurrentMarkersERP.value[i][0].remove();
+//     }
+//     CurrentMarkersCar.value = [];
+//     CurrentMarkersERP.value = [];
+//     addCarParkMarkers(boolCarorERP.value);
+//     addERPMarkers(boolCarorERP.value);
+//   }
+//   addCircle();
+//   console.log(CurrentMarkersCar.value);
+//   console.log(CurrentMarkersERP.value);
+// });
+
+// watch(boolCarorERP, (newValue, oldValue) => {
+//   if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
+//     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+//       CurrentMarkersCar.value[i][0].remove();
+//     }
+//     for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+//       CurrentMarkersERP.value[i][0].remove();
+//     }
+//     CurrentMarkersCar.value = [];
+//     CurrentMarkersERP.value = [];
+//     addCarParkMarkers(boolCarorERP.value);
+//     addERPMarkers(boolCarorERP.value);
+//   }
+//   addCircle();
+//   console.log(CurrentMarkersCar.value);
+//   console.log(CurrentMarkersERP.value);
+// });
+
+// Combine all 3 of the waychers above!!!
+
+watch(
+  [userLocation, radiusInKm, boolCarorERP],
+  (
+    [newUserLocation, newRadius, newBool],
+    [oldUserLocation, oldRadius, oldBool]
+  ) => {
+    if (
+      newUserLocation[0] !== oldUserLocation[0] ||
+      newUserLocation[1] !== oldUserLocation[1] ||
+      newRadius[0] !== oldRadius[0] ||
+      newRadius[1] !== oldRadius[1] ||
+      newBool[0] !== oldBool[0] ||
+      newBool[1] !== oldBool[1]
+    ) {
+      for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+        CurrentMarkersCar.value[i][0].remove();
+      }
+      for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+        CurrentMarkersERP.value[i][0].remove();
+      }
+      CurrentMarkersCar.value = [];
+      CurrentMarkersERP.value = [];
+      addCarParkMarkers(newBool);
+      addERPMarkers(newBool);
+      addCircle();
     }
-    for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
-      CurrentMarkersERP.value[i][0].remove();
-    }
-    CurrentMarkersCar.value = [];
-    CurrentMarkersERP.value = [];
-    addCarParkMarkers(boolCarorERP.value);
-    addERPMarkers(boolCarorERP.value);
+    console.log(CurrentMarkersCar.value);
+    console.log(CurrentMarkersERP.value);
   }
-  addCircle();
-  console.log(CurrentMarkersCar.value);
-  console.log(CurrentMarkersERP.value);
-});
+);
 
 // "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
 </script>
