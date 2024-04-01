@@ -2,8 +2,7 @@
   <div id="map-container"></div>
   <!-- <div id="sidebar">Longitude: -71.224518 | Latitude: 42.213995 | Zoom: 9</div>
    -->
-<div class="sidebar-and-button-container">
-
+  <Slider @sliderValue="sliderValue"></Slider>
   <SummarySideBar
     :carparkArray="CurrentMarkersCar"
     :erpArray="CurrentMarkersERP"
@@ -42,6 +41,7 @@ import ToggleERPorCarpark from "./ToggleERPorCarpark.vue";
 import Searchbar from "../components/SearchBar.vue";
 
 import SummarySideBar from "./SummarySideBar.vue";
+import Slider from "./Slider.vue";
 import { confirmPasswordReset } from "firebase/auth";
 
 // import turf things?
@@ -56,7 +56,7 @@ mapboxgl.accessToken =
 
 // The radius variables:
 // Define the radius of the circle in kilometers
-const radiusInKm = 1;
+const radiusInKm = ref(1);
 let circleLayerId = "circle";
 const options = { steps: 50, units: "kilometers" };
 
@@ -127,8 +127,10 @@ const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
   let marker = null;
   let properties_name = null;
   let properties_price = null;
-  const circle = turf.circle(userLocation.value, radiusInKm, options);
+  const circle = turf.circle(userLocation.value, radiusInKm.value, options);
+  const from = turf.point(userLocation.value);
   if (remove == false) {
+    const from = turf.point(userLocation.value);
     for (let i = 0; i < coor.length; i++) {
       let pt = turf.point([
         coor[i].geometry.coordinates[0][0],
@@ -137,6 +139,7 @@ const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
       if (turf.booleanPointInPolygon(pt, circle)) {
         properties_name = coor[i].properties.Name;
         properties_price = coor[i].properties.price;
+        const distance = turf.distance(from, pt, { units: "kilometers" });
 
         marker = new mapboxgl.Marker({
           color: "blue",
@@ -151,7 +154,7 @@ const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
             )
           ) // Customize popup content
           .addTo(map);
-        CurrentMarkersERP.value.push([marker, coor[i]]);
+        CurrentMarkersERP.value.push([marker, coor[i], distance]);
       }
     }
   } else {
@@ -167,7 +170,8 @@ const addCarParkMarkers = (remove) => {
   let properties_name = null;
   let properties_price = null;
   let marker = null;
-  const circle = turf.circle(userLocation.value, radiusInKm, options);
+  const circle = turf.circle(userLocation.value, radiusInKm.value, options);
+  const from = turf.point(userLocation.value);
 
   // This if it to remove all the markers, so if true, then add, false then remove.
   // I created 2 currentERP and Carpark arrays. That can save the markers inside.
@@ -178,6 +182,7 @@ const addCarParkMarkers = (remove) => {
         arraysCarPark[i].Longitude,
         arraysCarPark[i].Latitude,
       ]);
+
       const carPark = arraysCarPark[i]; // Current car park object
       const popupContent = `
         <h3>${carPark.car_park_no}</h3>
@@ -193,6 +198,8 @@ const addCarParkMarkers = (remove) => {
         <p><strong>Rates:</strong> ${carPark.rates}</p>
     `;
       if (turf.booleanPointInPolygon(pt, circle)) {
+        // Get the distance between my location to the marker
+        const distance = turf.distance(from, pt, { units: "kilometers" });
         properties_name = arraysCarPark[0].car_park_no;
         marker = new mapboxgl.Marker({
           color: "red",
@@ -200,7 +207,7 @@ const addCarParkMarkers = (remove) => {
           .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
           .setPopup(new mapboxgl.Popup().setHTML(popupContent)) // Customize popup content
           .addTo(map);
-        CurrentMarkersCar.value.push([marker, arraysCarPark[i]]);
+        CurrentMarkersCar.value.push([marker, arraysCarPark[i], distance]);
       }
     }
   } else {
@@ -270,20 +277,27 @@ function selectedDestination(coords) {
   userLocation.value = coords;
 }
 
+// Get the slider value
+const sliderValue = (value) => {
+  console.log(value);
+  radiusInKm.value = value;
+  addCircle();
+};
+
 onMounted(async () => {
   createMapInstance();
   await accessJsonERP();
   await accessJsonCar();
-  // showMarkersWithinBounds();
-  // addERPMarkers();
   addCarParkMarkers(boolCarorERP.value);
 
-  //Default zoom in when loaded
-
+  // Default zoom in when loaded
   map.flyTo({
     center: userLocation.value,
     zoom: 11,
   });
+
+  // Add the circle representing the radius around the user's location
+  // addCircle();
 });
 
 onUnmounted(() => {
@@ -306,28 +320,124 @@ destMarker.on("dragend", () => {
   userLocation.value = [updatedLongitude, updatedLatitude];
 });
 
-// When the values of ERP or Carpark coordinates changes, update the map accordingly
-watch(userLocation, (newValue, oldValue) => {
-  // console.log("Frist", newValue, "Sec", oldValue);
-  // console.log(newValue[] == oldValue);
-  // if (newValue != oldValue) {
+// To add the radius thing
+const addCircle = () => {
+  // Will be updated with the new circle with change coordinates
+  const circle = turf.circle(userLocation.value, radiusInKm.value, options);
 
-  if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
-    for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
-      CurrentMarkersCar.value[i][0].remove();
-    }
-    for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
-      CurrentMarkersERP.value[i][0].remove();
-    }
-    CurrentMarkersCar.value = [];
-    CurrentMarkersERP.value = [];
-    addCarParkMarkers(boolCarorERP.value);
-    addERPMarkers(boolCarorERP.value);
+  // Add the circle source and layer if they don't exist
+  if (!map.getSource("circle-source")) {
+    map.addSource("circle-source", {
+      type: "geojson",
+      data: circle,
+    });
+
+    map.addLayer({
+      id: circleLayerId,
+      type: "fill",
+      source: "circle-source",
+      layout: {},
+      paint: {
+        "fill-color": "blue",
+        "fill-opacity": 0.1,
+      },
+    });
+  } else {
+    // Update the circle's position
+    map.getSource("circle-source").setData(circle);
   }
-  // }
-  console.log(CurrentMarkersCar.value);
-  console.log(CurrentMarkersERP.value);
-});
+
+  console.log("circle added");
+};
+
+// When the values of ERP or Carpark coordinates changes, update the map accordingly
+// watch(userLocation, (newValue, oldValue) => {
+//   if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
+//     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+//       CurrentMarkersCar.value[i][0].remove();
+//     }
+//     for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+//       CurrentMarkersERP.value[i][0].remove();
+//     }
+//     CurrentMarkersCar.value = [];
+//     CurrentMarkersERP.value = [];
+//     addCarParkMarkers(boolCarorERP.value);
+//     addERPMarkers(boolCarorERP.value);
+//   }
+//   addCircle();
+//   console.log(CurrentMarkersCar.value);
+//   console.log(CurrentMarkersERP.value);
+// });
+
+// // watch the circle change size, then will chaneg the array accordingly
+// watch(radiusInKm, (newValue, oldValue) => {
+//   if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
+//     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+//       CurrentMarkersCar.value[i][0].remove();
+//     }
+//     for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+//       CurrentMarkersERP.value[i][0].remove();
+//     }
+//     CurrentMarkersCar.value = [];
+//     CurrentMarkersERP.value = [];
+//     addCarParkMarkers(boolCarorERP.value);
+//     addERPMarkers(boolCarorERP.value);
+//   }
+//   addCircle();
+//   console.log(CurrentMarkersCar.value);
+//   console.log(CurrentMarkersERP.value);
+// });
+
+// watch(boolCarorERP, (newValue, oldValue) => {
+//   if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
+//     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+//       CurrentMarkersCar.value[i][0].remove();
+//     }
+//     for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+//       CurrentMarkersERP.value[i][0].remove();
+//     }
+//     CurrentMarkersCar.value = [];
+//     CurrentMarkersERP.value = [];
+//     addCarParkMarkers(boolCarorERP.value);
+//     addERPMarkers(boolCarorERP.value);
+//   }
+//   addCircle();
+//   console.log(CurrentMarkersCar.value);
+//   console.log(CurrentMarkersERP.value);
+// });
+
+// Combine all 3 of the waychers above!!!
+
+watch(
+  [userLocation, radiusInKm, boolCarorERP],
+  (
+    [newUserLocation, newRadius, newBool],
+    [oldUserLocation, oldRadius, oldBool]
+  ) => {
+    if (
+      newUserLocation[0] !== oldUserLocation[0] ||
+      newUserLocation[1] !== oldUserLocation[1] ||
+      newRadius[0] !== oldRadius[0] ||
+      newRadius[1] !== oldRadius[1] ||
+      newBool[0] !== oldBool[0] ||
+      newBool[1] !== oldBool[1]
+    ) {
+      for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+        CurrentMarkersCar.value[i][0].remove();
+      }
+      for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+        CurrentMarkersERP.value[i][0].remove();
+      }
+      CurrentMarkersCar.value = [];
+      CurrentMarkersERP.value = [];
+      addCarParkMarkers(newBool);
+      addERPMarkers(newBool);
+      addCircle();
+    }
+    console.log(CurrentMarkersCar.value);
+    console.log(CurrentMarkersERP.value);
+  }
+);
 
 // "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
 </script>
