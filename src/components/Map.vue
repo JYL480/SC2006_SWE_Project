@@ -117,7 +117,9 @@ const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
   let properties_name = null;
   let properties_price = null;
   const circle = turf.circle(userLocation.value, radiusInKm.value, options);
+  const from = turf.point(userLocation.value);
   if (remove == false) {
+    const from = turf.point(userLocation.value);
     for (let i = 0; i < coor.length; i++) {
       let pt = turf.point([
         coor[i].geometry.coordinates[0][0],
@@ -126,6 +128,7 @@ const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
       if (turf.booleanPointInPolygon(pt, circle)) {
         properties_name = coor[i].properties.Name;
         properties_price = coor[i].properties.price;
+        const distance = turf.distance(from, pt, { units: "kilometers" });
 
         marker = new mapboxgl.Marker({
           color: "blue",
@@ -140,7 +143,7 @@ const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
             )
           ) // Customize popup content
           .addTo(map);
-        CurrentMarkersERP.value.push([marker, coor[i]]);
+        CurrentMarkersERP.value.push([marker, coor[i], distance]);
       }
     }
   } else {
@@ -157,6 +160,7 @@ const addCarParkMarkers = (remove) => {
   let properties_price = null;
   let marker = null;
   const circle = turf.circle(userLocation.value, radiusInKm.value, options);
+  const from = turf.point(userLocation.value);
 
   // This if it to remove all the markers, so if true, then add, false then remove.
   // I created 2 currentERP and Carpark arrays. That can save the markers inside.
@@ -167,6 +171,7 @@ const addCarParkMarkers = (remove) => {
         arraysCarPark[i].Longitude,
         arraysCarPark[i].Latitude,
       ]);
+
       const carPark = arraysCarPark[i]; // Current car park object
       const popupContent = `
         <h3>${carPark.car_park_no}</h3>
@@ -182,6 +187,8 @@ const addCarParkMarkers = (remove) => {
         <p><strong>Rates:</strong> ${carPark.rates}</p>
     `;
       if (turf.booleanPointInPolygon(pt, circle)) {
+        // Get the distance between my location to the marker
+        const distance = turf.distance(from, pt, { units: "kilometers" });
         properties_name = arraysCarPark[0].car_park_no;
         marker = new mapboxgl.Marker({
           color: "red",
@@ -189,7 +196,7 @@ const addCarParkMarkers = (remove) => {
           .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
           .setPopup(new mapboxgl.Popup().setHTML(popupContent)) // Customize popup content
           .addTo(map);
-        CurrentMarkersCar.value.push([marker, arraysCarPark[i]]);
+        CurrentMarkersCar.value.push([marker, arraysCarPark[i], distance]);
       }
     }
   } else {
@@ -347,6 +354,8 @@ watch(userLocation, (newValue, oldValue) => {
     addERPMarkers(boolCarorERP.value);
   }
   addCircle();
+  console.log(CurrentMarkersCar.value);
+  console.log(CurrentMarkersERP.value);
 });
 
 // watch the circle change size, then will chaneg the array accordingly
@@ -364,6 +373,8 @@ watch(radiusInKm, (newValue, oldValue) => {
     addERPMarkers(boolCarorERP.value);
   }
   addCircle();
+  console.log(CurrentMarkersCar.value);
+  console.log(CurrentMarkersERP.value);
 });
 
 // "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
