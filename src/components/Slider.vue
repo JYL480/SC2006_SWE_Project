@@ -38,7 +38,7 @@ const slider = () => {
 .PB-range-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 15px;
+  width: 10px;
   height: 15px;
   border-radius: 50%;
   background-color: #000000;
@@ -65,7 +65,7 @@ const slider = () => {
   justify-content: center;
   gap: 1rem;
   padding: 1rem;
-  border-radius: 6px;
+  border-radius: 10px;
   border: 1px solid #c6cace;
   box-shadow: 0px 1px 2px 0px #1f1e241f;
   background-color: #c72a2a6b;
@@ -75,4 +75,5 @@ const slider = () => {
 .PB-range-slidervalue {
   font-weight: 600;
 }
+
 </style>

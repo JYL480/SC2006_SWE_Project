@@ -53,7 +53,7 @@
 .pushable {
   position: relative;
   left:20px;
-  top: -30px;
+  top: -130px;
   background: transparent;
   padding: 0px;
   border: none;
@@ -99,7 +99,7 @@
   position: relative;
   border-radius: 8px;
   background: hsl(15, 100%, 41%);
-  padding: 16px 32px;
+  padding: 10px 32px;
   color: white;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;

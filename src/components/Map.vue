@@ -2,7 +2,7 @@
   <div id="map-container"></div>
   <!-- <div id="sidebar">Longitude: -71.224518 | Latitude: 42.213995 | Zoom: 9</div>
    -->
-  <Slider @sliderValue="sliderValue"></Slider>
+  
   <SummarySideBar
     :carparkArray="CurrentMarkersCar"
     :erpArray="CurrentMarkersERP"
@@ -20,6 +20,9 @@
         User Location
       </span>
   </button>
+  <div id="slide">
+    <Slider @sliderValue="sliderValue"></Slider>
+  </div>
   
 </template>
 
@@ -566,12 +569,6 @@ watch(
 
 .pushable:focus:not(:focus-visible) {
   outline: none;
-}
-
-.sidebar-and-button-container {
-  display: flex;
-  align-items: right; /* Align items vertically in the center */
-  justify-content: space-between; /* Put space between items */
 }
 
 
