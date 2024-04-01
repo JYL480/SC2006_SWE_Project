@@ -1,25 +1,13 @@
 <template>
-  <div>
-    <nav>
-      <ul>
-        <router-link to="/LandingPage">Home Help me</router-link>
-        |
-        <router-link to="/Register">Register</router-link>
-        |
-        <router-link to="/Login">Login</router-link>
-        |
-        <button @click="handleSignOut" v-if="isLoggedIn">Logout</button>
-        <router-link to="/ProfilePage">Profile</router-link>
-        |
-        <router-link to="BookmarkPage">Bookmark</router-link>
-      </ul>
-    </nav>
-    <router-view></router-view>
+  <div id="top">
+    <div id="image">
+      <br>
+        <router-link id="link" to="/LandingPage"><img :src="myImage" alt="Map Image"></router-link>
+          
+    </div>
+      <TopBar></TopBar>
   </div>
-
   
-  
-  <br>
 
 </template>
 
@@ -27,6 +15,8 @@
 import { onMounted, ref } from "vue";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "vue-router";
+import TopBar from './components/TopBar.vue';
+import myImage from '@/assets/image_2024-04-01_13-52-19.png';
 
 const isLoggedIn = ref(false);
 const router = useRouter();
@@ -48,9 +38,16 @@ const handleSignOut = () => {
     router.push("/LandingPage");
   });
 };
-  import navbar from './components/NavBar.vue';
+
 </script>
 
 <style>
+img{
+  width:20%;
+  height: auto;
+  z-index: 1;
+  padding-left: 20px;
+  display: flex;
+}
 
 </style>

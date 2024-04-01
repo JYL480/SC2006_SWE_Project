@@ -114,8 +114,8 @@
 
 .searchbox {
     position: absolute;
-    top: 20%;
-    left: 5%;
+    top: 0;
+    left: 55vw;
     transform:  translate(0%,100%);
     background:#2f3640;
     height: 30px;

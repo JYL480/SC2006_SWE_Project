@@ -1,6 +1,6 @@
 <template>
   <Map></Map>
-  <navbar></navbar>
+  <navbar id="navbar"></navbar>
   
 
 </template>
@@ -19,18 +19,6 @@ import navbar from '../components/NavBar.vue';
   position: relative;
 }
 
-.map-container {
-  flex: 1;
-  display: flex;
-  position: relative;
-}
-#map-container {
-  position: absolute;
-  top: 0;
-  left:0;
-  width: 100%;
-  height: 100vh;
-  z-index: -1; /* lower z-index value than other components */
-}
+
 
 </style>

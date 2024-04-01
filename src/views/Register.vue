@@ -1,6 +1,4 @@
 <template>
-  Hellllppp mne
-
   <section class="container forms">
     <div class="form login">
       <div class="form-content">
