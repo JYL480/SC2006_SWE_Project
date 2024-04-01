@@ -244,8 +244,8 @@
 
 .search-container {
     position: absolute;
-    top: 40%;
-    left: 5%;
+    top: 0;
+    left: 55vw;
 }
 
 .search-container:hover > .searchbox > .search-input {
