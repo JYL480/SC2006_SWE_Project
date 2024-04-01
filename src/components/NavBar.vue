@@ -1,5 +1,5 @@
 <template>
-  <div class="button-container">
+  <div class="button-container" id="navbar">
     <router-link to="/LandingPage">
       <button class="button">
         <svg
@@ -62,10 +62,12 @@
 <script setup></script>
 
 <style>
-    .button-container {
+
+.button-container {
     display: flex;
-    background-color: rgb(245, 47, 25);
-    width: 150px;
+    background-color
+    : hsl(15, 100%, 41%);
+    width: 200px;
     height: 40px;
     align-items: center;
     justify-content: space-around;
@@ -74,8 +76,8 @@
         rgba(0, 73, 144, 0.5) 5px 10px 15px;
     transition: all 0.5s;
     }
-    .button-container:hover {
-    width: 200px;
+.button-container:hover {
+    transform: scale(1.25);
     transition: all 0.5s;
     }
 
@@ -98,8 +100,12 @@
   transform: translateY(-3px);
 }
 
-    .icon {
+.icon {
     font-size: 20px;
     }
-
+#navbar {
+  position: fixed;
+  bottom: 3.5vh;
+  left:33vw;
+}
 </style>

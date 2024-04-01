@@ -1,5 +1,9 @@
-<template>Profile page here</template>
+<template>
+    
+</template>
 
 <script setup></script>
 
-<style></style>
+<style>
+
+</style>

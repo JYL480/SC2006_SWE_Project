@@ -2,14 +2,27 @@
   <div id="map-container"></div>
   <!-- <div id="sidebar">Longitude: -71.224518 | Latitude: 42.213995 | Zoom: 9</div>
    -->
+<div class="sidebar-and-button-container">
+
   <SummarySideBar
     :carparkArray="CurrentMarkersCar"
     :erpArray="CurrentMarkersERP"
     :carparkErpSelection="boolCarorERP"
   />
+  
+  <div id="searchbar">
+    <Searchbar @selected-dest="selectedDestination" />
+  </div>
+</div>
   <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
-  <Searchbar @selected-dest="selectedDestination" />
-  <button @click="getUserLocation">Get User Location</button>
+  <button id = "button" class="pushable" @click="getUserLocation">
+      <span class="shadow"></span>
+      <span class="edge"></span>
+      <span class="front">
+        User Location
+      </span>
+  </button>
+  
 </template>
 
 <script setup>
@@ -338,6 +351,121 @@ watch(userLocation, (newValue, oldValue) => {
   border-radius: 50%;
   cursor: pointer;
 }
+
+.map-container {
+  flex: 1;
+  display: flex;
+  position: relative;
+}
+#map-container {
+  position: absolute;
+  top: 0;
+  left:0;
+  width: 100%;
+  height: 100vh;
+  z-index: -1; /* lower z-index value than other components */
+}
+
+/* for get user location buttom*/
+#button{
+  position: relative;
+  left: 60vw;
+  top: 82vh;
+}
+.pushable {
+  position: relative;
+  background: transparent;
+  padding: 0px;
+  border: none;
+  cursor: pointer;
+  outline-offset: 4px;
+  outline-color: deeppink;
+  transition: filter 250ms;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: hsl(226, 25%, 69%);
+  border-radius: 8px;
+  filter: blur(2px);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: 8px;
+  background: linear-gradient(
+    to right,
+    hsl(15, 100%, 47%) 0%,
+    hsl(15, 39%, 49%) 8%,
+    hsl(15, 39%, 39%) 92%,
+    hsl(15, 39%, 29%) 100%
+  );
+}
+
+.front {
+  display: block;
+  position: relative;
+  border-radius: 8px;
+  background: hsl(15, 100%, 41%);
+  padding: 16px 32px;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 1rem;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.pushable:hover {
+  filter: brightness(110%);
+}
+
+.pushable:hover .front {
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+}
+
+.pushable:active .front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.pushable:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+}
+
+.pushable:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+.pushable:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.sidebar-and-button-container {
+  display: flex;
+  align-items: right; /* Align items vertically in the center */
+  justify-content: space-between; /* Put space between items */
+}
+
+
 </style>
 
 <!-- Rather than doing this, I will create a JSON file, and parsr thrufh!! -->
