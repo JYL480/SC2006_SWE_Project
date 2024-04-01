@@ -12,7 +12,6 @@
   <div id="searchbar">
     <Searchbar @selected-dest="selectedDestination" />
   </div>
-</div>
   <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
   <button id = "button" class="pushable" @click="getUserLocation">
       <span class="shadow"></span>
