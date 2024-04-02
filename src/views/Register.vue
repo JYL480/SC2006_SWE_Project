@@ -56,7 +56,7 @@
 
 <script setup>
 // Imports
-import { reactive, onUpdated, ref } from "vue";
+import { reactive, onUpdated, ref, onMounted } from "vue";
 import {
   createUserWithEmailAndPassword,
   updateProfile,
@@ -66,6 +66,9 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { useRouter } from "vue-router";
+import { faS } from "@fortawesome/free-solid-svg-icons";
+// import fetchAndWriteToFile from "../test.js";
+
 // Register
 const inputUserName = reactive({
   username: "",
@@ -108,6 +111,11 @@ onUpdated(() => {
   console.log("Email: ", inputEmail.email);
   console.log("Password: ", password.password);
 });
+onMounted(() => {
+  fetchAndWriteToFile();
+});
+
+// Test the fethc api thing
 </script>
 
 <style scoped>
@@ -279,3 +287,4 @@ a.google span {
   }
 }
 </style>
+../../test.js
