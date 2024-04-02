@@ -1,4 +1,9 @@
 {
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false
+  },
   "name": "map_app_2006",
   "version": "0.1.0",
   "private": true,
@@ -20,6 +25,7 @@
     "firebase": "^10.8.1",
     "mapbox-gl": "^3.2.0",
     "mapbox-gl-vue": "^2.0.4",
+    "resource-bundle": "^0.1.2",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3"
   },
