@@ -95,7 +95,7 @@ const createMapInstance = () => {
 // To get the person location?
 const accessJsonERP = async () => {
   try {
-    const response = await fetch("ERPTEST.geoJson");
+    const response = await fetch("erp-test.geojson");
     if (!response.ok) {
       throw new Error("Failed to fetch JSON data");
     }
@@ -108,7 +108,7 @@ const accessJsonERP = async () => {
 
 const accessJsonCar = async () => {
   try {
-    const response = await fetch("geoJsonCarUpdated.geoJson");
+    const response = await fetch("car-updated.geojson");
     if (!response.ok) {
       throw new Error("Failed to fetch JSON data");
     }
@@ -386,7 +386,7 @@ watch(
 const slotsMap = new Map();
 
 // const jsonData1 = JSON.parse(
-//   fs.readFileSync("public/geoJsonCar.geojson", "utf8")
+//   fs.readFileSync("public/car.geojson", "utf8")
 // );
 const fetchDataAndWriteToFile = () => {
   fetch("https://api.data.gov.sg/v1/transport/carpark-availability")
