@@ -111,9 +111,6 @@ onUpdated(() => {
   console.log("Email: ", inputEmail.email);
   console.log("Password: ", password.password);
 });
-onMounted(() => {
-  fetchAndWriteToFile();
-});
 
 // Test the fethc api thing
 </script>
