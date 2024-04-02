@@ -47,8 +47,8 @@ import { confirmPasswordReset } from "firebase/auth";
 import * as turf from "@turf/turf";
 
 // const process.env.MAPBOX_TOKEN;
-mapboxgl.accessToken =
-  "pk.eyJ1IjoibGp5NDgwIiwiYSI6ImNsdGY4a2F1MjBtNzEyam45MzV5bXl1NG8ifQ.e1MgohLQEySFfrautJ_7lQ";
+const MAPBOX_TOKEN = process.env.VUE_APP_MAPBOX_TOKEN;
+mapboxgl.accessToken = MAPBOX_TOKEN;
 
 // Define a ref to hold the map instance
 // All the variables
