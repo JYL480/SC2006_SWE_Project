@@ -18,9 +18,8 @@
     <span class="edge"></span>
     <span class="front"> User Location </span>
   </button>
-  <div id="slide">
-    <Slider @sliderValue="sliderValue"></Slider>
-  </div>
+
+  <Slider @sliderValue="sliderValue"></Slider>
 </template>
 
 <script setup>
