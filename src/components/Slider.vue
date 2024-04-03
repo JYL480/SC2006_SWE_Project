@@ -25,7 +25,7 @@ const slider = () => {
 
 <style scoped>
 .PB-range-slider {
-  width: 150%;
+  width: 100%;
   height: 4px;
   border-radius: 5px;
   background: #d5dbe1;
@@ -39,7 +39,7 @@ const slider = () => {
   -webkit-appearance: none;
   appearance: none;
   width: 10px;
-  height: 15px;
+  height: 10px;
   border-radius: 50%;
   background-color: #000000;
   cursor: pointer;
@@ -64,12 +64,12 @@ const slider = () => {
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  padding: 1rem;
+  padding: 0.5rem;
   border-radius: 10px;
   border: 1px solid #c6cace;
   box-shadow: 0px 1px 2px 0px #1f1e241f;
   background-color: #c72a2a6b;
-  width: 200px;
+  width: 150px;
 }
 
 .PB-range-slidervalue {
