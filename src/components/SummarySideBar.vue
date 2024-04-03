@@ -1,194 +1,234 @@
 <!--html: to be mounted to html-->
 
 <template>
-  <nav class="sidebar" :class="{close:istoggle}">
+  <nav class="sidebar" :class="{ close: istoggle }">
     <header>
       <div class="image-text">
         <div class="text logo-text">
           <div v-show="carparkErpSelection" class="SortOrderControl">
- 
-            <span v-if="!distanceButtonIsClicked" @click="distanceButton" class="SortOrderControl__option">Distance</span>
-            <span v-else class="SortOrderControl__option --isActive"><b>Distance</b></span>
+            <span
+              v-if="!distanceButtonIsClicked"
+              @click="distanceButton"
+              class="SortOrderControl__option"
+              >Distance</span
+            >
+            <span v-else class="SortOrderControl__option --isActive"
+              ><b>Distance</b></span
+            >
 
-            <span v-if="!priceButtonIsClicked" @click="priceButton" class="SortOrderControl__option ">Price</span>
-            <span v-else class="SortOrderControl__option --isActive"><b>Price</b></span>
+            <span
+              v-if="!priceButtonIsClicked"
+              @click="priceButton"
+              class="SortOrderControl__option"
+              >Price</span
+            >
+            <span v-else class="SortOrderControl__option --isActive"
+              ><b>Price</b></span
+            >
 
-            <span v-if="!slotsButtonIsClicked" @click="slotsButton" class="SortOrderControl__option">Slots</span>
-            <span v-else class="SortOrderControl__option --isActive"><b>Slots</b></span>
+            <span
+              v-if="!slotsButtonIsClicked"
+              @click="slotsButton"
+              class="SortOrderControl__option"
+              >Slots</span
+            >
+            <span v-else class="SortOrderControl__option --isActive"
+              ><b>Slots</b></span
+            >
           </div>
 
           <div v-show="!carparkErpSelection" class="SortOrderControl">
+            <span
+              v-if="!distanceButtonIsClicked"
+              @click="distanceButton"
+              class="SortOrderControl__option"
+              >Distance</span
+            >
+            <span v-else class="SortOrderControl__option --isActive"
+              ><b>Distance</b></span
+            >
 
-            <span v-if="!distanceButtonIsClicked" @click="distanceButton" class="SortOrderControl__option">Distance</span>
-            <span v-else class="SortOrderControl__option --isActive"><b>Distance</b></span>
+            <span
+              v-if="!priceButtonIsClicked"
+              @click="priceButton"
+              class="SortOrderControl__option"
+              >Price</span
+            >
+            <span v-else class="SortOrderControl__option --isActive"
+              ><b>Price</b></span
+            >
 
-            <span v-if="!priceButtonIsClicked" @click="priceButton" class="SortOrderControl__option ">Price</span>
-            <span v-else class="SortOrderControl__option --isActive"><b>Price</b></span>
-
-            <span v-if="!slotsButtonIsClicked" @click="slotsButton" class="SortOrderControl__option">Slots</span>
-            <span v-else class="SortOrderControl__option --isActive"><b>Slots</b></span>
+            <span
+              v-if="!slotsButtonIsClicked"
+              @click="slotsButton"
+              class="SortOrderControl__option"
+              >Slots</span
+            >
+            <span v-else class="SortOrderControl__option --isActive"
+              ><b>Slots</b></span
+            >
           </div>
-
         </div>
       </div>
       <i class="toggle" @click="toggleButton"></i>
     </header>
     <div class="menu-bar">
       <div class="menu">
-    <!--Very disgusting repetative code, maybe can change later after all functional requirements are done-->
-        <div v-show="!istoggle && carparkErpSelection" v-for="carpark in carparkArray" class="card">
-            <div class="card-details">
-                <div class="locationBox">
-                    <div class="location"> Location: {{carpark[1].address}} </div>            
-                </div>
-
-                <div class="messageBox1"> 
-                    <span><u><b>Parking Information</b></u></span>
-                    <br>
-                    <span><b>Rate:</b>${{carpark[1].rates}}</span>
-                    <br>
-                    <span><b>Night Parking:</b> {{(carpark[1].night_parking).toLowerCase()}}</span>
-                    <br>
-                    <span><b>Free Parking:</b> {{ (carpark[1].free_parking).toLowerCase() }}</span>
-                </div>
-
-                <div class="messageBox3">
-                    <span><b>Distance: </b>{{ carpark[2].toFixed(3) }}km</span>
-                    <br>
-                    <span><b>Slots: </b> 7</span>
-                </div>
+        <!--Very disgusting repetative code, maybe can change later after all functional requirements are done-->
+        <div
+          v-show="!istoggle && carparkErpSelection"
+          v-for="carpark in carparkArray"
+          class="card"
+        >
+          <div class="card-details">
+            <div class="locationBox">
+              <div class="location">Location: {{ carpark[1].address }}</div>
             </div>
+
+            <div class="messageBox1">
+              <span
+                ><u><b>Parking Information</b></u></span
+              >
+              <br />
+              <span><b>Rate:</b>${{ carpark[1].rates }}</span>
+              <br />
+              <span
+                ><b>Night Parking:</b>
+                {{ carpark[1].night_parking.toLowerCase() }}</span
+              >
+              <br />
+              <span
+                ><b>Free Parking:</b>
+                {{ carpark[1].free_parking.toLowerCase() }}</span
+              >
+            </div>
+
+            <div class="messageBox3">
+              <span><b>Distance: </b>{{ carpark[2].toFixed(3) }}km</span>
+              <br />
+              <span><b>Slots: </b> {{ carpark[1].available_lots }}</span>
+            </div>
+          </div>
         </div>
 
-        <div v-show="!istoggle && !carparkErpSelection" v-for="erp in erpArray" class="card"> <!--v-for="erp in erpArray"-->
-            <div class="card-details">
-                <div class="ERPlocationBox">
-                  <div class="location"> ERP Name: {{ erp[1].properties.Name }} </div>         
-                </div>
-
-                <div class="messageBox1"> 
-                    <span><b>ERP Price </b>${{ erp[1].properties.price }}</span>
-                    <br>
-                    <span>ERP is <b>{{erp[2].toFixed(3)}}km</b> away</span>
-                </div>
-
-                <div class="messageBox2"> 
-                    <span><b>Operating Hours</b></span>
-                    <br>
-                    <span>10am-7pm</span>
-                </div>
-
+        <div
+          v-show="!istoggle && !carparkErpSelection"
+          v-for="erp in erpArray"
+          class="card"
+        >
+          <!--v-for="erp in erpArray"-->
+          <div class="card-details">
+            <div class="ERPlocationBox">
+              <div class="location">ERP Name: {{ erp[1].properties.Name }}</div>
             </div>
+
+            <div class="messageBox1">
+              <span><b>ERP Price </b>${{ erp[1].properties.price }}</span>
+              <br />
+              <span
+                >ERP is <b>{{ erp[2].toFixed(3) }}km</b> away</span
+              >
+            </div>
+
+            <div class="messageBox2">
+              <span><b>Operating Hours</b></span>
+              <br />
+              <span>10am-7pm</span>
+            </div>
+          </div>
         </div>
- 
       </div>
     </div>
-
   </nav>
-
 </template>
 
 <!--Code logic: Summary Side Bar Logic here-->
 
-
 <script setup>
-import {ref, onMounted} from 'vue'
+import { ref, onMounted, watch } from "vue";
 
 const props = defineProps({
   carparkArray: Array,
   erpArray: Array,
-  carparkErpSelection: Boolean //True means show carpark, False means show ERP
-})
+  carparkErpSelection: Boolean, //True means show carpark, False means show ERP
+});
 
-var istoggle = ref(false)
-var distanceButtonIsClicked = ref(false)
-var priceButtonIsClicked = ref(false)
-var slotsButtonIsClicked = ref(false)
-
+var istoggle = ref(false);
+var distanceButtonIsClicked = ref(false);
+var priceButtonIsClicked = ref(false);
+var slotsButtonIsClicked = ref(false);
 
 function toggleButton() {
-    istoggle.value = !istoggle.value;
-} 
-
+  istoggle.value = !istoggle.value;
+}
 
 function distanceButton() {
-  distanceButtonIsClicked.value = !toggleButton.value
-    if(distanceButtonIsClicked) {
-      priceButtonIsClicked.value = false;
-      slotsButtonIsClicked.value = false;
-      //Sort carpark array by distance
+  distanceButtonIsClicked.value = !toggleButton.value;
+  if (distanceButtonIsClicked) {
+    priceButtonIsClicked.value = false;
+    slotsButtonIsClicked.value = false;
+    //Sort carpark array by distance
 
-        //comparator function 
-        function compareDistance(a,b) {
-          if(a[2]<b[2]) {
-            return -1;
-          }
-          else if(b[2]<a[2]) {
-            return 1;
-          }
-          else {
-            return 0;
-          }
-        }
-
-        if(props.carparkErpSelection) {
-          props.carparkArray.sort(compareDistance);
-        }
-        else {
-          props.erpArray.sort(compareDistance);
-        }      
+    //comparator function
+    function compareDistance(a, b) {
+      if (a[2] < b[2]) {
+        return -1;
+      } else if (b[2] < a[2]) {
+        return 1;
+      } else {
+        return 0;
+      }
     }
+
+    if (props.carparkErpSelection) {
+      props.carparkArray.sort(compareDistance);
+    } else {
+      props.erpArray.sort(compareDistance);
+    }
+  }
 }
 
 function priceButton() {
-  priceButtonIsClicked.value = !priceButtonIsClicked.value
-    if(priceButtonIsClicked) {
-      distanceButtonIsClicked.value = false;
-      slotsButtonIsClicked.value = false;
+  priceButtonIsClicked.value = !priceButtonIsClicked.value;
+  if (priceButtonIsClicked) {
+    distanceButtonIsClicked.value = false;
+    slotsButtonIsClicked.value = false;
 
-      function compareCarparkRates(a,b) {
-          if(a[1].rates<b[1].rates) {
-            return -1;
-          }
-          else if(b[1].rates<a[1].rates) {
-            return 1;
-          }
-          else {
-            return 0;
-          }
-        }
-
-        function compareERPPrice(a,b) {
-          if(a[1].properties.price<b[1].properties.price) {
-            return -1;
-          }
-          else if(b[1].properties.price<a[1].properties.price) {
-            return 1;
-          }
-          else {
-            return 0;
-          }
-        }
-        if(props.carparkErpSelection) {
-          props.carparkArray.sort(compareCarparkRates);
-        }
-        else {
-          props.erpArray.sort(compareERPPrice);
-        }
-        
+    function compareCarparkRates(a, b) {
+      if (a[1].rates < b[1].rates) {
+        return -1;
+      } else if (b[1].rates < a[1].rates) {
+        return 1;
+      } else {
+        return 0;
+      }
     }
+
+    function compareERPPrice(a, b) {
+      if (a[1].properties.price < b[1].properties.price) {
+        return -1;
+      } else if (b[1].properties.price < a[1].properties.price) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+    if (props.carparkErpSelection) {
+      props.carparkArray.sort(compareCarparkRates);
+    } else {
+      props.erpArray.sort(compareERPPrice);
+    }
+  }
 }
 
 function slotsButton() {
-  slotsButtonIsClicked.value = !slotsButtonIsClicked.value
-  if(slotsButtonIsClicked) {
+  slotsButtonIsClicked.value = !slotsButtonIsClicked.value;
+  if (slotsButtonIsClicked) {
     distanceButtonIsClicked.value = false;
     priceButtonIsClicked.value = false;
   }
 }
-
 </script>
-
 
 ``
 <!--CSS: Summary Side Bar Design here-->
@@ -208,7 +248,6 @@ function slotsButton() {
   --tran-04: all 0.3s ease;
   --tran-05: all 0.3s ease;
 }
-
 
 /* ===== Sidebar ===== */
 .sidebar {
@@ -282,21 +321,21 @@ function slotsButton() {
 }
 
 .SortOrderControl {
-    padding-left: 45px;
-    color: #ddd;
-    font-size: 1.6rem;
+  padding-left: 45px;
+  color: #ddd;
+  font-size: 1.6rem;
 }
 
 .SortOrderControl__option {
-    display: inline-block;
-    padding: 4px 16px;
-    border-right: 1px solid #ddd;
-    cursor: pointer;
+  display: inline-block;
+  padding: 4px 16px;
+  border-right: 1px solid #ddd;
+  cursor: pointer;
 }
 
 .SortOrderControl__option.\--isActive {
-    color: #131414;
-    cursor: default;
+  color: #131414;
+  cursor: default;
 }
 /*
 .LocationListItem {
@@ -392,7 +431,6 @@ function slotsButton() {
     font-size: 1.6rem;
 }*/
 
-
 header .image-text .name {
   padding-left: 60px;
   margin-top: 2px;
@@ -436,7 +474,6 @@ header .image-text .profession {
   font-size: 22px;
   cursor: pointer;
   transition: var(--tran-05);
-
 }
 
 .sidebar.close .toggle {
@@ -446,7 +483,6 @@ header .image-text .profession {
 .sidebar .menu {
   margin-top: 40px;
 }
-
 
 .sidebar li a {
   list-style: none;
@@ -530,95 +566,90 @@ body.dark .mode .sun-moon i.moon {
 
 /* For ListItens using cards */
 .card {
- width: 395px;
- height: 130px;
- border-radius: 20px;
- background: #f5f5f5;
- position: relative;
- border: 2px solid #c3c6ce;
- transition: 0.5s ease-out;
- overflow: visible;
- margin-bottom: 25px
+  width: 395px;
+  height: 130px;
+  border-radius: 20px;
+  background: #f5f5f5;
+  position: relative;
+  border: 2px solid #c3c6ce;
+  transition: 0.5s ease-out;
+  overflow: visible;
+  margin-bottom: 25px;
 }
 .locationBox {
- width: 392px;
- height: 35px;
- border-radius: 20px 20px 0px 0px;
- background: #219ebc;
- position: relative;
- border: 2px solid #c3c6ce;
- 
+  width: 392px;
+  height: 35px;
+  border-radius: 20px 20px 0px 0px;
+  background: #219ebc;
+  position: relative;
+  border: 2px solid #c3c6ce;
 }
 
 .ERPlocationBox {
- width: 392px;
- height: 35px;
- border-radius: 20px 20px 0px 0px;
- background: #219ebc;
- position: relative;
- border: 2px solid #c3c6ce;
- margin-bottom: 20px;
+  width: 392px;
+  height: 35px;
+  border-radius: 20px 20px 0px 0px;
+  background: #219ebc;
+  position: relative;
+  border: 2px solid #c3c6ce;
+  margin-bottom: 20px;
 }
 
 .card-details {
- color: black;
- height: 100%;
- gap: .5em;
- place-content: center;
+  color: black;
+  height: 100%;
+  gap: 0.5em;
+  place-content: center;
 }
 
 /*Hover*/
 .card:hover {
- border-color: #008bf8;
- box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.25);
+  border-color: #008bf8;
+  box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.25);
 }
 
 .messageBox1 {
-    box-sizing: border-box;
-    float: left;
-    width: 50%; 
-    padding-bottom: 35px; 
-    padding-top: 5px;
-    padding-left: 9px;
-    text-align: left;
-    /*margin-block-end: 1em;*/
-
+  box-sizing: border-box;
+  float: left;
+  width: 50%;
+  padding-bottom: 35px;
+  padding-top: 5px;
+  padding-left: 9px;
+  text-align: left;
+  /*margin-block-end: 1em;*/
 }
 
 .messageBox2 {
-    box-sizing: border-box;
-    float: left;
-    width: 50%; 
-    padding-bottom: 10px;
-    text-align: center;
-    border-left: thick double #219ebc;
+  box-sizing: border-box;
+  float: left;
+  width: 50%;
+  padding-bottom: 10px;
+  text-align: center;
+  border-left: thick double #219ebc;
 }
 
 .messageBox3 {
-    box-sizing: border-box;
-    float: left;
-    width: 50%; 
-    height: 100px;
-    padding: 20px; /* if you want space between the images */
-    text-align: left;
-    border-left: thick double #219ebc;
+  box-sizing: border-box;
+  float: left;
+  width: 50%;
+  height: 100px;
+  padding: 20px; /* if you want space between the images */
+  text-align: left;
+  border-left: thick double #219ebc;
 }
 
-
 .location {
-    box-sizing: border-box;
-    float: left;
-    margin-left: 5px;
-    padding: 5px; /* if you want space between the images */
-    overflow: hidden;
+  box-sizing: border-box;
+  float: left;
+  margin-left: 5px;
+  padding: 5px; /* if you want space between the images */
+  overflow: hidden;
 }
 
 .slotsBox {
-    box-sizing: border-box;
-    float: left;
-    width: 20%; 
-    padding: 5px; /* if you want space between the images */
+  box-sizing: border-box;
+  float: left;
+  width: 20%;
+  padding: 5px; /* if you want space between the images */
 }
-
-
 </style>

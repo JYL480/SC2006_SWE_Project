@@ -2,28 +2,24 @@
   <div id="map-container"></div>
   <!-- <div id="sidebar">Longitude: -71.224518 | Latitude: 42.213995 | Zoom: 9</div>
    -->
-  
+
   <SummarySideBar
     :carparkArray="CurrentMarkersCar"
     :erpArray="CurrentMarkersERP"
     :carparkErpSelection="boolCarorERP"
   />
-  
+
   <div id="searchbar">
     <Searchbar @selected-dest="selectedDestination" />
   </div>
   <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
-  <button id = "button" class="pushable" @click="getUserLocation">
-      <span class="shadow"></span>
-      <span class="edge"></span>
-      <span class="front">
-        User Location
-      </span>
+  <button id="button" class="pushable" @click="getUserLocation">
+    <span class="shadow"></span>
+    <span class="edge"></span>
+    <span class="front"> User Location </span>
   </button>
-  <div id="slide">
-    <Slider @sliderValue="sliderValue"></Slider>
-  </div>
-  
+
+  <Slider @sliderValue="sliderValue"></Slider>
 </template>
 
 <script setup>
@@ -50,8 +46,8 @@ import { confirmPasswordReset } from "firebase/auth";
 import * as turf from "@turf/turf";
 
 // const process.env.MAPBOX_TOKEN;
-mapboxgl.accessToken =
-  "pk.eyJ1IjoibGp5NDgwIiwiYSI6ImNsdGY4a2F1MjBtNzEyam45MzV5bXl1NG8ifQ.e1MgohLQEySFfrautJ_7lQ";
+const MAPBOX_TOKEN = process.env.VUE_APP_MAPBOX_TOKEN;
+mapboxgl.accessToken = MAPBOX_TOKEN;
 
 // Define a ref to hold the map instance
 // All the variables
@@ -83,8 +79,6 @@ let CurrentMarkersERP = ref([]);
 // True = carpark display, False, = ERP display
 let boolCarorERP = ref(true);
 
-let circle = null;
-
 // All the functions
 
 const createMapInstance = () => {
@@ -100,7 +94,7 @@ const createMapInstance = () => {
 // To get the person location?
 const accessJsonERP = async () => {
   try {
-    const response = await fetch("ERPTEST.geoJson");
+    const response = await fetch("erp-test.geojson");
     if (!response.ok) {
       throw new Error("Failed to fetch JSON data");
     }
@@ -113,7 +107,7 @@ const accessJsonERP = async () => {
 
 const accessJsonCar = async () => {
   try {
-    const response = await fetch("geoJsonCar.geoJson");
+    const response = await fetch("car-updated.geojson");
     if (!response.ok) {
       throw new Error("Failed to fetch JSON data");
     }
@@ -124,7 +118,7 @@ const accessJsonCar = async () => {
   }
 };
 
-const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
+const addERPMarkers = (remove) => {
   const coor = geojsonFeaturesERP.value;
   let marker = null;
   let properties_name = null;
@@ -168,7 +162,9 @@ const addERPMarkers = (remove, boolRemoveWhenCoorChange) => {
 };
 
 const addCarParkMarkers = (remove) => {
+  combineSlotsandJson();
   const arraysCarPark = geojsonFeaturesCarPark.value;
+
   let properties_name = null;
   let properties_price = null;
   let marker = null;
@@ -198,6 +194,7 @@ const addCarParkMarkers = (remove) => {
         <p><strong>Gantry Height:</strong> ${carPark.gantry_height}</p>
         <p><strong>Basement:</strong> ${carPark.car_park_basement}</p>
         <p><strong>Rates:</strong> ${carPark.rates}</p>
+        <p><strong>Available Slots:</strong> ${carPark.available_lots}</p>
     `;
       if (turf.booleanPointInPolygon(pt, circle)) {
         // Get the distance between my location to the marker
@@ -300,6 +297,7 @@ onMounted(async () => {
 
   // Add the circle representing the radius around the user's location
   // addCircle();
+  fetchDataAndWriteToFile();
 });
 
 onUnmounted(() => {
@@ -352,64 +350,6 @@ const addCircle = () => {
   console.log("circle added");
 };
 
-// When the values of ERP or Carpark coordinates changes, update the map accordingly
-// watch(userLocation, (newValue, oldValue) => {
-//   if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
-//     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
-//       CurrentMarkersCar.value[i][0].remove();
-//     }
-//     for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
-//       CurrentMarkersERP.value[i][0].remove();
-//     }
-//     CurrentMarkersCar.value = [];
-//     CurrentMarkersERP.value = [];
-//     addCarParkMarkers(boolCarorERP.value);
-//     addERPMarkers(boolCarorERP.value);
-//   }
-//   addCircle();
-//   console.log(CurrentMarkersCar.value);
-//   console.log(CurrentMarkersERP.value);
-// });
-
-// // watch the circle change size, then will chaneg the array accordingly
-// watch(radiusInKm, (newValue, oldValue) => {
-//   if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
-//     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
-//       CurrentMarkersCar.value[i][0].remove();
-//     }
-//     for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
-//       CurrentMarkersERP.value[i][0].remove();
-//     }
-//     CurrentMarkersCar.value = [];
-//     CurrentMarkersERP.value = [];
-//     addCarParkMarkers(boolCarorERP.value);
-//     addERPMarkers(boolCarorERP.value);
-//   }
-//   addCircle();
-//   console.log(CurrentMarkersCar.value);
-//   console.log(CurrentMarkersERP.value);
-// });
-
-// watch(boolCarorERP, (newValue, oldValue) => {
-//   if (newValue[0] !== oldValue[0] || newValue[1] !== oldValue[1]) {
-//     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
-//       CurrentMarkersCar.value[i][0].remove();
-//     }
-//     for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
-//       CurrentMarkersERP.value[i][0].remove();
-//     }
-//     CurrentMarkersCar.value = [];
-//     CurrentMarkersERP.value = [];
-//     addCarParkMarkers(boolCarorERP.value);
-//     addERPMarkers(boolCarorERP.value);
-//   }
-//   addCircle();
-//   console.log(CurrentMarkersCar.value);
-//   console.log(CurrentMarkersERP.value);
-// });
-
-// Combine all 3 of the waychers above!!!
-
 watch(
   [userLocation, radiusInKm, boolCarorERP],
   (
@@ -441,7 +381,49 @@ watch(
   }
 );
 
+// UHH i do the thing here?
+const slotsMap = new Map();
+
+// const jsonData1 = JSON.parse(
+//   fs.readFileSync("public/car.geojson", "utf8")
+// );
+const fetchDataAndWriteToFile = () => {
+  fetch("https://api.data.gov.sg/v1/transport/carpark-availability")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      } else {
+        // Return the JSON representation of the response
+        return response.json();
+      }
+    })
+    .then((data) => {
+      for (const item of data.items) {
+        for (const carpark of item.carpark_data) {
+          slotsMap.set(carpark.carpark_number, {
+            availableLots: parseInt(carpark.carpark_info[0].lots_available),
+          });
+          // console.log(carpark);
+        }
+      }
+    });
+
+  console.log("HERE", geojsonFeaturesCarPark.value);
+};
+
+const combineSlotsandJson = () => {
+  for (const carpark of geojsonFeaturesCarPark.value) {
+    const slotInfo = slotsMap.get(carpark.car_park_no);
+    if (slotInfo) {
+      carpark.available_lots = slotInfo.availableLots;
+    } else {
+      carpark.available_lots = "No Data"; // Or set to some default value if slot information is not available
+    }
+  }
+};
+
 // "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
+setInterval(fetchDataAndWriteToFile, 60000);
 </script>
 
 <style scoped>
@@ -472,14 +454,14 @@ watch(
 #map-container {
   position: absolute;
   top: 0;
-  left:0;
+  left: 0;
   width: 100%;
   height: 100vh;
   z-index: -1; /* lower z-index value than other components */
 }
 
 /* for get user location buttom*/
-#button{
+#button {
   position: relative;
   left: 60vw;
   top: 82vh;
@@ -570,8 +552,6 @@ watch(
 .pushable:focus:not(:focus-visible) {
   outline: none;
 }
-
-
 </style>
 
 <!-- Rather than doing this, I will create a JSON file, and parsr thrufh!! -->

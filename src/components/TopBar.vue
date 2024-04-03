@@ -1,59 +1,53 @@
-<template>     
-    <router-view></router-view>
-<div class="text">
-    
-    <button id="button" class="pushable">
-        <span class="shadow"></span>
-        <span class="edge"></span>
-        <span class="front">
-            <router-link id="link" to="/LandingPage">Home</router-link>
-        </span>
-    </button>
+<template>
+  <router-view></router-view>
 
-        <button id="button" class="pushable">
-        <span class="shadow"></span>
-        <span class="edge"></span>
-        <span class="front">
-            <router-link id="link" to="/Register">Register</router-link>
-        </span>
-        </button>
+  <button id="button" class="pushable">
+    <span class="shadow"></span>
+    <span class="edge"></span>
+    <span class="front">
+      <router-link id="link" to="/LandingPage">Home</router-link>
+    </span>
+  </button>
 
-        <button id="button" class="pushable">
-        <span class="shadow"></span>
-        <span class="edge"></span>
-        <span class="front">
-            <router-link id="link" to="/Login">Login</router-link>
-        </span>
-        </button>
+  <button id="button" class="pushable">
+    <span class="shadow"></span>
+    <span class="edge"></span>
+    <span class="front">
+      <router-link id="link" to="/Register">Register</router-link>
+    </span>
+  </button>
 
-        <button id="button" class="pushable" @click="handleSignOut" v-if="isLoggedIn">
-        <span class="shadow"></span>
-        <span class="edge"></span>
-        <span class="front">
-            <button>Logout</button>
-        </span>
-        </button>
-</div>
+  <button id="button" class="pushable">
+    <span class="shadow"></span>
+    <span class="edge"></span>
+    <span class="front">
+      <router-link id="link" to="/Login">Login</router-link>
+    </span>
+  </button>
+
+  <button id="button" class="pushable" @click="handleSignOut" v-if="isLoggedIn">
+    <span class="shadow"></span>
+    <span class="edge"></span>
+    <span class="front">
+      <button>Logout</button>
+    </span>
+  </button>
 </template>
 
-<script>
-
-</script>
+<script></script>
 
 <style>
-
-#link{
+#link {
   text-decoration: none;
   color: white;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
-
 .pushable {
   position: relative;
-  left:20px;
-  top: -115px;
+  left: 20px;
+  top: -130px;
   background: transparent;
   padding: 0px;
   border: none;
@@ -138,5 +132,4 @@
 .pushable:focus:not(:focus-visible) {
   outline: none;
 }
-
 </style>

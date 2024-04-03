@@ -3,8 +3,10 @@ import { getAnalytics } from "firebase/analytics";
 import { getDatabase, ref, set } from "firebase/database";
 import { getAuth } from "firebase/auth";
 
+const FIREBASETOKEN = process.env.FIREBASETOKEN;
+
 const firebaseConfig = {
-  apiKey: "AIzaSyDXZBjrWEXvWjrLMxl8hHoMLHWXIAFCY-8",
+  apiKey: FIREBASETOKEN,
   authDomain: "sc2006mapapp.firebaseapp.com",
   projectId: "sc2006mapapp",
   storageBucket: "sc2006mapapp.appspot.com",
