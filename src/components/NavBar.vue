@@ -62,24 +62,23 @@
 <script setup></script>
 
 <style>
-
 .button-container {
-    display: flex;
-    background-color
-    : hsl(15, 100%, 41%);
-    width: 200px;
-    height: 40px;
-    align-items: center;
-    justify-content: space-around;
-    border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px,
-        rgba(0, 73, 144, 0.5) 5px 10px 15px;
-    transition: all 0.5s;
-    }
+  display: flex;
+  background-color: hsl(15, 100%, 41%);
+  width: 200px;
+  height: 40px;
+  align-items: center;
+  justify-content: space-around;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px,
+    rgba(0, 73, 144, 0.5) 5px 10px 15px;
+  transition: all 0.5s;
+  margin-top: 10px;
+}
 .button-container:hover {
-    transform: scale(1.25);
-    transition: all 0.5s;
-    }
+  transform: scale(1.25);
+  transition: all 0.5s;
+}
 
 .button {
   outline: 0 !important;
@@ -101,11 +100,11 @@
 }
 
 .icon {
-    font-size: 20px;
-    }
+  font-size: 20px;
+}
 #navbar {
   position: fixed;
   bottom: 3.5vh;
-  left:33vw;
+  left: 33vw;
 }
 </style>
