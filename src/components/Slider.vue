@@ -63,7 +63,7 @@ const slider = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.5rem;
   padding: 0.5rem;
   border-radius: 10px;
   border: 1px solid #c6cace;
