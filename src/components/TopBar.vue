@@ -1,46 +1,63 @@
 <template>
   <router-view></router-view>
 
-<router-link id="link" to="/LandingPage">
-  <button id="button" class="pushable">
-    <span class="shadow"></span>
-    <span class="edge"></span>
-    <span class="front">
-      Home
-    </span>
-  </button>
-</router-link>
-
-<router-link id="link" to="/Register">
-  <button id="button" class="pushable">
-    <span class="shadow"></span>
-    <span class="edge"></span>
-    <span class="front">
-      Register
-    </span>
-  </button>
+  <router-link id="link" to="/LandingPage">
+    <button id="button" class="pushable">
+      <span class="shadow"></span>
+      <span class="edge"></span>
+      <span class="front"> Home </span>
+    </button>
   </router-link>
 
-<router-link id="link" to="/Login">
-  <button id="button" class="pushable">
-    <span class="shadow"></span>
-    <span class="edge"></span>
-    <span class="front">
-      Login
-    </span>
-  </button>
-</router-link>
+  <router-link id="link" to="/Register">
+    <button id="button" class="pushable">
+      <span class="shadow"></span>
+      <span class="edge"></span>
+      <span class="front"> Register </span>
+    </button>
+  </router-link>
 
-  <button id="button" class="pushable" @click="handleSignOut" v-if="isLoggedIn">
+  <router-link id="link" to="/Login">
+    <button id="button" class="pushable">
+      <span class="shadow"></span>
+      <span class="edge"></span>
+      <span class="front"> Login </span>
+    </button>
+  </router-link>
+
+  <button class="pushable" @click="handleSignOut" v-if="isLoggedIn">
     <span class="shadow"></span>
     <span class="edge"></span>
-    <span class="front">
-      <button>Logout</button>
-    </span>
+    <span class="front">Logout</span>
   </button>
 </template>
 
-<script></script>
+<script setup>
+import { onMounted, ref } from "vue";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { useRouter } from "vue-router";
+
+const isLoggedIn = ref(false);
+const router = useRouter();
+
+let auth;
+onMounted(() => {
+  auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      isLoggedIn.value = true;
+    } else {
+      isLoggedIn.value = false;
+    }
+  });
+});
+
+const handleSignOut = () => {
+  signOut(auth).then(() => {
+    router.push("/Login");
+  });
+};
+</script>
 
 <style>
 #link {
