@@ -1,29 +1,35 @@
 <template>
   <router-view></router-view>
 
+<router-link id="link" to="/LandingPage">
   <button id="button" class="pushable">
     <span class="shadow"></span>
     <span class="edge"></span>
     <span class="front">
-      <router-link id="link" to="/LandingPage">Home</router-link>
+      Home
     </span>
   </button>
+</router-link>
 
+<router-link id="link" to="/Register">
   <button id="button" class="pushable">
     <span class="shadow"></span>
     <span class="edge"></span>
     <span class="front">
-      <router-link id="link" to="/Register">Register</router-link>
+      Register
     </span>
   </button>
+  </router-link>
 
+<router-link id="link" to="/Login">
   <button id="button" class="pushable">
     <span class="shadow"></span>
     <span class="edge"></span>
     <span class="front">
-      <router-link id="link" to="/Login">Login</router-link>
+      Login
     </span>
   </button>
+</router-link>
 
   <button id="button" class="pushable" @click="handleSignOut" v-if="isLoggedIn">
     <span class="shadow"></span>
@@ -47,7 +53,7 @@
 .pushable {
   position: relative;
   left: 20px;
-  top: -130px;
+  top: -115px;
   background: transparent;
   padding: 0px;
   border: none;

@@ -1,10 +1,15 @@
 <template>
-    <TopBar></TopBar>
+    <div> Profile</div>
 </template>
 
 <script setup>
-    import TopBar from '../components/TopBar.vue';
+
+    
 </script>
 
 <style>
+    #TopBar {
+        bottom:20px;
+    }
+
 </style>

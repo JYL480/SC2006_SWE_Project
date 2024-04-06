@@ -236,7 +236,7 @@ function slotsButton() {
 :root {
   /* ===== Colors ===== */
   --body-color: #e4e9f7;
-  --sidebar-color: #706c6c;
+  --sidebar-color: #413535ce;
   --primary-color: #695cfe;
   --primary-color-light: #f6f5ff;
   --toggle-color: #ddd;
@@ -329,7 +329,7 @@ function slotsButton() {
 .SortOrderControl__option {
   display: inline-block;
   padding: 4px 16px;
-  border-right: 1px solid #ddd;
+  border-right: 1px solid #1d0404;
   cursor: pointer;
 }
 
@@ -571,18 +571,19 @@ body.dark .mode .sun-moon i.moon {
   border-radius: 20px;
   background: #f5f5f5;
   position: relative;
-  border: 2px solid #c3c6ce;
+  border: 2px solid #000000;
   transition: 0.5s ease-out;
   overflow: visible;
   margin-bottom: 25px;
+  transition: border-width 0.3s;
 }
 .locationBox {
   width: 392px;
   height: 35px;
   border-radius: 20px 20px 0px 0px;
-  background: #219ebc;
+  background: #bc2121;
   position: relative;
-  border: 2px solid #c3c6ce;
+  border: 2px solid #000000;
 }
 
 .ERPlocationBox {
@@ -604,7 +605,8 @@ body.dark .mode .sun-moon i.moon {
 
 /*Hover*/
 .card:hover {
-  border-color: #008bf8;
+  border-color: #009c00;
+  border-width: 5px;
   box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.25);
 }
 
@@ -625,7 +627,7 @@ body.dark .mode .sun-moon i.moon {
   width: 50%;
   padding-bottom: 10px;
   text-align: center;
-  border-left: thick double #219ebc;
+  border-left: thick double #000000;
 }
 
 .messageBox3 {
@@ -635,7 +637,7 @@ body.dark .mode .sun-moon i.moon {
   height: 100px;
   padding: 20px; /* if you want space between the images */
   text-align: left;
-  border-left: thick double #219ebc;
+  border-left: thick double #000000;
 }
 
 .location {

@@ -12,14 +12,17 @@
   <div id="searchbar">
     <Searchbar @selected-dest="selectedDestination" />
   </div>
+
   <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
+
   <button id="button" class="pushable" @click="getUserLocation">
     <span class="shadow"></span>
     <span class="edge"></span>
     <span class="front"> User Location </span>
   </button>
 
-  <Slider @sliderValue="sliderValue"></Slider>
+  <Slider id="slider" @sliderValue="sliderValue"></Slider>
+
 </template>
 
 <script setup>
@@ -427,10 +430,6 @@ setInterval(fetchDataAndWriteToFile, 60000);
 </script>
 
 <style scoped>
-#map-container {
-  width: 100%;
-  height: 100vh;
-}
 .map-container {
   flex: 1;
   display: flex;
@@ -446,18 +445,14 @@ setInterval(fetchDataAndWriteToFile, 60000);
   cursor: pointer;
 }
 
-.map-container {
-  flex: 1;
-  display: flex;
-  position: relative;
-}
+
 #map-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100vh;
-  z-index: -1; /* lower z-index value than other components */
+ /* lower z-index value than other components */
 }
 
 /* for get user location buttom*/
@@ -466,6 +461,13 @@ setInterval(fetchDataAndWriteToFile, 60000);
   left: 60vw;
   top: 82vh;
 }
+
+#slider{
+  position: relative;
+  z-index: 1;
+  left: 20px;
+}
+
 .pushable {
   position: relative;
   background: transparent;

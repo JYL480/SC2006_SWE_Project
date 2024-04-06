@@ -1,7 +1,9 @@
 <template>
-  <router-link id="link" to="/LandingPage" class="logo"
-    ><img :src="myImage" alt="Map Image"
-  /></router-link>
+  <router-link id="link" to="/LandingPage">
+    <div id=logo>
+      <img :src="myImage" alt="Map Image"/>
+    </div>
+  </router-link>
 
   <TopBar></TopBar>
 </template>
@@ -33,18 +35,20 @@ const handleSignOut = () => {
     router.push("/LandingPage");
   });
 };
+
 </script>
+<style>
 
-<style scoped>
 img {
-  width: 20%;
-  height: auto;
-  z-index: 1;
+  width: 20vw;
   padding-left: 20px;
-  display: flex;
+  z-index: 100;
 }
 
-.logo {
-  margin-top: 10px;
+#logo {
+  display: flex;
+  justify-content: left;
+  align-items: center;
 }
+
 </style>
