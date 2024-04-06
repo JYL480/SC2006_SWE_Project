@@ -1,9 +1,12 @@
 <template>
   <router-link id="link" to="/LandingPage">
-    <div id=logo>
-      <img :src="myImage" alt="Map Image"/>
+    <div id="logo">
+      <img :src="myImage" alt="Map Image" />
     </div>
   </router-link>
+  <!-- <button class="logOutButton" @click="handleSignOut" v-if="isLoggedIn">
+    Logout
+  </button> -->
 
   <TopBar></TopBar>
 </template>
@@ -32,13 +35,11 @@ onMounted(() => {
 
 const handleSignOut = () => {
   signOut(auth).then(() => {
-    router.push("/LandingPage");
+    router.push("/login");
   });
 };
-
 </script>
 <style>
-
 img {
   width: 20vw;
   padding-left: 20px;
@@ -51,4 +52,9 @@ img {
   align-items: center;
 }
 
+.logOutButton {
+  width: 20vw;
+  padding-left: 20px;
+  z-index: 100;
+}
 </style>
