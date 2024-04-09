@@ -7,6 +7,7 @@
     :carparkArray="CurrentMarkersCar"
     :erpArray="CurrentMarkersERP"
     :carparkErpSelection="boolCarorERP"
+    @car-park-hovered="handleCarParkHovered"
   />
 
   <div id="searchbar">
@@ -22,7 +23,6 @@
   </button>
 
   <Slider id="slider" @sliderValue="sliderValue"></Slider>
-
 </template>
 
 <script setup>
@@ -64,6 +64,13 @@ const options = { steps: 50, units: "kilometers" };
 const destMarker = new mapboxgl.Marker({
   color: "#008000",
   draggable: true,
+  scale: 1.5,
+});
+
+const highlightedMarker = new mapboxgl.Marker({
+  color: "#620010",
+  draggable: true,
+  scale: 1.2,
 });
 
 const geojsonFeaturesERP = ref([]);
@@ -77,6 +84,7 @@ let centerLng = null;
 let map = null;
 let CurrentMarkersCar = ref([]);
 let CurrentMarkersERP = ref([]);
+let nameMarketHighlight = ref("");
 
 // By default == true,
 // True = carpark display, False, = ERP display
@@ -164,7 +172,7 @@ const addERPMarkers = (remove) => {
   }
 };
 
-const addCarParkMarkers = (remove) => {
+const addCarParkMarkers = (remove, highlightedName) => {
   combineSlotsandJson();
   const arraysCarPark = geojsonFeaturesCarPark.value;
 
@@ -203,13 +211,25 @@ const addCarParkMarkers = (remove) => {
         // Get the distance between my location to the marker
         const distance = turf.distance(from, pt, { units: "kilometers" });
         properties_name = arraysCarPark[0].car_park_no;
-        marker = new mapboxgl.Marker({
-          color: "red",
-        })
-          .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
-          .setPopup(new mapboxgl.Popup().setHTML(popupContent)) // Customize popup content
-          .addTo(map);
-        CurrentMarkersCar.value.push([marker, arraysCarPark[i], distance]);
+        console.log("?asds", highlightedName);
+        if (properties_name == highlightedName) {
+          marker = new mapboxgl.Marker({
+            color: "pink",
+            scale: 1.5,
+          })
+            .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
+            .setPopup(new mapboxgl.Popup().setHTML(popupContent)) // Customize popup content
+            .addTo(map);
+          CurrentMarkersCar.value.push([marker, arraysCarPark[i], distance]);
+        } else {
+          marker = new mapboxgl.Marker({
+            color: "red",
+          })
+            .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
+            .setPopup(new mapboxgl.Popup().setHTML(popupContent)) // Customize popup content
+            .addTo(map);
+          CurrentMarkersCar.value.push([marker, arraysCarPark[i], distance]);
+        }
       }
     }
   } else {
@@ -281,7 +301,8 @@ function selectedDestination(coords) {
 
 // Get the slider value
 const sliderValue = (value) => {
-  console.log(value);
+  // console.log(value);
+
   radiusInKm.value = value;
   addCircle();
 };
@@ -350,39 +371,72 @@ const addCircle = () => {
     map.getSource("circle-source").setData(circle);
   }
 
-  console.log("circle added");
+  // console.log("circle added");
+};
+
+const forWatchers = (newBool, newName) => {
+  for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+    CurrentMarkersCar.value[i][0].remove();
+  }
+  for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
+    CurrentMarkersERP.value[i][0].remove();
+  }
+  CurrentMarkersCar.value = [];
+  CurrentMarkersERP.value = [];
+  addCarParkMarkers(newBool, newName);
+  addERPMarkers(newBool);
+  addCircle();
+
+  console.log(CurrentMarkersCar.value);
+  console.log(CurrentMarkersERP.value);
 };
 
 watch(
-  [userLocation, radiusInKm, boolCarorERP],
+  [userLocation, radiusInKm, boolCarorERP, nameMarketHighlight],
   (
-    [newUserLocation, newRadius, newBool],
-    [oldUserLocation, oldRadius, oldBool]
+    [newUserLocation, newRadius, newBool, newName],
+    [oldUserLocation, oldRadius, oldBool, oldName]
   ) => {
+    // console.log(newName, oldName);
     if (
       newUserLocation[0] !== oldUserLocation[0] ||
       newUserLocation[1] !== oldUserLocation[1] ||
       newRadius[0] !== oldRadius[0] ||
       newRadius[1] !== oldRadius[1] ||
       newBool[0] !== oldBool[0] ||
-      newBool[1] !== oldBool[1]
+      newBool[1] !== oldBool[1] ||
+      newName !== oldName
     ) {
-      for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
-        CurrentMarkersCar.value[i][0].remove();
-      }
-      for (let i = 0; i < CurrentMarkersERP.value.length; i++) {
-        CurrentMarkersERP.value[i][0].remove();
-      }
-      CurrentMarkersCar.value = [];
-      CurrentMarkersERP.value = [];
-      addCarParkMarkers(newBool);
-      addERPMarkers(newBool);
-      addCircle();
+      // must make the changes here. HMMM
+      // if (newName[0] != oldName[0]) {
+      //   for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+      //     if (CurrentMarkersCar.value[i][1].car_park_no == oldName) {
+      //       CurrentMarkersCar.value[i][0].remove();
+      //     }
+      //   }
+
+      forWatchers(newBool, newName);
     }
-    console.log(CurrentMarkersCar.value);
-    console.log(CurrentMarkersERP.value);
   }
+  // }
 );
+
+// Watch when teh hover changes!!
+// watch(
+//   [nameMarketHighlight, boolCarorERP],
+//   ([newValue, newBool], [oldValue, oldBool]) => {
+//     console.log("JE?", CurrentMarkersCar.value[1][1].car_park_no);
+//     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
+//       if (CurrentMarkersCar.value[i][1].car_park_no == newValue) {
+//         CurrentMarkersCar.value[i][0].remove();
+//       }
+//     }
+//     CurrentMarkersCar.value = [];
+//     CurrentMarkersERP.value = [];
+//     addCarParkMarkers(newBool);
+//     addERPMarkers(newBool);
+//   }
+// );
 
 // UHH i do the thing here?
 const slotsMap = new Map();
@@ -411,7 +465,7 @@ const fetchDataAndWriteToFile = () => {
       }
     });
 
-  console.log("HERE", geojsonFeaturesCarPark.value);
+  // console.log("HERE", geojsonFeaturesCarPark.value);
 };
 
 const combineSlotsandJson = () => {
@@ -427,6 +481,12 @@ const combineSlotsandJson = () => {
 
 // "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
 setInterval(fetchDataAndWriteToFile, 60000);
+
+// Handle the hover emit event
+const handleCarParkHovered = (name) => {
+  // console.log(name);
+  nameMarketHighlight.value = name;
+};
 </script>
 
 <style scoped>
@@ -445,14 +505,13 @@ setInterval(fetchDataAndWriteToFile, 60000);
   cursor: pointer;
 }
 
-
 #map-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100vh;
- /* lower z-index value than other components */
+  /* lower z-index value than other components */
 }
 
 /* for get user location buttom*/
@@ -462,7 +521,7 @@ setInterval(fetchDataAndWriteToFile, 60000);
   top: 82vh;
 }
 
-#slider{
+#slider {
   position: relative;
   z-index: 1;
   left: 20px;
