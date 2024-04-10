@@ -80,10 +80,7 @@
           v-for="carpark in carparkArray"
           class="card"
         >
-          <div
-            class="card-details"
-            @mouseover="emitCarHover(carpark[1].car_park_no)"
-          >
+          <div class="card-details">
             <div class="locationBox">
               <div class="location">Location: {{ carpark[1].address }}</div>
             </div>
@@ -310,12 +307,6 @@ const emitCarHover = (carParkName) => {
   --tran-05: all 0.3s ease;
 
   --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-/* Direction button */
-.directionButton {
-  border-radius: 10%;
-  margin-top: 10px;
 }
 
 /* ===== Sidebar ===== */
@@ -735,6 +726,7 @@ body.dark .mode .sun-moon i.moon {
 .btn-conteiner {
   display: flex;
   justify-content: center;
+  cursor: pointer;
 
   --color-text: #ffffff;
   --color-background: #ff135a;
