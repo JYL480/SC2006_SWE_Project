@@ -514,11 +514,8 @@ const handleCarParkHovered = (name) => {
 }
 
 /* for get user location buttom*/
-#button {
-  position: relative;
-  left: 60%;
-  top: 146px;
-}
+/* #button {
+} */
 
 #slider {
   position: relative;
@@ -528,11 +525,11 @@ const handleCarParkHovered = (name) => {
 }
 
 .pushable {
-  z-index: 1;
-  margin-top: 410px;
-  /* margin-right: 1000px; */
+  position: fixed;
+  left: 60%;
+  z-index: 1; /* margin-right: 1000px; */
+  bottom: 20px;
   background: transparent;
-  top: 50px;
   padding: 0px;
   border: none;
   cursor: pointer;
