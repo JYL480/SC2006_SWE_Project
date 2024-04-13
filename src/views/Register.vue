@@ -1,4 +1,5 @@
 <template>
+  <div id="spline-viewer-container"></div>
   <section class="container forms">
     <div class="form login">
       <div class="form-content">
@@ -9,7 +10,8 @@
               type="username"
               placeholder="Username"
               class="input"
-              v-model="inputUserName.username"
+              :required="true"
+              v-model="inputUserName"
             />
           </div>
           <div class="field input-field">
@@ -17,21 +19,42 @@
               type="email"
               placeholder="Email"
               class="input"
-              v-model="inputEmail.email"
+              :required="true"
+              v-model="inputEmail"
             />
           </div>
           <div class="field input-field">
             <input
               type="password"
-              placeholder="Password"
+              placeholder="At least 8 characters, 1 uppercase, 1 lowercase letters & 1 special character"
               class="password"
-              v-model="password.password"
+              :required="true"
+              :pattern="
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/
+              "
+              v-model="password"
             />
             <i class="bx bx-hide eye-icon"></i>
+            <ul v-if="showPasswordRequirements" class="password-requirements">
+              <li v-if="!password.length >= 8">Minimum 8 characters</li>
+              <li v-if="!/[a-z]/.test(password)">
+                At least one lowercase letter
+              </li>
+              <li v-if="!/[A-Z]/.test(password)">
+                At least one uppercase letter
+              </li>
+              <li v-if="!/\d/.test(password)">At least one number</li>
+              <li v-if="!/[@$!%*?&]/.test(password)">
+                At least one special character
+              </li>
+            </ul>
           </div>
-          <div class="form-link">
-            <a href="#" class="forgot-pass">Forgot password?</a>
+          <div :class="{ 'moved-down': showPasswordRequirements }">
+            <div class="form-link">
+              <a href="#" class="forgot-pass">Forgot password?</a>
+            </div>
           </div>
+
           <div class="field button-field">
             <button @click="Register()">Register</button>
           </div>
@@ -56,7 +79,14 @@
 
 <script setup>
 // Imports
-import { reactive, onUpdated, ref, onMounted } from "vue";
+import {
+  reactive,
+  onUpdated,
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+} from "vue";
 import {
   createUserWithEmailAndPassword,
   updateProfile,
@@ -67,20 +97,26 @@ import {
 } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { faS } from "@fortawesome/free-solid-svg-icons";
+import { SplineViewer } from "@splinetool/viewer";
 // import fetchAndWriteToFile from "../test.js";
 
+onMounted(() => {
+  console.log("Mounted");
+  new SplineViewer({
+    el: document.getElementById("spline-viewer-container"),
+    scene: "https://unpkg.com/@splinetool/viewer/build/spline-viewer.js",
+  });
+});
+
 // Register
-const inputUserName = reactive({
-  username: "",
-});
-const inputEmail = reactive({
-  email: "",
-});
-const password = reactive({
-  password: "",
-});
+const inputUserName = ref("");
+const inputEmail = ref("");
+const password = ref("");
+const showPasswordRequirements = ref(false);
 const router = useRouter();
 const auth = getAuth();
+
+watch(password.value, (newPassword, oldPassword) => {});
 
 const Register = () => {
   createUserWithEmailAndPassword(auth, inputEmail.email, password.password)
@@ -107,9 +143,13 @@ const signInWithGoogle = () => {
 
 // Debugging
 onUpdated(() => {
-  console.log("Username: ", inputUserName.username);
-  console.log("Email: ", inputEmail.email);
-  console.log("Password: ", password.password);
+  // console.log("Username: ", inputUserName.value);
+  // console.log("Email: ", inputEmail.value);
+  // console.log("Password: ", password.value);
+  console.log(password.value);
+  if (password.value != "") {
+    showPasswordRequirements.value = true;
+  }
 });
 
 // Test the fethc api thing
@@ -282,6 +322,12 @@ a.google span {
   .form {
     padding: 20px 10px;
   }
+}
+.moved-down {
+  transition: transform 0.2s ease-in-out;
+  transform: translateY(
+    20px
+  ); /* Adjust the translation value for desired movement */
 }
 </style>
 ../../test.js
