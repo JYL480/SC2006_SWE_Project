@@ -516,7 +516,8 @@ const handleCarParkHovered = (name) => {
 /* for get user location buttom*/
 #button {
   position: relative;
-  left: 53%;
+  left: 60%;
+  top: 146px;
 }
 
 #slider {
