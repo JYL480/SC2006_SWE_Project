@@ -124,7 +124,7 @@ onUpdated(() => {
   font-family: "Poppins", sans-serif;
 }
 .container {
-  height: 100vh;
+  height: 80vh;
   width: 100%;
   display: flex;
   align-items: center;
