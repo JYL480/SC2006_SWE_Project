@@ -1,5 +1,9 @@
 <template>
-  <router-view></router-view>
+  <router-link id="link" to="/LandingPage">
+    <div id="logo">
+      <img class="logoImg" src="../assets/logo.png" />
+    </div>
+  </router-link>
 
   <router-link id="link" to="/LandingPage">
     <button id="button" class="pushable">
@@ -8,7 +12,6 @@
       <span class="front"> Home </span>
     </button>
   </router-link>
-
   <router-link id="link" to="/Register">
     <button id="button" class="pushable">
       <span class="shadow"></span>
@@ -30,6 +33,8 @@
     <span class="edge"></span>
     <span class="front">Logout</span>
   </button>
+
+  <router-view></router-view>
 </template>
 
 <script setup>
@@ -59,7 +64,7 @@ const handleSignOut = () => {
 };
 </script>
 
-<style>
+<style scoped>
 #link {
   text-decoration: none;
   color: white;
@@ -69,9 +74,9 @@ const handleSignOut = () => {
 
 .pushable {
   position: relative;
-  left: 20px;
-  top: -115px;
   background: transparent;
+  left: 20px;
+  top: 5px;
   padding: 0px;
   border: none;
   cursor: pointer;
@@ -79,6 +84,7 @@ const handleSignOut = () => {
   outline-color: deeppink;
   transition: filter 250ms;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  z-index: 100;
 }
 
 .shadow {
@@ -154,5 +160,22 @@ const handleSignOut = () => {
 
 .pushable:focus:not(:focus-visible) {
   outline: none;
+}
+.logoImg {
+  width: 20vw;
+  padding-left: 20px;
+  z-index: 100;
+}
+
+#logo {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+.logOutButton {
+  width: 20vw;
+  padding-left: 20px;
+  z-index: 100;
 }
 </style>

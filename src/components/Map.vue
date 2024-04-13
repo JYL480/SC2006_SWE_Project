@@ -14,15 +14,14 @@
     <Searchbar @selected-dest="selectedDestination" />
   </div>
 
-  <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
+  <Slider id="slider" @sliderValue="sliderValue"></Slider>
 
+  <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
   <button id="button" class="pushable" @click="getUserLocation">
     <span class="shadow"></span>
     <span class="edge"></span>
     <span class="front"> User Location </span>
   </button>
-
-  <Slider id="slider" @sliderValue="sliderValue"></Slider>
 </template>
 
 <script setup>
@@ -517,19 +516,22 @@ const handleCarParkHovered = (name) => {
 /* for get user location buttom*/
 #button {
   position: relative;
-  left: 60vw;
-  top: 82vh;
+  left: 53%;
 }
 
 #slider {
   position: relative;
   z-index: 1;
   left: 20px;
+  top: 10px;
 }
 
 .pushable {
-  position: relative;
+  z-index: 1;
+  margin-top: 410px;
+  /* margin-right: 1000px; */
   background: transparent;
+  top: 50px;
   padding: 0px;
   border: none;
   cursor: pointer;
