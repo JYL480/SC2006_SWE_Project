@@ -12,7 +12,7 @@
       <span class="front"> Home </span>
     </button>
   </router-link>
-  <router-link id="link" to="/Register">
+  <router-link id="link" to="/Register" v-if="!isLoggedIn">
     <button id="button" class="pushable">
       <span class="shadow"></span>
       <span class="edge"></span>
