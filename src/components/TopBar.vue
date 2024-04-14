@@ -1,5 +1,9 @@
 <template>
-  <router-view></router-view>
+  <router-link id="link" to="/LandingPage">
+    <div id="logo">
+      <img class="logoImg" src="../assets/logo.png" />
+    </div>
+  </router-link>
 
   <router-link id="link" to="/LandingPage">
     <button id="button" class="pushable">
@@ -8,8 +12,7 @@
       <span class="front"> Home </span>
     </button>
   </router-link>
-
-  <router-link id="link" to="/Register">
+  <router-link id="link" to="/Register" v-if="!isLoggedIn">
     <button id="button" class="pushable">
       <span class="shadow"></span>
       <span class="edge"></span>
@@ -17,7 +20,7 @@
     </button>
   </router-link>
 
-  <router-link id="link" to="/Login">
+  <router-link id="link" to="/Login" v-if="!isLoggedIn">
     <button id="button" class="pushable">
       <span class="shadow"></span>
       <span class="edge"></span>
@@ -30,6 +33,11 @@
     <span class="edge"></span>
     <span class="front">Logout</span>
   </button>
+  <span class="displayName" v-if="isLoggedIn">
+    <span class="front"> Welcome {{ auth.currentUser.displayName }}</span>
+  </span>
+
+  <router-view></router-view>
 </template>
 
 <script setup>
@@ -40,9 +48,8 @@ import { useRouter } from "vue-router";
 const isLoggedIn = ref(false);
 const router = useRouter();
 
-let auth;
+const auth = getAuth();
 onMounted(() => {
-  auth = getAuth();
   onAuthStateChanged(auth, (user) => {
     if (user) {
       isLoggedIn.value = true;
@@ -59,19 +66,29 @@ const handleSignOut = () => {
 };
 </script>
 
-<style>
+<style scoped>
 #link {
   text-decoration: none;
   color: white;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
+.displayName {
+  z-index: 100;
+  display: flex;
+  top: 16px;
+  left: 20px;
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+  /* Other styles as needed */
+}
 
 .pushable {
   position: relative;
-  left: 20px;
-  top: -115px;
   background: transparent;
+  left: 20px;
+  top: 5px;
   padding: 0px;
   border: none;
   cursor: pointer;
@@ -79,6 +96,7 @@ const handleSignOut = () => {
   outline-color: deeppink;
   transition: filter 250ms;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  z-index: 100;
 }
 
 .shadow {
@@ -154,5 +172,22 @@ const handleSignOut = () => {
 
 .pushable:focus:not(:focus-visible) {
   outline: none;
+}
+.logoImg {
+  width: 20vw;
+  padding-left: 20px;
+  z-index: 100;
+}
+
+#logo {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+.logOutButton {
+  width: 20vw;
+  padding-left: 20px;
+  z-index: 100;
 }
 </style>

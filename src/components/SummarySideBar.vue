@@ -6,9 +6,10 @@
       <div class="image-text">
         <div class="text logo-text">
           <div v-show="carparkErpSelection" class="SortOrderControl">
-            <span v-if="!distanceButtonIsClicked"
-                  @click="distanceButton"
-                  class="SortOrderControl__option">
+            <span
+              v-if="!distanceButtonIsClicked"
+              @click="distanceButton"
+              class="SortOrderControl__option">
               Distance
             </span>
 
@@ -16,9 +17,10 @@
               <b>Distance</b>
             </span>
 
-            <span v-if="!priceButtonIsClicked"
-                  @click="priceButton"
-                  class="SortOrderControl__option">
+            <span
+              v-if="!priceButtonIsClicked"
+              @click="priceButton"
+              class="SortOrderControl__option">
               Price
             </span>
 
@@ -26,9 +28,10 @@
               <b>Price</b>
             </span>
 
-            <span v-if="!slotsButtonIsClicked"
-                  @click="slotsButton"
-                  class="SortOrderControl__option">
+            <span
+              v-if="!slotsButtonIsClicked"
+              @click="slotsButton"
+              class="SortOrderControl__option">
               Slots
             </span>
 
@@ -38,9 +41,10 @@
           </div>
 
           <div v-show="!carparkErpSelection" class="SortOrderControl">
-            <span v-if="!distanceButtonIsClicked"
-                  @click="distanceButton"
-                  class="SortOrderControl__option">
+            <span
+              v-if="!distanceButtonIsClicked"
+              @click="distanceButton"
+              class="SortOrderControl__option">
               Distance
             </span>
 
@@ -67,8 +71,7 @@
             <span v-else class="SortOrderControl__option --isActive">
               <b>Slots</b>
             </span>
-          -->
-          </div>
+          --></div>
         </div>
       </div>
       <i class="toggle" @click="toggleButton"></i>
@@ -76,16 +79,16 @@
     <div class="menu-bar">
       <div class="menu">
         <!--Very disgusting repetative code, maybe can change later after all functional requirements are done-->
-        <div v-show="!istoggle && carparkErpSelection"
-             v-for="carpark in carparkArray"
-             class="card">
-
-          <div class="card-details">
-
+        <div
+          v-show="!istoggle && carparkErpSelection"
+          v-for="carpark in carparkArray"
+          class="card">
+          <div
+            class="card-details"
+            @mouseover="emitCarParkIDHovered(carpark[1].car_park_no)"
+            @mouseleave="clearHoveredCarParkID">
             <div class="locationBox">
-              <div class="location">
-                Location: {{ carpark[1].address }}
-              </div>
+              <div class="location">Location: {{ carpark[1].address }}</div>
               <label class="ui-bookmark">
                 <input :checked="bookmarkedCarparks.has(carpark[1]['car_park_no'])" @change="carparkBookmarkToggle(carpark[1])" type="checkbox">
                 <div class="bookmark">
@@ -104,63 +107,62 @@
               </span>
 
               <br />
+              <span> <b>Rate:</b> ${{ carpark[1].rates }} </span>
+
+              <br />
               <span>
-                <b>Rate:</b> ${{ carpark[1].rates }}
+                  <b>Night Parking:</b> {{ carpark[1].night_parking.toLowerCase() }}
               </span>
 
               <br />
               <span>
-                <b>Night Parking:</b>{{ carpark[1].night_parking.toLowerCase() }}
-              </span>
-
-              <br />
-              <span>
-                <b>Free Parking:</b>{{ carpark[1].free_parking.toLowerCase() }}
+                <b>Free Parking:</b> {{ carpark[1].free_parking.toLowerCase() }}
               </span>
             </div>
 
             <div class="messageBox3">
-              <span>
-                <b>Distance: </b>{{ carpark[2].toFixed(3) }}km
-              </span>
+              <span> <b>Distance: </b> {{ carpark[2].toFixed(3) }}km </span>
 
               <br />
-              <span>
-                <b>Slots: </b>{{ carpark[1].available_lots }}
-              </span>
+              <span> <b>Slots: </b> {{ carpark[1].available_lots }} </span>
 
               <br />
               <span>
                 <div class="btn-conteiner">
-                  <a class="btn-content"
+                  <a
+                    class="btn-content"
                     @click="openDirections(carpark[1].Latitude, carpark[1].Longitude)">
                     <span class="btn-title">Directions</span>
                     <span class="icon-arrow">
-                      <svg width="66px"
-                           height="28px"
-                           viewBox="0 0 66 43"
-                           version="1.1"
-                           xmlns="http://www.w3.org/2000/svg"
-                           xmlns:xlink="http://www.w3.org/1999/xlink">
-
-                        <g id="arrow"
-                           stroke="none"
-                           stroke-width="1"
-                           fill="none"
-                           fill-rule="evenodd">
-                          <path id="arrow-icon-one"
-                                d="M40.1543933,3.89485454 L43.9763149,0.139296592 C44.1708311,-0.0518420739 44.4826329,-0.0518571125 44.6771675,0.139262789 L65.6916134,20.7848311 C66.0855801,21.1718824 66.0911863,21.8050225 65.704135,22.1989893 C65.7000188,22.2031791 65.6958657,22.2073326 65.6916762,22.2114492 L44.677098,42.8607841 C44.4825957,43.0519059 44.1708242,43.0519358 43.9762853,42.8608513 L40.1545186,39.1069479 C39.9575152,38.9134427 39.9546793,38.5968729 40.1481845,38.3998695 C40.1502893,38.3977268 40.1524132,38.395603 40.1545562,38.3934985 L56.9937789,21.8567812 C57.1908028,21.6632968 57.193672,21.3467273 57.0001876,21.1497035 C56.9980647,21.1475418 56.9959223,21.1453995 56.9937605,21.1432767 L40.1545208,4.60825197 C39.9574869,4.41477773 39.9546013,4.09820839 40.1480756,3.90117456 C40.1501626,3.89904911 40.1522686,3.89694235 40.1543933,3.89485454 Z"
-                                fill="#FFFFFF">
+                      <svg
+                        width="66px"
+                        height="28px"
+                        viewBox="0 0 66 43"
+                        version="1.1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g
+                          id="arrow"
+                          stroke="none"
+                          stroke-width="1"
+                          fill="none"
+                          fill-rule="evenodd">
+                          <path
+                            id="arrow-icon-one"
+                            d="M40.1543933,3.89485454 L43.9763149,0.139296592 C44.1708311,-0.0518420739 44.4826329,-0.0518571125 44.6771675,0.139262789 L65.6916134,20.7848311 C66.0855801,21.1718824 66.0911863,21.8050225 65.704135,22.1989893 C65.7000188,22.2031791 65.6958657,22.2073326 65.6916762,22.2114492 L44.677098,42.8607841 C44.4825957,43.0519059 44.1708242,43.0519358 43.9762853,42.8608513 L40.1545186,39.1069479 C39.9575152,38.9134427 39.9546793,38.5968729 40.1481845,38.3998695 C40.1502893,38.3977268 40.1524132,38.395603 40.1545562,38.3934985 L56.9937789,21.8567812 C57.1908028,21.6632968 57.193672,21.3467273 57.0001876,21.1497035 C56.9980647,21.1475418 56.9959223,21.1453995 56.9937605,21.1432767 L40.1545208,4.60825197 C39.9574869,4.41477773 39.9546013,4.09820839 40.1480756,3.90117456 C40.1501626,3.89904911 40.1522686,3.89694235 40.1543933,3.89485454 Z"
+                            fill="#FFFFFF">
                           </path>
 
-                          <path id="arrow-icon-two"
-                                d="M20.1543933,3.89485454 L23.9763149,0.139296592 C24.1708311,-0.0518420739 24.4826329,-0.0518571125 24.6771675,0.139262789 L45.6916134,20.7848311 C46.0855801,21.1718824 46.0911863,21.8050225 45.704135,22.1989893 C45.7000188,22.2031791 45.6958657,22.2073326 45.6916762,22.2114492 L24.677098,42.8607841 C24.4825957,43.0519059 24.1708242,43.0519358 23.9762853,42.8608513 L20.1545186,39.1069479 C19.9575152,38.9134427 19.9546793,38.5968729 20.1481845,38.3998695 C20.1502893,38.3977268 20.1524132,38.395603 20.1545562,38.3934985 L36.9937789,21.8567812 C37.1908028,21.6632968 37.193672,21.3467273 37.0001876,21.1497035 C36.9980647,21.1475418 36.9959223,21.1453995 36.9937605,21.1432767 L20.1545208,4.60825197 C19.9574869,4.41477773 19.9546013,4.09820839 20.1480756,3.90117456 C20.1501626,3.89904911 20.1522686,3.89694235 20.1543933,3.89485454 Z"
-                                fill="#FFFFFF">
+                          <path
+                            id="arrow-icon-two"
+                            d="M20.1543933,3.89485454 L23.9763149,0.139296592 C24.1708311,-0.0518420739 24.4826329,-0.0518571125 24.6771675,0.139262789 L45.6916134,20.7848311 C46.0855801,21.1718824 46.0911863,21.8050225 45.704135,22.1989893 C45.7000188,22.2031791 45.6958657,22.2073326 45.6916762,22.2114492 L24.677098,42.8607841 C24.4825957,43.0519059 24.1708242,43.0519358 23.9762853,42.8608513 L20.1545186,39.1069479 C19.9575152,38.9134427 19.9546793,38.5968729 20.1481845,38.3998695 C20.1502893,38.3977268 20.1524132,38.395603 20.1545562,38.3934985 L36.9937789,21.8567812 C37.1908028,21.6632968 37.193672,21.3467273 37.0001876,21.1497035 C36.9980647,21.1475418 36.9959223,21.1453995 36.9937605,21.1432767 L20.1545208,4.60825197 C19.9574869,4.41477773 19.9546013,4.09820839 20.1480756,3.90117456 C20.1501626,3.89904911 20.1522686,3.89694235 20.1543933,3.89485454 Z"
+                            fill="#FFFFFF">
                           </path>
 
-                          <path id="arrow-icon-three"
-                                d="M0.154393339,3.89485454 L3.97631488,0.139296592 C4.17083111,-0.0518420739 4.48263286,-0.0518571125 4.67716753,0.139262789 L25.6916134,20.7848311 C26.0855801,21.1718824 26.0911863,21.8050225 25.704135,22.1989893 C25.7000188,22.2031791 25.6958657,22.2073326 25.6916762,22.2114492 L4.67709797,42.8607841 C4.48259567,43.0519059 4.17082418,43.0519358 3.97628526,42.8608513 L0.154518591,39.1069479 C-0.0424848215,38.9134427 -0.0453206733,38.5968729 0.148184538,38.3998695 C0.150289256,38.3977268 0.152413239,38.395603 0.154556228,38.3934985 L16.9937789,21.8567812 C17.1908028,21.6632968 17.193672,21.3467273 17.0001876,21.1497035 C16.9980647,21.1475418 16.9959223,21.1453995 16.9937605,21.1432767 L0.15452076,4.60825197 C-0.0425130651,4.41477773 -0.0453986756,4.09820839 0.148075568,3.90117456 C0.150162624,3.89904911 0.152268631,3.89694235 0.154393339,3.89485454 Z"
-                                fill="#FFFFFF">
+                          <path
+                            id="arrow-icon-three"
+                            d="M0.154393339,3.89485454 L3.97631488,0.139296592 C4.17083111,-0.0518420739 4.48263286,-0.0518571125 4.67716753,0.139262789 L25.6916134,20.7848311 C26.0855801,21.1718824 26.0911863,21.8050225 25.704135,22.1989893 C25.7000188,22.2031791 25.6958657,22.2073326 25.6916762,22.2114492 L4.67709797,42.8607841 C4.48259567,43.0519059 4.17082418,43.0519358 3.97628526,42.8608513 L0.154518591,39.1069479 C-0.0424848215,38.9134427 -0.0453206733,38.5968729 0.148184538,38.3998695 C0.150289256,38.3977268 0.152413239,38.395603 0.154556228,38.3934985 L16.9937789,21.8567812 C17.1908028,21.6632968 17.193672,21.3467273 17.0001876,21.1497035 C16.9980647,21.1475418 16.9959223,21.1453995 16.9937605,21.1432767 L0.15452076,4.60825197 C-0.0425130651,4.41477773 -0.0453986756,4.09820839 0.148075568,3.90117456 C0.150162624,3.89904911 0.152268631,3.89694235 0.154393339,3.89485454 Z"
+                            fill="#FFFFFF">
                           </path>
                         </g>
                       </svg>
@@ -172,21 +174,25 @@
           </div>
         </div>
 
-        <div v-show="!istoggle && !carparkErpSelection"
-             v-for="erp in erpArray"
-             class="card">
+        <div
+          v-show="!istoggle && !carparkErpSelection"
+          v-for="erp in erpArray"
+          class="card">
           <!--v-for="erp in erpArray"-->
-          <div class="card-details">
+          <div
+            class="card-details"
+            @mouseover="emitERPIDHovered(erp[1].properties.Name)"
+            @mouseleave="clearHoveredERPID">
             <div class="ERPlocationBox">
-              <div class="location">
-                ERP Name: {{ erp[1].properties.Name }}
-              </div>
+              <div class="location">ERP Name: {{ erp[1].properties.Name }}</div>
               <label class="ui-bookmark">
                 <input :checked="bookmarkedERP.has(erp[1].properties.Name)" @change="erpBookmarkToggle(erp[1])" type="checkbox">
                 <div class="bookmark">
                   <svg viewBox="0 0 32 32">
                     <g>
-                      <path d="M27 4v27a1 1 0 0 1-1.625.781L16 24.281l-9.375 7.5A1 1 0 0 1 5 31V4a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4z"></path>
+                      <path
+                        d="M27 4v27a1 1 0 0 1-1.625.781L16 24.281l-9.375 7.5A1 1 0 0 1 5 31V4a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4z">
+                      </path>
                     </g>
                   </svg>
                 </div>
@@ -194,9 +200,7 @@
             </div>
 
             <div class="messageBox1">
-              <span>
-                <b>ERP Price </b>${{ erp[1].properties.price }}
-              </span>
+              <span> <b>ERP Price </b>${{ erp[1].properties.price }} </span>
               <br />
               <span>
                 ERP is <b>{{ erp[2].toFixed(3) }}km</b> away
@@ -209,9 +213,7 @@
               </span>
 
               <br />
-              <span>
-                10am-7pm
-              </span>
+              <span> 10am-7pm </span>
             </div>
           </div>
         </div>
@@ -232,6 +234,42 @@ const props = defineProps({
   erpArray: Array,
   carparkErpSelection: Boolean, //True means show carpark, False means show ERP
 });
+//====================== EMIT CARID HOVERING THING car park!! =================================
+const emit = defineEmits([
+  "emitCarParkIDHovered",
+  "emitMouseCarParkOff",
+  "emitERPIDHovered",
+  "emitMouseERPOff",
+]);
+
+const mouseOnOrOffCarpark = ref(false);
+const mouseOnOrOffERP = ref(false);
+
+const emitCarParkIDHovered = (carparkID) => {
+  mouseOnOrOffCarpark.value = true;
+  emit("emitCarParkIDHovered", carparkID, mouseOnOrOffCarpark.value);
+};
+
+const clearHoveredCarParkID = () => {
+  mouseOnOrOffCarpark.value = false;
+  emit("emitMouseCarParkOff", mouseOnOrOffCarpark.value);
+};
+
+// ===================== EMIT ERP THING =========================================
+
+const emitERPIDHovered = (erpID) => {
+  mouseOnOrOffERP.value = true;
+  console.log(erpID);
+  emit("emitERPIDHovered", erpID, mouseOnOrOffERP.value);
+};
+
+const clearHoveredERPID = () => {
+  mouseOnOrOffERP.value = false;
+  console.log(mouseOnOrOffERP.value);
+  emit("emitMouseERPOff", mouseOnOrOffERP.value);
+};
+
+// =================================================================================
 
 var istoggle = ref(false);
 var distanceButtonIsClicked = ref(false);
@@ -308,13 +346,13 @@ function slotsButton() {
     priceButtonIsClicked.value = false;
   }
   function compareSlots(a, b) {
-      if (a[1].available_lots < b[1].available_lots) {
-        return -1;
-      } else if (b[1].available_lots < a[1].available_lots) {
-        return 1;
-      } else {
-        return 0;
-      }
+    if (a[1].available_lots < b[1].available_lots) {
+      return -1;
+    } else if (b[1].available_lots < a[1].available_lots) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
   props.carparkArray.sort(compareSlots);
 }
@@ -441,12 +479,6 @@ function erpBookmarkToggle(erpDetails) {
     }
 }
 // End of Bookmark Stuff ----------------------------------------
-
-// To highlight the marker there!!
-const emitEvent = defineEmits(["carParkHovered"]);
-const emitCarHover = (carParkName) => {
-  emitEvent("carParkHovered", carParkName);
-};
 </script>
 
 ``
@@ -908,138 +940,135 @@ body.dark .mode .sun-moon i.moon {
 /* For BookMark */
 
 .ui-bookmark {
-    --icon-size: 24px;
-    --icon-secondary-color: rgb(77, 77, 77);
-    --icon-hover-color: rgb(97, 97, 97);
-    --icon-primary-color: gold;
-    --icon-circle-border: 1px solid var(--icon-primary-color);
-    --icon-circle-size: 35px;
-    --icon-anmt-duration: 0.3s;
+  --icon-size: 24px;
+  --icon-secondary-color: rgb(77, 77, 77);
+  --icon-hover-color: rgb(97, 97, 97);
+  --icon-primary-color: gold;
+  --icon-circle-border: 1px solid var(--icon-primary-color);
+  --icon-circle-size: 35px;
+  --icon-anmt-duration: 0.3s;
+}
+
+.ui-bookmark input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: none;
+}
+
+.ui-bookmark .bookmark {
+  width: var(--icon-size);
+  height: auto;
+  fill: var(--icon-secondary-color);
+  cursor: pointer;
+  -webkit-transition: 0.2s;
+  -o-transition: 0.2s;
+  transition: 0.2s;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  position: relative;
+  -webkit-transform-origin: top;
+  -ms-transform-origin: top;
+  transform-origin: top;
+  margin-top: 5px;
+}
+
+.bookmark::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  -webkit-box-shadow: 0 30px 0 -4px var(--icon-primary-color),
+    30px 0 0 -4px var(--icon-primary-color),
+    0 -30px 0 -4px var(--icon-primary-color),
+    -30px 0 0 -4px var(--icon-primary-color),
+    -22px 22px 0 -4px var(--icon-primary-color),
+    -22px -22px 0 -4px var(--icon-primary-color),
+    22px -22px 0 -4px var(--icon-primary-color),
+    22px 22px 0 -4px var(--icon-primary-color);
+  box-shadow: 0 30px 0 -4px var(--icon-primary-color),
+    30px 0 0 -4px var(--icon-primary-color),
+    0 -30px 0 -4px var(--icon-primary-color),
+    -30px 0 0 -4px var(--icon-primary-color),
+    -22px 22px 0 -4px var(--icon-primary-color),
+    -22px -22px 0 -4px var(--icon-primary-color),
+    22px -22px 0 -4px var(--icon-primary-color),
+    22px 22px 0 -4px var(--icon-primary-color);
+  border-radius: 50%;
+  -webkit-transform: scale(0);
+  -ms-transform: scale(0);
+  transform: scale(0);
+}
+
+.bookmark::before {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  border: var(--icon-circle-border);
+  opacity: 0;
+}
+
+/* actions */
+
+.ui-bookmark:hover .bookmark {
+  fill: var(--icon-hover-color);
+}
+
+.ui-bookmark input:checked + .bookmark::after {
+  -webkit-animation: circles var(--icon-anmt-duration)
+    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: circles var(--icon-anmt-duration)
+    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  -webkit-animation-delay: var(--icon-anmt-duration);
+  animation-delay: var(--icon-anmt-duration);
+}
+
+.ui-bookmark input:checked + .bookmark {
+  fill: var(--icon-primary-color);
+  -webkit-animation: bookmark var(--icon-anmt-duration) forwards;
+  animation: bookmark var(--icon-anmt-duration) forwards;
+  -webkit-transition-delay: 0.3s;
+  -o-transition-delay: 0.3s;
+  transition-delay: 0.3s;
+}
+
+.ui-bookmark input:checked + .bookmark::before {
+  -webkit-animation: circle var(--icon-anmt-duration)
+    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: circle var(--icon-anmt-duration)
+    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  -webkit-animation-delay: var(--icon-anmt-duration);
+  animation-delay: var(--icon-anmt-duration);
+}
+
+@-webkit-keyframes bookmark {
+  50% {
+    -webkit-transform: scaleY(0.6);
+    transform: scaleY(0.6);
   }
-  
-  .ui-bookmark input {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    display: none;
+
+  100% {
+    -webkit-transform: scaleY(1);
+    transform: scaleY(1);
   }
-  
-  .ui-bookmark .bookmark {
-    width: var(--icon-size);
-    height: auto;
-    fill: var(--icon-secondary-color);
-    cursor: pointer;
-    -webkit-transition: 0.2s;
-    -o-transition: 0.2s;
-    transition: 0.2s;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    position: relative;
-    -webkit-transform-origin: top;
-    -ms-transform-origin: top;
-    transform-origin: top;
-    margin-top: 5px;
+}
+
+@keyframes bookmark {
+  50% {
+    -webkit-transform: scaleY(0.6);
+    transform: scaleY(0.6);
   }
-  
-  .bookmark::after {
-    content: "";
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    -webkit-box-shadow: 0 30px 0 -4px var(--icon-primary-color),
-      30px 0 0 -4px var(--icon-primary-color),
-      0 -30px 0 -4px var(--icon-primary-color),
-      -30px 0 0 -4px var(--icon-primary-color),
-      -22px 22px 0 -4px var(--icon-primary-color),
-      -22px -22px 0 -4px var(--icon-primary-color),
-      22px -22px 0 -4px var(--icon-primary-color),
-      22px 22px 0 -4px var(--icon-primary-color);
-    box-shadow: 0 30px 0 -4px var(--icon-primary-color),
-      30px 0 0 -4px var(--icon-primary-color),
-      0 -30px 0 -4px var(--icon-primary-color),
-      -30px 0 0 -4px var(--icon-primary-color),
-      -22px 22px 0 -4px var(--icon-primary-color),
-      -22px -22px 0 -4px var(--icon-primary-color),
-      22px -22px 0 -4px var(--icon-primary-color),
-      22px 22px 0 -4px var(--icon-primary-color);
-    border-radius: 50%;
-    -webkit-transform: scale(0);
-    -ms-transform: scale(0);
-    transform: scale(0);
+
+  100% {
+    -webkit-transform: scaleY(1);
+    transform: scaleY(1);
   }
-  
-  .bookmark::before {
-    content: "";
-    position: absolute;
-    border-radius: 50%;
-    border: var(--icon-circle-border);
-    opacity: 0;
-  }
-  
-  /* actions */
-  
-  .ui-bookmark:hover .bookmark {
-    fill: var(--icon-hover-color);
-  }
-  
-  .ui-bookmark input:checked + .bookmark::after {
-    -webkit-animation: circles var(--icon-anmt-duration)
-      cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    animation: circles var(--icon-anmt-duration)
-      cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    -webkit-animation-delay: var(--icon-anmt-duration);
-    animation-delay: var(--icon-anmt-duration);
-  }
-  
-  .ui-bookmark input:checked + .bookmark {
-    fill: var(--icon-primary-color);
-    -webkit-animation: bookmark var(--icon-anmt-duration) forwards;
-    animation: bookmark var(--icon-anmt-duration) forwards;
-    -webkit-transition-delay: 0.3s;
-    -o-transition-delay: 0.3s;
-    transition-delay: 0.3s;
-  }
-  
-  .ui-bookmark input:checked + .bookmark::before {
-    -webkit-animation: circle var(--icon-anmt-duration)
-      cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    animation: circle var(--icon-anmt-duration)
-      cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    -webkit-animation-delay: var(--icon-anmt-duration);
-    animation-delay: var(--icon-anmt-duration);
-  }
-  
-  @-webkit-keyframes bookmark {
-    50% {
-      -webkit-transform: scaleY(0.6);
-      transform: scaleY(0.6);
-    }
-  
-    100% {
-      -webkit-transform: scaleY(1);
-      transform: scaleY(1);
-    }
-  }
-  
-  @keyframes bookmark {
-    50% {
-      -webkit-transform: scaleY(0.6);
-      transform: scaleY(0.6);
-    }
-  
-    100% {
-      -webkit-transform: scaleY(1);
-      transform: scaleY(1);
-    }
-  }
+}
 </style>
-
-
-
