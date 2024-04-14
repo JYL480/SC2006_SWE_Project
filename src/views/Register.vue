@@ -26,52 +26,39 @@
           <div class="field input-field">
             <input
               type="password"
-              placeholder="At least 8 characters, 1 uppercase, 1 lowercase letters & 1 special character"
+              placeholder="Password"
               class="password"
               :required="true"
-              :pattern="
-                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/
-              "
               v-model="password"
             />
             <i class="bx bx-hide eye-icon"></i>
             <ul v-if="showPasswordRequirements" class="password-requirements">
-              <li v-if="!password.length >= 8">Minimum 8 characters</li>
-              <li v-if="!/[a-z]/.test(password)">
-                At least one lowercase letter
-              </li>
-              <li v-if="!/[A-Z]/.test(password)">
-                At least one uppercase letter
-              </li>
-              <li v-if="!/\d/.test(password)">At least one number</li>
-              <li v-if="!/[@$!%*?&]/.test(password)">
-                At least one special character
-              </li>
+              <li v-if="!passLength">Minimum 8 characters</li>
+              <li v-if="!lowercaseMet">At least one lowercase letter</li>
+              <li v-if="!uppercaseMet">At least one uppercase letter</li>
+              <li v-if="!numberMet">At least one number</li>
+              <li v-if="!specialCharMet">At least one special character</li>
             </ul>
           </div>
           <div :class="{ 'moved-down': showPasswordRequirements }">
+            <div class="field button-field">
+              <button @click="Register()">Register</button>
+            </div>
             <div class="form-link">
-              <a href="#" class="forgot-pass">Forgot password?</a>
+              <span
+                >Already have an account?
+                <a href="/#/Login" class="link signup-link">LogIn</a></span
+              >
+            </div>
+            <div class="line"></div>
+            <div class="media-options">
+              <a href="#" class="field google">
+                <img src="../assets/googleIcon.png" class="google-img" />
+                <span @click="signInWithGoogle">Login with Google</span>
+              </a>
             </div>
           </div>
-
-          <div class="field button-field">
-            <button @click="Register()">Register</button>
-          </div>
         </form>
-        <div class="form-link">
-          <span
-            >Already have an account?
-            <a href="#" class="link signup-link">LogIn</a></span
-          >
-        </div>
-      </div>
-      <div class="line"></div>
-      <div class="media-options">
-        <a href="#" class="field google">
-          <img src="../assets/googleIcon.png" class="google-img" />
-          <span @click="signInWithGoogle">Login with Google</span>
-        </a>
       </div>
     </div>
   </section>
@@ -94,6 +81,7 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { faS } from "@fortawesome/free-solid-svg-icons";
@@ -108,6 +96,18 @@ onMounted(() => {
   });
 });
 
+const checkPasswordRequirements = () => {
+  lowercaseMet.value = /[a-z]/.test(password.value);
+  uppercaseMet.value = /[A-Z]/.test(password.value);
+  numberMet.value = /\d/.test(password.value);
+  specialCharMet.value = /[@$!%*?&]/.test(password.value);
+  if (password.value.length >= 8) {
+    passLength.value = true;
+  } else {
+    passLength.value = false;
+  }
+};
+
 // Register
 const inputUserName = ref("");
 const inputEmail = ref("");
@@ -115,16 +115,30 @@ const password = ref("");
 const showPasswordRequirements = ref(false);
 const router = useRouter();
 const auth = getAuth();
-
-watch(password.value, (newPassword, oldPassword) => {});
+const lowercaseMet = ref(false);
+const uppercaseMet = ref(false);
+const numberMet = ref(false);
+const specialCharMet = ref(false);
+const passLength = ref(false);
+const user = auth.currentUser;
 
 const Register = () => {
-  createUserWithEmailAndPassword(auth, inputEmail.email, password.password)
+  createUserWithEmailAndPassword(auth, inputEmail.value, password.value)
     .then((data) => {
       // alert('User Created')
+
       console.log("User Created");
-      router.push("/Login");
-      con;
+      // router.push("/Login");
+      updateProfile(auth.currentUser, { displayName: inputUserName.value })
+        .then(() => {
+          console.log("Profile updated with displayName:", inputUserName.value);
+          router.push("#/LandingPage");
+        })
+        .catch((profileError) => {
+          console.error("Error updating profile:", profileError.message);
+          // Handle profile update error
+          alert(profileError.message); // Show an alert or handle error
+        });
     })
     .catch((error) => {
       console.log(error.message);
@@ -135,7 +149,7 @@ const Register = () => {
 // Google sign in
 const signInWithGoogle = () => {
   const provider = new GoogleAuthProvider();
-  signInWithPopup(getAuth(), provider).then((result) => {
+  signInWithPopup(auth, provider).then((result) => {
     console.log(result.user);
     router.push("/LandingPage");
   });
@@ -143,12 +157,16 @@ const signInWithGoogle = () => {
 
 // Debugging
 onUpdated(() => {
-  // console.log("Username: ", inputUserName.value);
-  // console.log("Email: ", inputEmail.value);
-  // console.log("Password: ", password.value);
-  console.log(password.value);
   if (password.value != "") {
-    showPasswordRequirements.value = true;
+    checkPasswordRequirements();
+    showPasswordRequirements.value =
+      password.value.length >= 8 ||
+      !lowercaseMet.value ||
+      !uppercaseMet.value ||
+      !numberMet.value ||
+      !specialCharMet.value;
+  } else if (password.value == "") {
+    showPasswordRequirements.value = false;
   }
 });
 
@@ -164,6 +182,7 @@ onUpdated(() => {
   font-family: "Poppins", sans-serif;
 }
 .container {
+  margin-top: 20px;
   height: 80vh;
   width: 100%;
   display: flex;
@@ -326,8 +345,11 @@ a.google span {
 .moved-down {
   transition: transform 0.2s ease-in-out;
   transform: translateY(
-    20px
+    120px
   ); /* Adjust the translation value for desired movement */
 }
+.password-requirements {
+  margin-left: 15px;
+}
 </style>
-../../test.js
+.

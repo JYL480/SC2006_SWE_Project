@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits, onUpdated } from "vue";
+import { ref, onUpdated } from "vue";
 
 const toggle = ref(true);
 const emitEvent = defineEmits(["ERPorCarpark"]);

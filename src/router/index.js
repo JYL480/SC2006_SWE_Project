@@ -4,7 +4,7 @@ import Register from "../views/Register.vue";
 import LandingPage from "../views/LandingPage.vue";
 import ProfilePage from "../views/ProfilePage.vue";
 import BookmarkPage from "../views/BookmarkPage.vue";
-
+import ResetPassword from "../views/ResetPass.vue";
 
 const routes = [
   {
@@ -32,7 +32,12 @@ const routes = [
     path: "/BookmarkPage",
     name: "BookmarkPage",
     component: BookmarkPage,
-  }
+  },
+  {
+    path: "/ResetPassword",
+    name: "ResetPassword",
+    component: ResetPassword,
+  },
 ];
 
 const router = createRouter({
