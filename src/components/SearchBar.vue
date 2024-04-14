@@ -30,7 +30,7 @@
 <script setup>
     import { database } from "src/main.js";
     import { ref, computed, watch } from "vue";
-    import { getDatabase, ref as dbRef, get as dbGet, set as dbSet } from "firebase/database";
+    import { ref as dbRef, get as dbGet, set as dbSet } from "firebase/database";
     import { getAuth } from "firebase/auth";
     import { faLocationPin } from '@fortawesome/free-solid-svg-icons'
 
@@ -97,7 +97,6 @@
      * Sets recent locations of the currently logged in user in Database
      * @param {Array<LocationDropdownItem>} recentLocationsArr Array of locations as per MapBox Search Box /retrieve API ['properties']
      * @param {string|null} userID Unique ID of the user (i.e. as per firebase getAuth().currentUser.uid)
-     * @returns null
      */
     async function dbSetUserRecentLocations(recentLocationsArr, userID) {
         if (userID) {

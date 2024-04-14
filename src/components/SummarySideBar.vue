@@ -87,7 +87,7 @@
                 Location: {{ carpark[1].address }}
               </div>
               <label class="ui-bookmark">
-                <input type="checkbox">
+                <input :checked="bookmarkedCarparks.has(carpark[1]['car_park_no'])" @change="carparkBookmarkToggle(carpark[1])" type="checkbox">
                 <div class="bookmark">
                   <svg viewBox="0 0 32 32">
                     <g>
@@ -182,7 +182,7 @@
                 ERP Name: {{ erp[1].properties.Name }}
               </div>
               <label class="ui-bookmark">
-                <input type="checkbox">
+                <input :checked="bookmarkedERP.has(erp[1].properties.Name)" @change="erpBookmarkToggle(erp[1])" type="checkbox">
                 <div class="bookmark">
                   <svg viewBox="0 0 32 32">
                     <g>
@@ -223,7 +223,9 @@
 <!--Code logic: Summary Side Bar Logic here-->
 
 <script setup>
-import { ref, onMounted, watch, defineEmits } from "vue";
+import { database, currentUser } from "src/main.js";
+import { ref, watch, defineEmits } from "vue";
+import { ref as dbRef, get as dbGet, set as dbSet } from "firebase/database";
 
 const props = defineProps({
   carparkArray: Array,
@@ -322,6 +324,123 @@ const openDirections = (lat, long) => {
   const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${long}`;
   window.open(googleMapsUrl, "_blank");
 };
+
+// Bookmark Stuff -----------------------------------------------
+let bookmarkedCarparks = ref(new Set());
+let bookmarkedERP = ref(new Set());
+
+watch(currentUser,        // Fetch user's bookmarks whenever there is a change in user (while the sidebar is active, else bookmarks will be loaded when mounting the sidebar)
+    async () => {
+        if (currentUser.value) {
+            console.log("Fetching bookmarks for user: " + currentUser.value.uid);
+            const bookmarks = await dbGetUserBookmarks(currentUser.value.uid);
+            bookmarkedCarparks.value = bookmarks["carpark"];
+            bookmarkedERP.value = bookmarks["erp"];
+        }
+        else {
+            console.log("Clearing Bookmarks (no user logged in)");
+            bookmarkedCarparks.value = new Set();
+            bookmarkedERP.value = new Set();
+        }
+    },
+    { immediate: true }
+);
+
+/**
+ * Retrieve recent locations of the currently logged in user from Database
+ * @param {string} userID Unique ID of the user (i.e. as per firebase getAuth().currentUser.uid)
+ * @returns {Promise<{carpark: Set<string>, erp: Set<string>}>} Object with .carpark and .erp, each being an Set of the bookmarked IDs
+ */
+async function dbGetUserBookmarks(userID) {
+    let bookmarkArrays = null;
+    if (userID) {
+        const userBookmarksRef = dbRef(database, "users/" + userID + "/bookmarks");
+
+        try {
+            console.log("GET DB Bookmarks: " + userID);
+            const response = await dbGet(userBookmarksRef);
+            if (response.exists()) {
+                console.log(response.val());
+                bookmarkArrays = response.val();    // DB can only store JSON, Sets are not supported in JSON
+            }
+        } catch (e) {
+            console.log(e);
+            return;
+        }
+    }
+
+    if (bookmarkArrays) {
+        return {
+            "carpark": new Set(bookmarkArrays["carpark"]),
+            "erp": new Set(bookmarkArrays["erp"]),
+        }
+    }
+    else {
+        return {
+            "carpark": new Set(),
+            "erp": new Set(),
+        }
+    }
+}
+
+/**
+ * Sets bookmarks of the currently logged in user in Database
+ * @param {Set<string>} carparkBookmarkSet Set of bookmarked Carpark IDs
+ * @param {Set<string>} erpBookmarkSet Set of IDs bookmarked ERP IDs
+ * @param {string|null} userID Unique ID of the user (i.e. as per firebase getAuth().currentUser.uid)
+ */
+async function dbSetBookmarks(carparkBookmarksSet, erpBookmarkSet, userID) {
+    const bookmarks = {carpark: [...carparkBookmarksSet], erp: [...erpBookmarkSet]};    // JSON doesn't support Set, just Array
+    if (userID) {
+        const userBookmarksRef = dbRef(database, "users/" + userID + "/bookmarks");
+        console.log("SET DB Bookmarks: " + userID);
+        try {
+            await dbSet(userBookmarksRef, bookmarks);
+        } catch (e) {
+            console.log(e);
+            return;
+        }
+    }
+}
+
+/**
+ * @param {{car_park_no: string}} carparkDetails Where the .car_park_no gives the unique ID of the carpark
+ */
+function carparkBookmarkToggle(carparkDetails) {
+    const carparkID = carparkDetails["car_park_no"];
+    if (bookmarkedCarparks.value.has(carparkID)) {
+        bookmarkedCarparks.value.delete(carparkID);
+        console.log("Removed Carpark Bookmark: " + carparkID);
+    }
+    else {
+        bookmarkedCarparks.value.add(carparkID);
+        console.log("Added Carpark Bookmark: " + carparkID);
+    }
+
+    if (currentUser.value) {
+        dbSetBookmarks(bookmarkedCarparks.value, bookmarkedERP.value, currentUser.value.uid);
+    }
+}
+
+/**
+ * @param {{properties: {Name: string}}} erpDetails Where the .properties.Name gives the unique ID of the ERP
+ */
+function erpBookmarkToggle(erpDetails) {
+    const erpID = erpDetails["properties"]["Name"]
+    if (bookmarkedERP.value.has(erpID)) {
+        bookmarkedERP.value.delete(erpID);
+        console.log("Removed ERP Bookmark: " + erpID);
+    }
+    else {
+        bookmarkedERP.value.add(erpID);
+        console.log("Added ERP Bookmark: " + erpID);
+    }
+
+    if (currentUser.value) {
+        dbSetBookmarks(bookmarkedCarparks.value, bookmarkedERP.value, currentUser.value.uid);
+    }
+}
+// End of Bookmark Stuff ----------------------------------------
 
 // To highlight the marker there!!
 const emitEvent = defineEmits(["carParkHovered"]);
