@@ -82,7 +82,7 @@ const router = useRouter();
 
 const Login = (loggedIn) => {
   const auth = getAuth();
-  signInWithEmailAndPassword(auth, inputEmail.email, password.password)
+  signInWithEmailAndPassword(auth, inputEmail.value, password.value)
     .then((data) => {
       console.log("User Logged In");
       console.log(auth.currentUser);
