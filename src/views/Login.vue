@@ -9,7 +9,8 @@
               type="email"
               placeholder="Email"
               class="input"
-              v-model="inputEmail.email"
+              :required="true"
+              v-model="inputEmail"
             />
           </div>
           <div class="field input-field">
@@ -17,33 +18,45 @@
               type="password"
               placeholder="Password"
               class="password"
-              v-model="password.password"
+              :required="true"
+              v-model="password"
             />
             <i class="bx bx-hide eye-icon"></i>
+            <ul v-if="showPasswordRequirements" class="password-requirements">
+              <li v-if="!passLength">Minimum 8 characters</li>
+              <li v-if="!lowercaseMet">At least one lowercase letter</li>
+              <li v-if="!uppercaseMet">At least one uppercase letter</li>
+              <li v-if="!numberMet">At least one number</li>
+              <li v-if="!specialCharMet">At least one special character</li>
+            </ul>
           </div>
           <div>
             <p class="error" v-if="errMsg">{{ errMsg }}</p>
           </div>
-          <div class="form-link">
-            <a href="#" class="forgot-pass">Forgot password?</a>
-          </div>
-          <div class="field button-field">
-            <button @click="Login">Login</button>
+          <div :class="{ 'moved-down': showPasswordRequirements }">
+            <div class="form-link" @click="navigateToResetPass">
+              <a href="/#/ResetPassword" class="forgot-pass"
+                >Forgot password?</a
+              >
+              <div class="field button-field">
+                <button @click="Login">Login</button>
+              </div>
+            </div>
+            <div class="form-link">
+              <span
+                >Don't have an account?
+                <a href="#/Register" class="link signup-link">Register</a></span
+              >
+            </div>
+            <div class="line"></div>
+            <div class="media-options">
+              <a href="#" class="field google">
+                <img src="../assets/googleIcon.png" class="google-img" />
+                <span @click="signInWithGoogle">Login with Google</span>
+              </a>
+            </div>
           </div>
         </form>
-        <div class="form-link">
-          <span
-            >Don't have an account?
-            <a href="#" class="link signup-link">Register</a></span
-          >
-        </div>
-      </div>
-      <div class="line"></div>
-      <div class="media-options">
-        <a href="#" class="field google">
-          <img src="../assets/googleIcon.png" class="google-img" />
-          <span @click="signInWithGoogle">Login with Google</span>
-        </a>
       </div>
     </div>
   </section>
@@ -59,16 +72,11 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { useRouter } from "vue-router";
-import { reactive, ref } from "vue";
-
+import { reactive, ref, onUpdated } from "vue";
 // Sign in the user with email and password
-const inputEmail = reactive({
-  email: "",
-});
+const inputEmail = ref("");
 
-const password = reactive({
-  password: "",
-});
+const password = ref("");
 const errMsg = ref("");
 const router = useRouter();
 
@@ -105,6 +113,53 @@ const signInWithGoogle = () => {
     router.push("/LandingPage");
   });
 };
+
+const passwordReset = () => {
+  sendPasswordResetEmail(auth, email)
+    .then(() => {
+      // Password reset email sent!
+      console.log("Password reset email sent!");
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode);
+      console.log(errorMessage);
+    });
+};
+
+// ==================== password checker ============================
+const lowercaseMet = ref(false);
+const uppercaseMet = ref(false);
+const numberMet = ref(false);
+const specialCharMet = ref(false);
+const passLength = ref(false);
+const showPasswordRequirements = ref(false);
+
+const checkPasswordRequirements = () => {
+  lowercaseMet.value = /[a-z]/.test(password.value);
+  uppercaseMet.value = /[A-Z]/.test(password.value);
+  numberMet.value = /\d/.test(password.value);
+  specialCharMet.value = /[@$!%*?&]/.test(password.value);
+  if (password.value.length >= 8) {
+    passLength.value = true;
+  } else {
+    passLength.value = false;
+  }
+};
+onUpdated(() => {
+  if (password.value != "") {
+    checkPasswordRequirements();
+    showPasswordRequirements.value =
+      password.value.length >= 8 ||
+      !lowercaseMet.value ||
+      !uppercaseMet.value ||
+      !numberMet.value ||
+      !specialCharMet.value;
+  } else if (password.value == "") {
+    showPasswordRequirements.value = false;
+  }
+});
 </script>
 
 <style scoped>
@@ -116,7 +171,7 @@ const signInWithGoogle = () => {
   font-family: "Poppins", sans-serif;
 }
 .container {
-  height: 100vh;
+  height: 80vh;
   width: 100%;
   display: flex;
   align-items: center;
@@ -274,5 +329,15 @@ a.google span {
   .form {
     padding: 20px 10px;
   }
+}
+
+.moved-down {
+  transition: transform 0.2s ease-in-out;
+  transform: translateY(
+    120px
+  ); /* Adjust the translation value for desired movement */
+}
+.password-requirements {
+  margin-left: 15px;
 }
 </style>

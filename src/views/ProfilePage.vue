@@ -1,15 +1,10 @@
 <template>
-    <div> Profile</div>
 </template>
 
-<script setup>
+<script setup></script>
 
-    
-</script>
-
-<style>
-    #TopBar {
-        bottom:20px;
-    }
-
+<style scoped>
+#TopBar {
+  bottom: 20px;
+}
 </style>

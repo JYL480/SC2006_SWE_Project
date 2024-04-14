@@ -7,22 +7,26 @@
     :carparkArray="CurrentMarkersCar"
     :erpArray="CurrentMarkersERP"
     :carparkErpSelection="boolCarorERP"
-    @car-park-hovered="handleCarParkHovered"
+    @emitCarParkIDHovered="emitCarParkIDHovered"
+    @emitMouseCarParkOff="clearHoveredCarParkID"
+    @emitERPIDHovered="emitERPIDHovered"
+    @emitMouseERPOff="clearHoveredERPID"
   />
 
   <div id="searchbar">
     <Searchbar @selected-dest="selectedDestination" />
   </div>
 
-  <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
+  <Slider id="slider" @sliderValue="sliderValue"></Slider>
 
+  <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
   <button id="button" class="pushable" @click="getUserLocation">
     <span class="shadow"></span>
     <span class="edge"></span>
     <span class="front"> User Location </span>
   </button>
 
-  <Slider id="slider" @sliderValue="sliderValue"></Slider>
+  <
 </template>
 
 <script setup>
@@ -134,6 +138,7 @@ const addERPMarkers = (remove) => {
   let marker = null;
   let properties_name = null;
   let properties_price = null;
+  let description = null;
   const circle = turf.circle(userLocation.value, radiusInKm.value, options);
   const from = turf.point(userLocation.value);
   if (remove == false) {
@@ -146,7 +151,14 @@ const addERPMarkers = (remove) => {
       if (turf.booleanPointInPolygon(pt, circle)) {
         properties_name = coor[i].properties.Name;
         properties_price = coor[i].properties.price;
+        description = coor[i].properties.Description;
         const distance = turf.distance(from, pt, { units: "kilometers" });
+
+        const popupContent = `
+        <p><strong>Address:</strong>${properties_name}</p>
+        <p><strong>Price:</strong>${properties_price}</p>
+        
+    `;
 
         marker = new mapboxgl.Marker({
           color: "blue",
@@ -155,11 +167,7 @@ const addERPMarkers = (remove) => {
             coor[i].geometry.coordinates[0][0],
             coor[i].geometry.coordinates[1][1],
           ])
-          .setPopup(
-            new mapboxgl.Popup().setHTML(
-              `<h3>${properties_name}</h3><p>$ ${properties_price}</p>`
-            )
-          ) // Customize popup content
+          .setPopup(new mapboxgl.Popup().setHTML(popupContent)) // Customize popup content
           .addTo(map);
         CurrentMarkersERP.value.push([marker, coor[i], distance]);
       }
@@ -211,7 +219,7 @@ const addCarParkMarkers = (remove, highlightedName) => {
         // Get the distance between my location to the marker
         const distance = turf.distance(from, pt, { units: "kilometers" });
         properties_name = arraysCarPark[0].car_park_no;
-        console.log("?asds", highlightedName);
+        // console.log("?asds", highlightedName);
         if (properties_name == highlightedName) {
           marker = new mapboxgl.Marker({
             color: "pink",
@@ -307,6 +315,83 @@ const sliderValue = (value) => {
   addCircle();
 };
 
+// ======================= For the hovering thing =======================
+// To get the Carpark ID to pop up the HTML when hovered over the card
+const carIDHovering = ref("");
+const mouseOnOrOffBoolCarPark = ref(null);
+
+// I will receive the emited things from the child
+// Then do some boolean thing for it
+const emitCarParkIDHovered = (carID, mouseOnOrOff) => {
+  carIDHovering.value = carID;
+  mouseOnOrOffBoolCarPark.value = mouseOnOrOff;
+  // console.log("????", mouseOnOrOffBoolCarPark.value);
+};
+
+const clearHoveredCarParkID = (mouseOnOrOff) => {
+  mouseOnOrOffBoolCarPark.value = mouseOnOrOff;
+  // console.log(mouseOnOrOffBoolCarPark.value);
+  // console.log("ASDASFLHADLKJG");
+};
+
+watch(
+  [carIDHovering, mouseOnOrOffBoolCarPark],
+  ([newID, newBool], [oldID, oldBool]) => {
+    const markerToOpen = CurrentMarkersCar.value.find(
+      ([marker, carPark]) => carPark.car_park_no === newID
+    );
+    const [marker, carPark, distance] = markerToOpen;
+    if (newBool) {
+      if (marker.togglePopup() == false) {
+        marker.togglePopup();
+      }
+    } else if (!newBool) {
+      // To close the marker
+
+      if (marker.togglePopup() == true) {
+        marker.togglePopup();
+      }
+    }
+  }
+);
+//======================FOR THE ERP PART NOW ==============================
+
+const erpIDHovering = ref("");
+const mouseOnOrOffBoolERP = ref(null);
+const emitERPIDHovered = (erpID, mouseOnOrOff2) => {
+  erpIDHovering.value = erpID;
+  mouseOnOrOffBoolERP.value = mouseOnOrOff2;
+  // console.log(erpIDHovering.value);
+};
+const clearHoveredERPID = (mouseOnOrOff2) => {
+  mouseOnOrOffBoolERP.value = mouseOnOrOff2;
+  // console.log(mouseOnOrOffBoolERP.value);
+};
+watch(
+  [erpIDHovering, mouseOnOrOffBoolERP],
+  ([newID, newBool], [oldID, oldBool]) => {
+    const markerToOpen = CurrentMarkersERP.value.find(
+      ([marker, ERP]) => ERP.properties.Name === newID
+    );
+    // console.log(markerToOpen);
+    const [marker, carPark, distance] = markerToOpen;
+    // console.log(marker);
+    if (newBool) {
+      if (marker.togglePopup() == false) {
+        marker.togglePopup();
+      }
+    } else if (!newBool) {
+      // To close the marker
+
+      if (marker.togglePopup() == true) {
+        marker.togglePopup();
+      }
+    }
+  }
+);
+
+// =======================================================================
+
 onMounted(async () => {
   createMapInstance();
   await accessJsonERP();
@@ -387,8 +472,8 @@ const forWatchers = (newBool, newName) => {
   addERPMarkers(newBool);
   addCircle();
 
-  console.log(CurrentMarkersCar.value);
-  console.log(CurrentMarkersERP.value);
+  // console.log(CurrentMarkersCar.value);
+  // console.log(CurrentMarkersERP.value);
 };
 
 watch(
@@ -515,20 +600,21 @@ const handleCarParkHovered = (name) => {
 }
 
 /* for get user location buttom*/
-#button {
-  position: relative;
-  left: 60vw;
-  top: 82vh;
-}
+/* #button {
+} */
 
 #slider {
   position: relative;
   z-index: 1;
   left: 20px;
+  top: 20px;
 }
 
 .pushable {
-  position: relative;
+  position: fixed;
+  left: 60%;
+  z-index: 1; /* margin-right: 1000px; */
+  bottom: 20px;
   background: transparent;
   padding: 0px;
   border: none;
