@@ -88,7 +88,11 @@
           v-for="carpark in carparkArray"
           class="card"
         >
-          <div class="card-details">
+          <div
+            class="card-details"
+            @mouseover="emitCarParkIDHovered(carpark[1].car_park_no)"
+            @mouseleave="clearHoveredCarParkID"
+          >
             <div class="locationBox">
               <div class="location">Location: {{ carpark[1].address }}</div>
               <label class="ui-bookmark">
@@ -190,7 +194,11 @@
           class="card"
         >
           <!--v-for="erp in erpArray"-->
-          <div class="card-details">
+          <div
+            class="card-details"
+            @mouseover="emitERPIDHovered(erp[1].properties.Name)"
+            @mouseleave="clearHoveredERPID"
+          >
             <div class="ERPlocationBox">
               <div class="location">ERP Name: {{ erp[1].properties.Name }}</div>
               <label class="ui-bookmark">
@@ -240,6 +248,42 @@ const props = defineProps({
   erpArray: Array,
   carparkErpSelection: Boolean, //True means show carpark, False means show ERP
 });
+//====================== EMIT CARID HOVERING THING car park!! =================================
+const emit = defineEmits([
+  "emitCarParkIDHovered",
+  "emitMouseCarParkOff",
+  "emitERPIDHovered",
+  "emitMouseERPOff",
+]);
+
+const mouseOnOrOffCarpark = ref(false);
+const mouseOnOrOffERP = ref(false);
+
+const emitCarParkIDHovered = (carparkID) => {
+  mouseOnOrOffCarpark.value = true;
+  emit("emitCarParkIDHovered", carparkID, mouseOnOrOffCarpark.value);
+};
+
+const clearHoveredCarParkID = () => {
+  mouseOnOrOffCarpark.value = false;
+  emit("emitMouseCarParkOff", mouseOnOrOffCarpark.value);
+};
+
+// ===================== EMIT ERP THING =========================================
+
+const emitERPIDHovered = (erpID) => {
+  mouseOnOrOffERP.value = true;
+  console.log(erpID);
+  emit("emitERPIDHovered", erpID, mouseOnOrOffERP.value);
+};
+
+const clearHoveredERPID = () => {
+  mouseOnOrOffERP.value = false;
+  console.log(mouseOnOrOffERP.value);
+  emit("emitMouseERPOff", mouseOnOrOffERP.value);
+};
+
+// =================================================================================
 
 var istoggle = ref(false);
 var distanceButtonIsClicked = ref(false);
@@ -331,12 +375,6 @@ function slotsButton() {
 const openDirections = (lat, long) => {
   const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${long}`;
   window.open(googleMapsUrl, "_blank");
-};
-
-// To highlight the marker there!!
-const emitEvent = defineEmits(["carParkHovered"]);
-const emitCarHover = (carParkName) => {
-  emitEvent("carParkHovered", carParkName);
 };
 </script>
 

@@ -24,8 +24,8 @@
           <div>
             <p class="error" v-if="errMsg">{{ errMsg }}</p>
           </div>
-          <div class="form-link">
-            <a href="#" class="forgot-pass">Forgot password?</a>
+          <div class="form-link" @click="navigateToResetPass">
+            <a href="/#/ResetPassword" class="forgot-pass">Forgot password?</a>
           </div>
           <div class="field button-field">
             <button @click="Login">Login</button>
@@ -34,7 +34,7 @@
         <div class="form-link">
           <span
             >Don't have an account?
-            <a href="#" class="link signup-link">Register</a></span
+            <a href="#/Register" class="link signup-link">Register</a></span
           >
         </div>
       </div>
@@ -60,7 +60,6 @@ import {
 } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { reactive, ref } from "vue";
-
 // Sign in the user with email and password
 const inputEmail = reactive({
   email: "",
@@ -73,6 +72,7 @@ const errMsg = ref("");
 const router = useRouter();
 
 const Login = (loggedIn) => {
+  console.log("HUH");
   const auth = getAuth();
   signInWithEmailAndPassword(auth, inputEmail.email, password.password)
     .then((data) => {
@@ -104,6 +104,20 @@ const signInWithGoogle = () => {
     console.log(result.user);
     router.push("/LandingPage");
   });
+};
+
+const passwordReset = () => {
+  sendPasswordResetEmail(auth, email)
+    .then(() => {
+      // Password reset email sent!
+      console.log("Password reset email sent!");
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode);
+      console.log(errorMessage);
+    });
 };
 </script>
 

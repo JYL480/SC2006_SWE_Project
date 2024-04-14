@@ -20,7 +20,7 @@
     </button>
   </router-link>
 
-  <router-link id="link" to="/Login">
+  <router-link id="link" to="/Login" v-if="!isLoggedIn">
     <button id="button" class="pushable">
       <span class="shadow"></span>
       <span class="edge"></span>
@@ -33,6 +33,9 @@
     <span class="edge"></span>
     <span class="front">Logout</span>
   </button>
+  <span class="displayName" v-if="isLoggedIn">
+    <span class="front"> Welcome {{ auth.currentUser.displayName }}</span>
+  </span>
 
   <router-view></router-view>
 </template>
@@ -45,9 +48,8 @@ import { useRouter } from "vue-router";
 const isLoggedIn = ref(false);
 const router = useRouter();
 
-let auth;
+const auth = getAuth();
 onMounted(() => {
-  auth = getAuth();
   onAuthStateChanged(auth, (user) => {
     if (user) {
       isLoggedIn.value = true;
@@ -70,6 +72,16 @@ const handleSignOut = () => {
   color: white;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+.displayName {
+  z-index: 100;
+  display: flex;
+  top: 16px;
+  left: 20px;
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+  /* Other styles as needed */
 }
 
 .pushable {
