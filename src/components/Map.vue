@@ -71,8 +71,8 @@ const destMarker = new mapboxgl.Marker({
   scale: 1.5,
 });
 
-const highlightedMarker = new mapboxgl.Marker({
-  color: "#620010",
+let NoSlotMarker = new mapboxgl.Marker({
+  color: "#00000",
   draggable: true,
   scale: 1.2,
 });
@@ -220,10 +220,10 @@ const addCarParkMarkers = (remove, highlightedName) => {
         const distance = turf.distance(from, pt, { units: "kilometers" });
         properties_name = arraysCarPark[0].car_park_no;
         // console.log("?asds", highlightedName);
-        if (properties_name == highlightedName) {
+        if (carPark.available_lots == 0 || carPark.car_park_no == "No Data") {
           marker = new mapboxgl.Marker({
-            color: "pink",
-            scale: 1.5,
+            color: "#00000",
+            scale: 1,
           })
             .setLngLat([arraysCarPark[i].Longitude, arraysCarPark[i].Latitude])
             .setPopup(new mapboxgl.Popup().setHTML(popupContent)) // Customize popup content
@@ -406,7 +406,9 @@ onMounted(async () => {
 
   // Add the circle representing the radius around the user's location
   // addCircle();
-  fetchDataAndWriteToFile();
+  console.log("Carpark slots fetched");
+  setInterval(fetchDataAndWriteToFile, 1000);
+  // fetchDataAndWriteToFile();
 });
 
 onUnmounted(() => {
@@ -566,12 +568,6 @@ const combineSlotsandJson = () => {
 
 // "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
 setInterval(fetchDataAndWriteToFile, 60000);
-
-// Handle the hover emit event
-const handleCarParkHovered = (name) => {
-  // console.log(name);
-  nameMarketHighlight.value = name;
-};
 </script>
 
 <style scoped>
