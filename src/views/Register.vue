@@ -1,5 +1,7 @@
 <template>
-  <div id="spline-viewer-container"></div>
+  <!-- <section>
+    <canvas ref="canvas" />
+  </section> -->
   <section class="container forms">
     <div class="form login">
       <div class="form-content">
@@ -85,16 +87,25 @@ import {
 } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { faS } from "@fortawesome/free-solid-svg-icons";
-import { SplineViewer } from "@splinetool/viewer";
-// import fetchAndWriteToFile from "../test.js";
+import { Application } from "@splinetool/runtime";
 
-onMounted(() => {
-  console.log("Mounted");
-  new SplineViewer({
-    el: document.getElementById("spline-viewer-container"),
-    scene: "https://unpkg.com/@splinetool/viewer/build/spline-viewer.js",
-  });
+// import fetchAndWriteToFile from "../test.js";
+const canvas = ref(null);
+const state = reactive({
+  spline: {
+    scene:
+      "https://prod.spline.design/<your-spline-scene-url>/scene.splinecode",
+    app: null,
+    isLoaded: false,
+  },
 });
+
+// onMounted(async () => {
+//   const app = new Application(canvas.value);
+//   await app.load(state.spline.scene);
+//   state.spline.app = app;
+//   state.spline.isLoaded = true;
+// });
 
 const checkPasswordRequirements = () => {
   lowercaseMet.value = /[a-z]/.test(password.value);
