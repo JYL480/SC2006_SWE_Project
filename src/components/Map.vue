@@ -157,7 +157,7 @@ const addERPMarkers = (remove) => {
         const popupContent = `
         <p><strong>Address:</strong>${properties_name}</p>
         <p><strong>Price:</strong>${properties_price}</p>
-        
+
     `;
 
         marker = new mapboxgl.Marker({
@@ -406,8 +406,8 @@ onMounted(async () => {
 
   // Add the circle representing the radius around the user's location
   // addCircle();
-  console.log("Carpark slots fetched");
-  setInterval(fetchDataAndWriteToFile, 1000);
+
+  setInterval(fetchDataAndWriteToFile, 60000);
   // fetchDataAndWriteToFile();
 });
 
@@ -510,7 +510,7 @@ watch(
   // }
 );
 
-const slotsMap = new Map();
+let slotsMap = new Map();
 
 // const jsonData1 = JSON.parse(
 //   fs.readFileSync("public/car.geojson", "utf8")
@@ -526,8 +526,9 @@ const fetchDataAndWriteToFile = () => {
       }
     })
     .then((data) => {
-      for (const item of data.items) {
-        for (const carpark of item.carpark_data) {
+      // console.log("Carpark slots fetched at 1min interval");
+      for (let item of data.items) {
+        for (let carpark of item.carpark_data) {
           slotsMap.set(carpark.carpark_number, {
             availableLots: parseInt(carpark.carpark_info[0].lots_available),
           });
@@ -540,6 +541,7 @@ const fetchDataAndWriteToFile = () => {
 };
 
 const combineSlotsandJson = () => {
+  // console.log(slotsMap);
   for (const carpark of geojsonFeaturesCarPark.value) {
     const slotInfo = slotsMap.get(carpark.car_park_no);
     if (slotInfo) {
@@ -551,7 +553,6 @@ const combineSlotsandJson = () => {
 };
 
 // "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
-setInterval(fetchDataAndWriteToFile, 60000);
 </script>
 
 <style scoped>
