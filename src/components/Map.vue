@@ -183,6 +183,7 @@ const addERPMarkers = (remove) => {
 const addCarParkMarkers = (remove, highlightedName) => {
   combineSlotsandJson();
   const arraysCarPark = geojsonFeaturesCarPark.value;
+  console.log(arraysCarPark);
 
   let properties_name = null;
   let properties_price = null;
@@ -407,8 +408,9 @@ onMounted(async () => {
   // Add the circle representing the radius around the user's location
   // addCircle();
   console.log("Carpark slots fetched");
-  setInterval(fetchDataAndWriteToFile, 1000);
+  // setInterval(fetchDataAndWriteToFile, 1000);
   // fetchDataAndWriteToFile();
+  fetchData();
 });
 
 onUnmounted(() => {
@@ -505,40 +507,40 @@ watch(
       forWatchers(newBool, newName);
     }
     console.log("Data pulled?");
-    fetchDataAndWriteToFile();
+    // fetchData();
   }
   // }
 );
 
-const slotsMap = new Map();
-
 // const jsonData1 = JSON.parse(
 //   fs.readFileSync("public/car.geojson", "utf8")
 // );
-const fetchDataAndWriteToFile = () => {
-  fetch("https://api.data.gov.sg/v1/transport/carpark-availability")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      } else {
-        // Return the JSON representation of the response
-        return response.json();
-      }
-    })
-    .then((data) => {
-      for (const item of data.items) {
-        for (const carpark of item.carpark_data) {
-          slotsMap.set(carpark.carpark_number, {
-            availableLots: parseInt(carpark.carpark_info[0].lots_available),
-          });
-          // console.log(carpark);
-        }
-      }
-    });
+// const fetchDataAndWriteToFile = () => {
+//   fetch("https://api.data.gov.sg/v1/transport/carpark-availability")
+//     .then((response) => {
+//       if (!response.ok) {
+//         throw new Error("Network response was not ok");
+//       } else {
+//         // Return the JSON representation of the response
+//         return response.json();
+//       }
+//     })
+//     .then((data) => {
+//       for (const item of data.items) {
+//         for (const carpark of item.carpark_data) {
+//           slotsMap.set(carpark.carpark_number, {
+//             availableLots: parseInt(carpark.carpark_info[0].lots_available),
+//           });
+//           // console.log(carpark);
+//         }
+//       }
+//     });
 
-  // console.log("HERE", geojsonFeaturesCarPark.value);
-};
+//   // console.log("HERE", geojsonFeaturesCarPark.value);
+// };
 
+// =============================== To fetch the API thing =====================================
+const slotsMap = new Map();
 const combineSlotsandJson = () => {
   for (const carpark of geojsonFeaturesCarPark.value) {
     const slotInfo = slotsMap.get(carpark.car_park_no);
@@ -550,8 +552,27 @@ const combineSlotsandJson = () => {
   }
 };
 
+const fetchData = async () => {
+  try {
+    const response = await fetch(
+      "https://api.data.gov.sg/v1/transport/carpark-availability"
+    );
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    const data = await response.json();
+    console.log(data);
+    // const carParksData = processCarParkData(data); // Process the data as needed
+    // carParks.value = carParksData;
+  } catch (error) {
+    console.error("Error fetching car park data:", error);
+  }
+};
+
+// =================================================================================
+
 // "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
-setInterval(fetchDataAndWriteToFile, 60000);
+// setInterval(fetchDataAndWriteToFile, 60000);
 </script>
 
 <style scoped>
