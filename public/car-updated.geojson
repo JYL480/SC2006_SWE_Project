@@ -569,25 +569,7 @@
     "gantry_height": 1.8,
     "car_park_basement": "Y"
   },
-  {
-    "car_park_no": "53",
-    "Area": "JurongLakeDistrict",
-    "address": "IMM Building",
-    "Latitude": "1.334847",
-    "Longitude": "103.746815",
-    "available_lots": 587,
-    "LotType": "C",
-    "Agency": "LTA",
-    "rates": 3,
-    "car_park_type": "BASEMENT CAR PARK",
-    "type_of_parking_system": "ELECTRONIC PARKING",
-    "short_term_parking": "WHOLE DAY",
-    "free_parking": "NO",
-    "night_parking": "YES",
-    "car_park_decks": 1,
-    "gantry_height": 1.8,
-    "car_park_basement": "Y"
-  },
+
 
   {
     "car_park_no": "55",
