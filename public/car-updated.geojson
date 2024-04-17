@@ -1,24 +1,5 @@
 [
   {
-    "car_park_no": "54",
-    "Area": "JurongLakeDistrict",
-    "address": "JCube",
-    "Latitude": "1.33341",
-    "Longitude": "103.740088",
-    "available_lots": 54,
-    "LotType": "C",
-    "Agency": "LTA",
-    "rates": 3,
-    "car_park_type": "BASEMENT CAR PARK",
-    "type_of_parking_system": "ELECTRONIC PARKING",
-    "short_term_parking": "WHOLE DAY",
-    "free_parking": "NO",
-    "night_parking": "YES",
-    "car_park_decks": 1,
-    "gantry_height": 1.8,
-    "car_park_basement": "Y"
-  },
-  {
     "car_park_no": "55",
     "Area": "Orchard",
     "address": "Paragon",
@@ -607,25 +588,7 @@
     "gantry_height": 1.8,
     "car_park_basement": "Y"
   },
-  {
-    "car_park_no": "54",
-    "Area": "JurongLakeDistrict",
-    "address": "JCube",
-    "Latitude": "1.33341",
-    "Longitude": "103.740088",
-    "available_lots": 54,
-    "LotType": "C",
-    "Agency": "LTA",
-    "rates": 3,
-    "car_park_type": "BASEMENT CAR PARK",
-    "type_of_parking_system": "ELECTRONIC PARKING",
-    "short_term_parking": "WHOLE DAY",
-    "free_parking": "NO",
-    "night_parking": "YES",
-    "car_park_decks": 1,
-    "gantry_height": 1.8,
-    "car_park_basement": "Y"
-  },
+
   {
     "car_park_no": "55",
     "Area": "Orchard",

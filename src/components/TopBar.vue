@@ -174,6 +174,7 @@ const handleSignOut = () => {
   outline: none;
 }
 .logoImg {
+  position: relative;
   width: 20vw;
   padding-left: 20px;
   z-index: 100;

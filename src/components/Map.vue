@@ -421,14 +421,10 @@ onUnmounted(() => {
 });
 
 destMarker.on("dragend", () => {
-  // Get the updated lngLat of the marker
   const lngLat = destMarker.getLngLat();
-
-  // Update the latitude and longitude values
   const updatedLatitude = lngLat.lat;
   const updatedLongitude = lngLat.lng;
 
-  // Log or use the updated latitude and longitude values as needed
   // console.log("Updated Latitude:", updatedLatitude);
   // console.log("Updated Longitude:", updatedLongitude);
   userLocation.value = [updatedLongitude, updatedLatitude];
@@ -555,7 +551,7 @@ const combineSlotsandJson = () => {
       !carpark.available_lots
     ) {
       console.log("Hello???");
-      carpark.available_lots = "No Data";
+      carpark.available_lots = 0;
       // } else {
       //   carpark.available_lots = "No Data";
       // }
