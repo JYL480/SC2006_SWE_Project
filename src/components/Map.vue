@@ -220,7 +220,10 @@ const addCarParkMarkers = (remove, highlightedName) => {
         const distance = turf.distance(from, pt, { units: "kilometers" });
         properties_name = arraysCarPark[0].car_park_no;
         // console.log("?asds", highlightedName);
-        if (carPark.available_lots == 0 || carPark.car_park_no == "No Data") {
+        if (
+          carPark.available_lots == 0 ||
+          carPark.available_lots == "No Data"
+        ) {
           marker = new mapboxgl.Marker({
             color: "#00000",
             scale: 1,
