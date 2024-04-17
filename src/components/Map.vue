@@ -1,7 +1,5 @@
 <template>
   <div id="map-container"></div>
-  <!-- <div id="sidebar">Longitude: -71.224518 | Latitude: 42.213995 | Zoom: 9</div>
-   -->
 
   <SummarySideBar
     :carparkArray="CurrentMarkersCar"
@@ -205,7 +203,7 @@ const addCarParkMarkers = (remove, highlightedName) => {
         // Get the distance between my location to the marker
         const distance = turf.distance(from, pt, { units: "kilometers" });
         properties_name = arraysCarPark[0].car_park_no;
-        // console.log("?asds", highlightedName);
+
         if (
           carPark.available_lots == 0 ||
           carPark.available_lots == "No Data"
@@ -230,9 +228,7 @@ const addCarParkMarkers = (remove, highlightedName) => {
       }
     }
   } else {
-    // console.log(CurrentMarkersCar.value[1]);
     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
-      // console.log(CurrentMarkersCar[i].value);
       CurrentMarkersCar.value[i][0].remove();
     }
     CurrentMarkersCar.value = [];
@@ -270,7 +266,6 @@ const getUserLocation = async () => {
 // Get value from child
 const ERPorCarpark = (value) => {
   boolCarorERP.value = value;
-  // clearMarkers();
   ERPorCarpark.value = value;
 
   addERPMarkers(value);
@@ -298,8 +293,6 @@ function selectedDestination(coords) {
 
 // Get the slider value
 const sliderValue = (value) => {
-  // console.log(value);
-
   radiusInKm.value = value;
   addCircle();
 };
@@ -308,19 +301,13 @@ const sliderValue = (value) => {
 // To get the Carpark ID to pop up the HTML when hovered over the card
 const carIDHovering = ref("");
 const mouseOnOrOffBoolCarPark = ref(null);
-
-// I will receive the emited things from the child
-// Then do some boolean thing for it
 const emitCarParkIDHovered = (carID, mouseOnOrOff) => {
   carIDHovering.value = carID;
   mouseOnOrOffBoolCarPark.value = mouseOnOrOff;
-  // console.log("????", mouseOnOrOffBoolCarPark.value);
 };
 
 const clearHoveredCarParkID = (mouseOnOrOff) => {
   mouseOnOrOffBoolCarPark.value = mouseOnOrOff;
-  // console.log(mouseOnOrOffBoolCarPark.value);
-  // console.log("ASDASFLHADLKJG");
 };
 
 watch(
@@ -410,18 +397,12 @@ destMarker.on("dragend", () => {
   const lngLat = destMarker.getLngLat();
   const updatedLatitude = lngLat.lat;
   const updatedLongitude = lngLat.lng;
-
-  // console.log("Updated Latitude:", updatedLatitude);
-  // console.log("Updated Longitude:", updatedLongitude);
   userLocation.value = [updatedLongitude, updatedLatitude];
 });
 
 // To add the radius thing
 const addCircle = () => {
-  // Will be updated with the new circle with change coordinates
   const circle = turf.circle(userLocation.value, radiusInKm.value, options);
-
-  // Add the circle source and layer if they don't exist
   if (!map.getSource("circle-source")) {
     map.addSource("circle-source", {
       type: "geojson",
@@ -439,11 +420,8 @@ const addCircle = () => {
       },
     });
   } else {
-    // Update the circle's position
     map.getSource("circle-source").setData(circle);
   }
-
-  // console.log("circle added");
 };
 
 const forWatchers = (newBool, newName) => {
@@ -458,9 +436,6 @@ const forWatchers = (newBool, newName) => {
   addCarParkMarkers(newBool, newName);
   addERPMarkers(newBool);
   addCircle();
-
-  // console.log(CurrentMarkersCar.value);
-  // console.log(CurrentMarkersERP.value);
 };
 
 watch(
@@ -469,7 +444,6 @@ watch(
     [newUserLocation, newRadius, newBool, newName],
     [oldUserLocation, oldRadius, oldBool, oldName]
   ) => {
-    // console.log(newName, oldName);
     if (
       newUserLocation[0] !== oldUserLocation[0] ||
       newUserLocation[1] !== oldUserLocation[1] ||
@@ -479,14 +453,6 @@ watch(
       newBool[1] !== oldBool[1] ||
       newName !== oldName
     ) {
-      // must make the changes here. HMMM
-      // if (newName[0] != oldName[0]) {
-      //   for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
-      //     if (CurrentMarkersCar.value[i][1].car_park_no == oldName) {
-      //       CurrentMarkersCar.value[i][0].remove();
-      //     }
-      //   }
-
       forWatchers(newBool, newName);
     }
     console.log("Data pulled?");
@@ -496,10 +462,6 @@ watch(
 );
 
 let slotsMap = new Map();
-
-// const jsonData1 = JSON.parse(
-//   fs.readFileSync("public/car.geojson", "utf8")
-// );
 const fetchDataAndWriteToFile = () => {
   fetch("https://api.data.gov.sg/v1/transport/carpark-availability")
     .then((response) => {
@@ -511,22 +473,17 @@ const fetchDataAndWriteToFile = () => {
       }
     })
     .then((data) => {
-      // console.log("Carpark slots fetched at 1min interval");
       for (let item of data.items) {
         for (let carpark of item.carpark_data) {
           slotsMap.set(carpark.carpark_number, {
             availableLots: parseInt(carpark.carpark_info[0].lots_available),
           });
-          // console.log(carpark);
         }
       }
     });
-
-  // console.log("HERE", geojsonFeaturesCarPark.value);
 };
 
 const combineSlotsandJson = () => {
-  // console.log(slotsMap);
   for (const carpark of geojsonFeaturesCarPark.value) {
     const slotInfo = slotsMap.get(carpark.car_park_no);
     if (slotInfo) {
@@ -538,15 +495,9 @@ const combineSlotsandJson = () => {
     ) {
       console.log("Hello???");
       carpark.available_lots = 0;
-      // } else {
-      //   carpark.available_lots = "No Data";
-      // }
-      // Or set to some default value if slot information is not available
     }
   }
 };
-
-// "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
 </script>
 
 <style scoped>
