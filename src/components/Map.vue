@@ -30,24 +30,13 @@
 </template>
 
 <script setup>
-import {
-  ref,
-  onMounted,
-  onUpdated,
-  onUnmounted,
-  computed,
-  onBeforeMount,
-  watch,
-} from "vue";
-import { MapboxMap, MapboxGeolocateControl } from "@studiometa/vue-mapbox-gl";
+import { ref, onMounted, onUnmounted, watch } from "vue";
+
 import mapboxgl from "mapbox-gl"; // or "const mapboxgl = require('mapbox-gl');"
-import GeolocateControl from "mapbox-gl";
 import ToggleERPorCarpark from "./ToggleERPorCarpark.vue";
 import Searchbar from "../components/SearchBar.vue";
-
 import SummarySideBar from "./SummarySideBar.vue";
 import Slider from "./Slider.vue";
-import { confirmPasswordReset } from "firebase/auth";
 
 // import turf things?
 import * as turf from "@turf/turf";
@@ -79,8 +68,6 @@ let NoSlotMarker = new mapboxgl.Marker({
 
 const geojsonFeaturesERP = ref([]);
 const geojsonFeaturesCarPark = ref([]);
-const mapCenter = ref([103.82287200000002, 1.3649170000000002]);
-const defaultLocation = [103.851784, 1.287953];
 // Im guessing this user Location will keep changing!!!
 let userLocation = ref([103.82287200000002, 1.3649170000000002]);
 let centerLat = null;
@@ -185,7 +172,6 @@ const addCarParkMarkers = (remove, highlightedName) => {
   const arraysCarPark = geojsonFeaturesCarPark.value;
 
   let properties_name = null;
-  let properties_price = null;
   let marker = null;
   const circle = turf.circle(userLocation.value, radiusInKm.value, options);
   const from = turf.point(userLocation.value);
