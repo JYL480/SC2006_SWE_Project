@@ -546,8 +546,17 @@ const combineSlotsandJson = () => {
     const slotInfo = slotsMap.get(carpark.car_park_no);
     if (slotInfo) {
       carpark.available_lots = slotInfo.availableLots;
-    } else {
-      carpark.available_lots = "No Data"; // Or set to some default value if slot information is not available
+    } else if (
+      !carpark.agency == "LTA" ||
+      !carpark.agency == "URA" ||
+      !carpark.available_lots
+    ) {
+      console.log("Hello???");
+      carpark.available_lots = "No Data";
+      // } else {
+      //   carpark.available_lots = "No Data";
+      // }
+      // Or set to some default value if slot information is not available
     }
   }
 };
