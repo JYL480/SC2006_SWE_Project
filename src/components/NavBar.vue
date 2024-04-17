@@ -20,8 +20,8 @@
       </button>
     </router-link>
 
-    <router-link to="/BookmarkPage">
-      <button class="button">
+    <div>
+      <button @click="emit('bookmarkViewToggled');" class="button">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
@@ -36,7 +36,7 @@
           />
         </svg>
       </button>
-    </router-link>
+    </div>
 
     <router-link to="/ProfilePage">
       <button class="button">
@@ -59,7 +59,9 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+    const emit = defineEmits([ "bookmarkViewToggled" ]);    // bookmarkViewToggled to be emitted when user clicked on the bookmark button to view their bookmarks
+</script>
 
 <style>
 .button-container {

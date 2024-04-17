@@ -115,7 +115,7 @@
      * Queries MapBox Search Box API for suggestions (each suggestion is assumed to be exactly 1 location)
      * @param {string} query        The term to query for suggestions
      * @param {string} [proximity]  Proximity bias to be used when suggesting (e.g. user's location)
-     * @returns Array of suggestions
+     * @returns {Promise<Array>} Array of suggestions
      */
     async function querySuggestions(query, proximity=undefined) {
         // Query MapBox Search Box /suggest API
