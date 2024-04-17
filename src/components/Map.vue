@@ -504,28 +504,12 @@ watch(
 
       forWatchers(newBool, newName);
     }
+    console.log("Data pulled?");
+    fetchDataAndWriteToFile();
   }
   // }
 );
 
-// Watch when teh hover changes!!
-// watch(
-//   [nameMarketHighlight, boolCarorERP],
-//   ([newValue, newBool], [oldValue, oldBool]) => {
-//     console.log("JE?", CurrentMarkersCar.value[1][1].car_park_no);
-//     for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
-//       if (CurrentMarkersCar.value[i][1].car_park_no == newValue) {
-//         CurrentMarkersCar.value[i][0].remove();
-//       }
-//     }
-//     CurrentMarkersCar.value = [];
-//     CurrentMarkersERP.value = [];
-//     addCarParkMarkers(newBool);
-//     addERPMarkers(newBool);
-//   }
-// );
-
-// UHH i do the thing here?
 const slotsMap = new Map();
 
 // const jsonData1 = JSON.parse(
