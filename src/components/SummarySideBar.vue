@@ -86,18 +86,20 @@
         <div
           v-show="!istoggle && carparkErpSelection"
           v-for="carpark in carparkArray"
+          key="carpark[1].car_park_no"
           class="card"
         >
           <div
             class="card-details"
-            @mouseover="emitCarParkIDHovered(carpark[1].car_park_no)"
+            @mouseenter="emitCarParkIDHovered(carpark[1].car_park_no)"
             @mouseleave="clearHoveredCarParkID"
           >
             <div class="locationBox">
               <div class="location">Location: {{ carpark[1].address }}</div>
               <label class="ui-bookmark">
                 <input
-                  :checked="bookmarkedCarparks.has(carpark[1]['car_park_no'])"
+                  :checked="bookmarks['carpark'].has(carpark[1]['car_park_no'])"
+                  :key="carparkItemRerenderKey"
                   @change="carparkBookmarkToggle(carpark[1])"
                   type="checkbox"
                 />
@@ -195,19 +197,21 @@
         <div
           v-show="!istoggle && !carparkErpSelection"
           v-for="erp in erpArray"
+          key="erp[1].properties.Name"
           class="card"
         >
           <!--v-for="erp in erpArray"-->
           <div
             class="card-details"
-            @mouseover="emitERPIDHovered(erp[1].properties.Name)"
+            @mouseenter="emitERPIDHovered(erp[1].properties.Name)"
             @mouseleave="clearHoveredERPID"
           >
             <div class="ERPlocationBox">
               <div class="location">ERP Name: {{ erp[1].properties.Name }}</div>
               <label class="ui-bookmark">
                 <input
-                  :checked="bookmarkedERP.has(erp[1].properties.Name)"
+                  :checked="bookmarks['erp'].has(erp[1].properties.Name)"
+                  :key="erpItemRerenderKey"
                   @change="erpBookmarkToggle(erp[1])"
                   type="checkbox"
                 />
@@ -264,6 +268,7 @@ const emit = defineEmits([
   "emitMouseCarParkOff",
   "emitERPIDHovered",
   "emitMouseERPOff",
+  "bookmarksChanged",
 ]);
 
 const mouseOnOrOffCarpark = ref(false);
@@ -299,6 +304,11 @@ var istoggle = ref(false);
 var distanceButtonIsClicked = ref(false);
 var priceButtonIsClicked = ref(false);
 var slotsButtonIsClicked = ref(false);
+
+/**
+ * 2-way sync with parent Map component
+ */
+const bookmarks = defineModel();
 
 function toggleButton() {
   istoggle.value = !istoggle.value;
@@ -388,46 +398,36 @@ const openDirections = (lat, long) => {
 };
 
 // Bookmark Stuff -----------------------------------------------
-let bookmarkedCarparks = ref(new Set());
-let bookmarkedERP = ref(new Set());
-
-watch(
-  currentUser, // Fetch user's bookmarks whenever there is a change in user (while the sidebar is active, else bookmarks will be loaded when mounting the sidebar)
-  async () => {
-    if (currentUser.value) {
-      console.log("Fetching bookmarks for user: " + currentUser.value.uid);
-      const bookmarks = await dbGetUserBookmarks(currentUser.value.uid);
-      bookmarkedCarparks.value = bookmarks["carpark"];
-      bookmarkedERP.value = bookmarks["erp"];
-    } else {
-      console.log("Clearing Bookmarks (no user logged in)");
-      bookmarkedCarparks.value = new Set();
-      bookmarkedERP.value = new Set();
-    }
-  },
-  { immediate: true }
-);
-
+/**
+ * Exist for the sole purpose of changing it to trigger a DOM update by Vue (a little hacky)
+ */
+const carparkItemRerenderKey = ref(false);
+/**
+ * Exist for the sole purpose of changing it to trigger a DOM update by Vue (a little hacky)
+ */
+const erpItemRerenderKey = ref(false);
 /**
  * @param {{car_park_no: string}} carparkDetails Where the .car_park_no gives the unique ID of the carpark
  */
 function carparkBookmarkToggle(carparkDetails) {
   const carparkID = carparkDetails["car_park_no"];
-  if (bookmarkedCarparks.value.has(carparkID)) {
-    bookmarkedCarparks.value.delete(carparkID);
+  if (bookmarks.value["carpark"].has(carparkID)) {
+    bookmarks.value["carpark"].delete(carparkID);
     console.log("Removed Carpark Bookmark: " + carparkID);
   } else {
-    bookmarkedCarparks.value.add(carparkID);
+    bookmarks.value["carpark"].add(carparkID);
     console.log("Added Carpark Bookmark: " + carparkID);
   }
 
   if (currentUser.value) {
     dbSetUserBookmarks(
-      bookmarkedCarparks.value,
-      bookmarkedERP.value,
+      bookmarks.value["carpark"],
+      bookmarks.value["erp"],
       currentUser.value.uid
     );
   }
+  emit("bookmarksChanged");
+  carparkItemRerenderKey.value = !carparkItemRerenderKey.value;
 }
 
 /**
@@ -435,21 +435,23 @@ function carparkBookmarkToggle(carparkDetails) {
  */
 function erpBookmarkToggle(erpDetails) {
   const erpID = erpDetails["properties"]["Name"];
-  if (bookmarkedERP.value.has(erpID)) {
-    bookmarkedERP.value.delete(erpID);
+  if (bookmarks.value["erp"].has(erpID)) {
+    bookmarks.value["erp"].delete(erpID);
     console.log("Removed ERP Bookmark: " + erpID);
   } else {
-    bookmarkedERP.value.add(erpID);
+    bookmarks.value["erp"].add(erpID);
     console.log("Added ERP Bookmark: " + erpID);
   }
 
   if (currentUser.value) {
     dbSetUserBookmarks(
-      bookmarkedCarparks.value,
-      bookmarkedERP.value,
+      bookmarks.value["carpark"],
+      bookmarks.value["erp"],
       currentUser.value.uid
     );
   }
+  emit("bookmarksChanged");
+  erpItemRerenderKey.value = !erpItemRerenderKey.value;
 }
 // End of Bookmark Stuff ----------------------------------------
 </script>

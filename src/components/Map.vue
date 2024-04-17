@@ -2,13 +2,15 @@
   <div id="map-container"></div>
 
   <SummarySideBar
+    v-model="bookmarks"
     :carparkArray="CurrentMarkersCar"
     :erpArray="CurrentMarkersERP"
-    :carparkErpSelection="boolCarorERP"
+    :carparkErpSelection="boolCarOrERP"
     @emitCarParkIDHovered="emitCarParkIDHovered"
     @emitMouseCarParkOff="clearHoveredCarParkID"
     @emitERPIDHovered="emitERPIDHovered"
     @emitMouseERPOff="clearHoveredERPID"
+    @bookmarksChanged="onBookmarksChanged"
   />
 
   <div id="searchbar">
@@ -28,6 +30,8 @@
 </template>
 
 <script setup>
+import { currentUser } from "src/main";
+import { dbGetUserBookmarks } from "src/databaselib";
 import { ref, onMounted, onUnmounted, watch } from "vue";
 
 import mapboxgl from "mapbox-gl"; // or "const mapboxgl = require('mapbox-gl');"
@@ -108,7 +112,29 @@ let nameMarketHighlight = ref("");
 
 // By default == true,
 // True = carpark display, False, = ERP display
-let boolCarorERP = ref(true);
+let boolCarOrERP = ref(true);
+
+const bookmarks = ref({carpark: new Set(), erp: new Set()});
+let isBookmarkDisplay = false; // Whether the current view is showing only bookmarks
+watch(
+  currentUser, // Fetch user's bookmarks whenever there is a change in user (while the sidebar is active, else bookmarks will be loaded when mounting the sidebar)
+  async () => {
+    if (currentUser.value) {
+      console.log("Fetching bookmarks for user: " + currentUser.value.uid);
+      bookmarks.value = await dbGetUserBookmarks(currentUser.value.uid);
+    } else {
+      console.log("Clearing Bookmarks (no user logged in)");
+    }
+  },
+  { immediate: true }
+);
+
+function onBookmarksChanged() {   // Update markers whenever bookmarks changes when appropriate
+    if (isBookmarkDisplay) {
+      refreshMarkers(boolCarOrERP.value, nameMarketHighlight.value);  // TODO: Refactor to separate refreshing markers and pin dragging
+    }
+}
+
 
 // All the functions
 
@@ -174,8 +200,11 @@ function erpFilterUserRadius(erp) {
   return turf.booleanPointInPolygon(pt, circle);
 }
 
+/**
+ * @param {ERP} erp 
+ */
 function erpFilterBookmarks(erp) {
-  return false;
+  return bookmarks.value["erp"].has(erp["properties"]["Name"]);
 }
 
 /**
@@ -187,8 +216,11 @@ function carparkFilterUserRadius(carpark) {
   return turf.booleanPointInPolygon(pt, circle);
 }
 
-function carparkFilterBookmarks(carparks) {
-  return false;
+/**
+ * @param {Carpark} carpark 
+ */
+function carparkFilterBookmarks(carpark) {
+  return bookmarks.value["carpark"].has(carpark["car_park_no"]);
 }
 // End of Global Filters
 
@@ -321,7 +353,7 @@ function showHideCarparkMarkers (show, carparkFilterStrategy) {
 let prevERPFilterStrategy = null;
 let prevCarparkFilterStrategy = null;
 function toggleBookmarkMarkers() {
-    if (currentCarparkFilterStrategy == carparkFilterBookmarks) {
+    if (isBookmarkDisplay) {
         console.log("Markers Filter Strategy: Restored");
         currentERPFilterStrategy = prevERPFilterStrategy;
         currentCarparkFilterStrategy = prevCarparkFilterStrategy;
@@ -333,7 +365,8 @@ function toggleBookmarkMarkers() {
         currentERPFilterStrategy = erpFilterBookmarks;
         currentCarparkFilterStrategy = carparkFilterBookmarks;
     }
-    refreshUserLocationPin(boolCarorERP, nameMarketHighlight);  // TODO: Refactor to separate refreshing markers and pin dragging
+    isBookmarkDisplay = !isBookmarkDisplay;
+    refreshMarkers(boolCarOrERP.value, nameMarketHighlight.value);  // TODO: Refactor to separate refreshing markers and pin dragging
 }
 
 // To get the person's location now!!
@@ -366,7 +399,7 @@ const getUserLocation = async () => {
 // This is toggle between car parks and erp
 // Get value from child
 const ERPorCarpark = (value) => {
-  boolCarorERP.value = value;
+  boolCarOrERP.value = value;
   ERPorCarpark.value = value;
 
   showHideERPMarkers(value, currentERPFilterStrategy);
@@ -417,6 +450,9 @@ watch(
     const markerToOpen = CurrentMarkersCar.value.find(
       ([marker, carPark]) => carPark.car_park_no === newID
     );
+    if (!markerToOpen) {    // Occurs when attempting to close a popup that didn't exist (leaving a sidebar item without entering e.g. when unbookmarking)
+      return;
+    }
     const [marker, carPark, distance] = markerToOpen;
     if (newBool) {
       if (marker.togglePopup() == false) {
@@ -450,6 +486,9 @@ watch(
     const markerToOpen = CurrentMarkersERP.value.find(
       ([marker, ERP]) => ERP.properties.Name === newID
     );
+    if (!markerToOpen) {    // Occurs when attempting to close a popup that didn't exist (leaving a sidebar item without entering e.g. when unbookmarking)
+      return;
+    }
     // console.log(markerToOpen);
     const [marker, carPark, distance] = markerToOpen;
     // console.log(marker);
@@ -473,7 +512,7 @@ onMounted(async () => {
   createMapInstance();
   await accessJsonERP();
   await accessJsonCar();
-  showHideCarparkMarkers(boolCarorERP.value, currentCarparkFilterStrategy);
+  showHideCarparkMarkers(boolCarOrERP.value, currentCarparkFilterStrategy);
 
   // Default zoom in when loaded
   map.flyTo({
@@ -528,7 +567,8 @@ const addCircle = () => {
   }
 };
 
-const refreshUserLocationPin = (newBool, newName) => {
+const refreshMarkers = (newBool, newName) => {
+  console.log("newBool false is ERP: " + newBool);
   for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
     CurrentMarkersCar.value[i][0].remove();
   }
@@ -543,7 +583,7 @@ const refreshUserLocationPin = (newBool, newName) => {
 };
 
 watch(
-  [userLocation, radiusInKm, boolCarorERP, nameMarketHighlight],
+  [userLocation, radiusInKm, boolCarOrERP, nameMarketHighlight],
   (
     [newUserLocation, newRadius, newBool, newName],
     [oldUserLocation, oldRadius, oldBool, oldName]
@@ -557,7 +597,7 @@ watch(
       newBool[1] !== oldBool[1] ||
       newName !== oldName
     ) {
-      refreshUserLocationPin(newBool, newName);
+      refreshMarkers(newBool, newName);
     }
     console.log("Data pulled?");
     fetchDataAndWriteToFile();
