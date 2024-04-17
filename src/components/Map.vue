@@ -1,7 +1,5 @@
 <template>
   <div id="map-container"></div>
-  <!-- <div id="sidebar">Longitude: -71.224518 | Latitude: 42.213995 | Zoom: 9</div>
-   -->
 
   <SummarySideBar
     :carparkArray="CurrentMarkersCar"
@@ -30,21 +28,11 @@
 </template>
 
 <script setup>
-import {
-  ref,
-  onMounted,
-  onUpdated,
-  onUnmounted,
-  computed,
-  onBeforeMount,
-  watch,
-} from "vue";
-import { MapboxMap, MapboxGeolocateControl } from "@studiometa/vue-mapbox-gl";
+import { ref, onMounted, onUnmounted, watch } from "vue";
+
 import mapboxgl from "mapbox-gl"; // or "const mapboxgl = require('mapbox-gl');"
-import GeolocateControl from "mapbox-gl";
 import ToggleERPorCarpark from "./ToggleERPorCarpark.vue";
 import Searchbar from "../components/SearchBar.vue";
-
 import SummarySideBar from "./SummarySideBar.vue";
 import Slider from "./Slider.vue";
 import Navbar from "./NavBar.vue";
@@ -109,8 +97,6 @@ let NoSlotMarker = new mapboxgl.Marker({
 
 const geojsonFeaturesERP = ref([]);
 const geojsonFeaturesCarPark = ref([]);
-const mapCenter = ref([103.82287200000002, 1.3649170000000002]);
-const defaultLocation = [103.851784, 1.287953];
 // Im guessing this user Location will keep changing!!!
 let userLocation = ref([103.82287200000002, 1.3649170000000002]);
 let centerLat = null;
@@ -381,7 +367,6 @@ const getUserLocation = async () => {
 // Get value from child
 const ERPorCarpark = (value) => {
   boolCarorERP.value = value;
-  // clearMarkers();
   ERPorCarpark.value = value;
 
   showHideERPMarkers(value, currentERPFilterStrategy);
@@ -409,8 +394,6 @@ function selectedDestination(coords) {
 
 // Get the slider value
 const sliderValue = (value) => {
-  // console.log(value);
-
   radiusInKm.value = value;
   addCircle();
 };
@@ -419,19 +402,13 @@ const sliderValue = (value) => {
 // To get the Carpark ID to pop up the HTML when hovered over the card
 const carIDHovering = ref("");
 const mouseOnOrOffBoolCarPark = ref(null);
-
-// I will receive the emited things from the child
-// Then do some boolean thing for it
 const emitCarParkIDHovered = (carID, mouseOnOrOff) => {
   carIDHovering.value = carID;
   mouseOnOrOffBoolCarPark.value = mouseOnOrOff;
-  // console.log("????", mouseOnOrOffBoolCarPark.value);
 };
 
 const clearHoveredCarParkID = (mouseOnOrOff) => {
   mouseOnOrOffBoolCarPark.value = mouseOnOrOff;
-  // console.log(mouseOnOrOffBoolCarPark.value);
-  // console.log("ASDASFLHADLKJG");
 };
 
 watch(
@@ -506,8 +483,8 @@ onMounted(async () => {
 
   // Add the circle representing the radius around the user's location
   // addCircle();
-  console.log("Carpark slots fetched");
-  setInterval(fetchDataAndWriteToFile, 1000);
+
+  setInterval(fetchDataAndWriteToFile, 60000);
   // fetchDataAndWriteToFile();
 });
 
@@ -518,16 +495,9 @@ onUnmounted(() => {
 });
 
 destMarker.on("dragend", () => {
-  // Get the updated lngLat of the marker
   const lngLat = destMarker.getLngLat();
-
-  // Update the latitude and longitude values
   const updatedLatitude = lngLat.lat;
   const updatedLongitude = lngLat.lng;
-
-  // Log or use the updated latitude and longitude values as needed
-  // console.log("Updated Latitude:", updatedLatitude);
-  // console.log("Updated Longitude:", updatedLongitude);
   userLocation.value = [updatedLongitude, updatedLatitude];
 });
 
@@ -554,11 +524,8 @@ const addCircle = () => {
       },
     });
   } else {
-    // Update the circle's position
     map.getSource("circle-source").setData(circle);
   }
-
-  // console.log("circle added");
 };
 
 const refreshUserLocationPin = (newBool, newName) => {
@@ -573,9 +540,6 @@ const refreshUserLocationPin = (newBool, newName) => {
   showHideCarparkMarkers(newBool, currentCarparkFilterStrategy);
   showHideERPMarkers(newBool, currentERPFilterStrategy);
   addCircle();
-
-  // console.log(CurrentMarkersCar.value);
-  // console.log(CurrentMarkersERP.value);
 };
 
 watch(
@@ -584,7 +548,6 @@ watch(
     [newUserLocation, newRadius, newBool, newName],
     [oldUserLocation, oldRadius, oldBool, oldName]
   ) => {
-    // console.log(newName, oldName);
     if (
       newUserLocation[0] !== oldUserLocation[0] ||
       newUserLocation[1] !== oldUserLocation[1] ||
@@ -594,14 +557,6 @@ watch(
       newBool[1] !== oldBool[1] ||
       newName !== oldName
     ) {
-      // must make the changes here. HMMM
-      // if (newName[0] != oldName[0]) {
-      //   for (let i = 0; i < CurrentMarkersCar.value.length; i++) {
-      //     if (CurrentMarkersCar.value[i][1].car_park_no == oldName) {
-      //       CurrentMarkersCar.value[i][0].remove();
-      //     }
-      //   }
-
       refreshUserLocationPin(newBool, newName);
     }
     console.log("Data pulled?");
@@ -610,11 +565,7 @@ watch(
   // }
 );
 
-const slotsMap = new Map();
-
-// const jsonData1 = JSON.parse(
-//   fs.readFileSync("public/car.geojson", "utf8")
-// );
+let slotsMap = new Map();
 const fetchDataAndWriteToFile = () => {
   fetch("https://api.data.gov.sg/v1/transport/carpark-availability")
     .then((response) => {
@@ -626,17 +577,14 @@ const fetchDataAndWriteToFile = () => {
       }
     })
     .then((data) => {
-      for (const item of data.items) {
-        for (const carpark of item.carpark_data) {
+      for (let item of data.items) {
+        for (let carpark of item.carpark_data) {
           slotsMap.set(carpark.carpark_number, {
             availableLots: parseInt(carpark.carpark_info[0].lots_available),
           });
-          // console.log(carpark);
         }
       }
     });
-
-  // console.log("HERE", geojsonFeaturesCarPark.value);
 };
 
 const combineSlotsandJson = () => {
@@ -644,14 +592,16 @@ const combineSlotsandJson = () => {
     const slotInfo = slotsMap.get(carpark.car_park_no);
     if (slotInfo) {
       carpark.available_lots = slotInfo.availableLots;
-    } else {
-      carpark.available_lots = "No Data"; // Or set to some default value if slot information is not available
+    } else if (
+      !carpark.agency == "LTA" ||
+      !carpark.agency == "URA" ||
+      !carpark.available_lots
+    ) {
+      console.log("Hello???");
+      carpark.available_lots = 0;
     }
   }
 };
-
-// "mapbox://styles/ljy480/cltfztv7d00ub01nw3uhsceke/draft",
-setInterval(fetchDataAndWriteToFile, 60000);
 </script>
 
 <style scoped>
