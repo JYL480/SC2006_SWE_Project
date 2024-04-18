@@ -21,7 +21,7 @@
     </router-link>
 
     <div>
-      <button @click="emit('bookmarkViewToggled');" class="button">
+        <button @click="isBookmarkedDisplay=!isBookmarkedDisplay; emit('bookmarkViewToggled');" class="button" :class="{'depressed-button': isBookmarkedDisplay}">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
@@ -60,7 +60,9 @@
 </template>
 
 <script setup>
+    import { ref } from "vue";
     const emit = defineEmits([ "bookmarkViewToggled" ]);    // bookmarkViewToggled to be emitted when user clicked on the bookmark button to view their bookmarks
+    const isBookmarkedDisplay = ref(false);
 </script>
 
 <style>
@@ -97,8 +99,27 @@
   cursor: pointer;
 }
 
+.button {
+  outline: 0 !important;
+  border: 0 !important;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: all ease-in-out 0.3s;
+  cursor: pointer;
+}
+
 .button:hover {
   transform: translateY(-3px);
+}
+
+.depressed-button {
+  color: gold;
 }
 
 .icon {

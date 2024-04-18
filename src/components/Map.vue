@@ -269,6 +269,10 @@ function showHideERPMarkers(hide, erpFilterStrategy) {
     return;
   }
 
+  if (!erpFilterStrategy) {
+    erpFilterStrategy = () => { return true; }
+  }
+
   const allERPs = geojsonFeaturesERP.value;    // Get all ERPs
   const from = turf.point(userLocation.value);
 
@@ -340,6 +344,10 @@ function showHideCarparkMarkers (show, carparkFilterStrategy) {
     }
     CurrentMarkersCar.value = [];
     return;
+  }
+
+  if (!carparkFilterStrategy) {
+    carparkFilterStrategy = () => { return true; }
   }
 
   combineSlotsandJson();
