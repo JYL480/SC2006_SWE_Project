@@ -73,6 +73,7 @@ const slider = () => {
 }
 
 .PB-range-slidervalue {
+  font-family: "Poppins", sans-serif;
   font-weight: 600;
 }
 
