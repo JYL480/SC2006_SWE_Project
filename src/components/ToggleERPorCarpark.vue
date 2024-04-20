@@ -32,6 +32,9 @@ const ERPorCarpark = () => {
   border-radius: 30px;
   color: black;
   overflow: hidden;
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 #checkbox_toggle {
@@ -60,8 +63,6 @@ const ERPorCarpark = () => {
 }
 
 .checkbox .slide .text {
-  font-size: 16px;
-  font-weight: 700;
   z-index: 100;
   cursor: pointer;
   text-align: center;
@@ -81,7 +82,5 @@ const ERPorCarpark = () => {
 .text1 {
   margin-right: 90px;
   z-index: 100;
-  font-size: 16px;
-  font-weight: 700;
 }
 </style>

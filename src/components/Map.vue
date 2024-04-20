@@ -310,7 +310,7 @@ function addCarParkMarkerWithDistance(carparksToMark, from) {
     // console.log("?asds", highlightedName);
     if (carpark.available_lots == 0 || carpark.car_park_no == "No Data") {
       marker = new mapboxgl.Marker({
-        color: "#00000",
+        color: "grey",
         scale: 1,
       })
         .setLngLat([carparksToMark[i].Longitude, carparksToMark[i].Latitude])

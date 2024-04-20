@@ -132,7 +132,7 @@ onUpdated(() => {
   align-items: center;
   font-family: inherit;
   color: #fff;
-  background-color: #212121;
+  background-color: #d13400;
   border: none;
   width: 100%;
   padding: 12px 16px;
@@ -145,7 +145,7 @@ onUpdated(() => {
 }
 
 .form-container .form-submit-btn:hover {
-  background-color: #313131;
+  background-color: #e63900;
 }
 
 .form-container .link {

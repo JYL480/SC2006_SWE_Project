@@ -807,7 +807,7 @@ body.dark .mode .sun-moon i.moon {
   cursor: pointer;
 
   --color-text: #ffffff;
-  --color-background: #ff135a;
+  --color-background: #bc2121;
   --color-outline: #ff145b80;
   --color-shadow: #00000080;
 }
@@ -815,9 +815,8 @@ body.dark .mode .sun-moon i.moon {
 .btn-content {
   display: flex;
   align-items: center;
-  padding: 0px 5px 0px;
+  padding: 0px 8px 0px 10px;
   text-decoration: none;
-  font-family: "Poppins", sans-serif;
   font-weight: 600;
   font-size: 14px;
   color: var(--color-text);
@@ -825,7 +824,7 @@ body.dark .mode .sun-moon i.moon {
   transition: 1s;
   border-radius: 100px;
   box-shadow: 0 0 0.2em 0 var(--color-background);
-  margin-right: 30px;
+  margin-right: 10px;
   margin-top: 10px;
 }
 
