@@ -126,7 +126,7 @@ watch(
       console.log("Clearing Bookmarks (no user logged in)");
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 function onBookmarksChanged() {
@@ -198,7 +198,7 @@ function erpFilterUserRadius(erp) {
   const circle = turf.circle(
     userLocation.value,
     radiusInKm.value,
-    radiusOptions,
+    radiusOptions
   );
   const pt = erp.turfpt;
   return turf.booleanPointInPolygon(pt, circle);
@@ -218,7 +218,7 @@ function carparkFilterUserRadius(carpark) {
   const circle = turf.circle(
     userLocation.value,
     radiusInKm.value,
-    radiusOptions,
+    radiusOptions
   );
   const pt = carpark.turfpt;
   return turf.booleanPointInPolygon(pt, circle);
@@ -467,7 +467,7 @@ watch(
   [carIDHovering, mouseOnOrOffBoolCarPark],
   ([newID, newBool], [oldID, oldBool]) => {
     const markerToOpen = CurrentMarkersCar.value.find(
-      ([marker, carPark]) => carPark.car_park_no === newID,
+      ([marker, carPark]) => carPark.car_park_no === newID
     );
     if (!markerToOpen) {
       // Occurs when attempting to close a popup that didn't exist (leaving a sidebar item without entering e.g. when unbookmarking)
@@ -485,7 +485,7 @@ watch(
         marker.togglePopup();
       }
     }
-  },
+  }
 );
 //======================FOR THE ERP PART NOW ==============================
 
@@ -504,7 +504,7 @@ watch(
   [erpIDHovering, mouseOnOrOffBoolERP],
   ([newID, newBool], [oldID, oldBool]) => {
     const markerToOpen = CurrentMarkersERP.value.find(
-      ([marker, ERP]) => ERP.properties.Name === newID,
+      ([marker, ERP]) => ERP.properties.Name === newID
     );
     if (!markerToOpen) {
       // Occurs when attempting to close a popup that didn't exist (leaving a sidebar item without entering e.g. when unbookmarking)
@@ -524,7 +524,7 @@ watch(
         marker.togglePopup();
       }
     }
-  },
+  }
 );
 
 // =======================================================================
@@ -567,7 +567,7 @@ const addCircle = () => {
   const circle = turf.circle(
     userLocation.value,
     radiusInKm.value,
-    radiusOptions,
+    radiusOptions
   );
 
   // Add the circle source and layer if they don't exist
@@ -611,7 +611,7 @@ watch(
   [userLocation, radiusInKm, boolCarOrERP, nameMarketHighlight],
   (
     [newUserLocation, newRadius, newBool, newName],
-    [oldUserLocation, oldRadius, oldBool, oldName],
+    [oldUserLocation, oldRadius, oldBool, oldName]
   ) => {
     if (
       newUserLocation[0] !== oldUserLocation[0] ||
@@ -626,7 +626,7 @@ watch(
     }
     console.log("Data pulled?");
     fetchDataAndWriteToFile();
-  },
+  }
   // }
 );
 
@@ -706,8 +706,10 @@ const combineSlotsandJson = () => {
 }
 
 .pushable {
-  position: fixed;
-  left: 60%;
+  position: absolute;
+  bottom: 3.5vh;
+  left: 50vw;
+  display: flex;
   z-index: 1; /* margin-right: 1000px; */
   bottom: 20px;
   background: transparent;

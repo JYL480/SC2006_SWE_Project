@@ -81,8 +81,7 @@ const isBookmarkedDisplay = ref(false);
   align-items: center;
   justify-content: space-around;
   border-radius: 10px;
-  box-shadow:
-    rgba(0, 0, 0, 0.35) 0px 5px 15px,
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px,
     rgba(0, 73, 144, 0.5) 5px 10px 15px;
   transition: all 0.5s;
   margin-top: 10px;
@@ -136,6 +135,6 @@ const isBookmarkedDisplay = ref(false);
 #navbar {
   position: fixed;
   bottom: 3.5vh;
-  left: 33vw;
+  left: 27vw;
 }
 </style>
