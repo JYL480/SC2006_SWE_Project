@@ -1,5 +1,11 @@
 # map_app_2006
 
+## Visit our Siam Fees on:
+
+```
+https://sc2006mapapp.web.app/#/
+```
+
 ## Project setup
 
 ```
