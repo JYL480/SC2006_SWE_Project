@@ -6,12 +6,12 @@
       <div class="form-group">
         <label for="email">Email</label>
         <input
-          type="text"
           id="email"
+          v-model="inputEmail"
+          type="text"
           name="email"
           placeholder="Enter your email"
           required=""
-          v-model="inputEmail"
         />
       </div>
 
@@ -81,7 +81,9 @@ onUpdated(() => {
   flex-direction: column;
   box-sizing: border-box;
   border-radius: 10px;
-  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.084), 0px 2px 3px rgba(0, 0, 0, 0.168);
+  box-shadow:
+    0px 0px 3px rgba(0, 0, 0, 0.084),
+    0px 2px 3px rgba(0, 0, 0, 0.168);
 }
 .form-container button:active {
   scale: 0.95;
@@ -141,7 +143,9 @@ onUpdated(() => {
   margin: 12px 0;
   cursor: pointer;
   border-radius: 6px;
-  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.084), 0px 2px 3px rgba(0, 0, 0, 0.168);
+  box-shadow:
+    0px 0px 3px rgba(0, 0, 0, 0.084),
+    0px 2px 3px rgba(0, 0, 0, 0.168);
 }
 
 .form-container .form-submit-btn:hover {

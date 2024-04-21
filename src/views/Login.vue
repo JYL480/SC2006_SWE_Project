@@ -6,20 +6,20 @@
         <form action="#">
           <div class="field input-field">
             <input
+              v-model="inputEmail"
               type="email"
               placeholder="Email"
               class="input"
               :required="true"
-              v-model="inputEmail"
             />
           </div>
           <div class="field input-field">
             <input
+              v-model="password"
               type="password"
               placeholder="Password"
               class="password"
               :required="true"
-              v-model="password"
             />
             <i class="bx bx-hide eye-icon"></i>
             <ul v-if="showPasswordRequirements" class="password-requirements">
@@ -31,7 +31,7 @@
             </ul>
           </div>
           <div>
-            <p class="error" v-if="errMsg">{{ errMsg }}</p>
+            <p v-if="errMsg" class="error">{{ errMsg }}</p>
           </div>
           <div :class="{ 'moved-down': showPasswordRequirements }">
             <div class="form-link" @click="navigateToResetPass">

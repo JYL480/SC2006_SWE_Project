@@ -8,8 +8,8 @@
           <div v-show="carparkErpSelection" class="SortOrderControl">
             <span
               v-if="!distanceButtonIsClicked"
-              @click="distanceButton"
               class="SortOrderControl__option"
+              @click="distanceButton"
             >
               Distance
             </span>
@@ -20,8 +20,8 @@
 
             <span
               v-if="!priceButtonIsClicked"
-              @click="priceButton"
               class="SortOrderControl__option"
+              @click="priceButton"
             >
               Price
             </span>
@@ -32,8 +32,8 @@
 
             <span
               v-if="!slotsButtonIsClicked"
-              @click="slotsButton"
               class="SortOrderControl__option"
+              @click="slotsButton"
             >
               Slots
             </span>
@@ -46,8 +46,8 @@
           <div v-show="!carparkErpSelection" class="SortOrderControl">
             <span
               v-if="!distanceButtonIsClicked"
-              @click="distanceButton"
               class="SortOrderControl__option"
+              @click="distanceButton"
             >
               Distance
             </span>
@@ -84,8 +84,8 @@
       <div class="menu">
         <!--Very disgusting repetative code, maybe can change later after all functional requirements are done-->
         <div
-          v-show="!istoggle && carparkErpSelection"
           v-for="carpark in carparkArray"
+          v-show="!istoggle && carparkErpSelection"
           key="carpark[1].car_park_no"
           class="card"
         >
@@ -98,10 +98,10 @@
               <div class="location">Location: {{ carpark[1].address }}</div>
               <label class="ui-bookmark">
                 <input
-                  :checked="bookmarks['carpark'].has(carpark[1]['car_park_no'])"
                   :key="carparkItemRerenderKey"
-                  @change="carparkBookmarkToggle(carpark[1])"
+                  :checked="bookmarks['carpark'].has(carpark[1]['car_park_no'])"
                   type="checkbox"
+                  @change="carparkBookmarkToggle(carpark[1])"
                 />
                 <div class="bookmark">
                   <svg viewBox="0 0 32 32">
@@ -195,8 +195,8 @@
         </div>
 
         <div
-          v-show="!istoggle && !carparkErpSelection"
           v-for="erp in erpArray"
+          v-show="!istoggle && !carparkErpSelection"
           key="erp[1].properties.Name"
           class="card"
         >
@@ -210,10 +210,10 @@
               <div class="location">ERP Name: {{ erp[1].properties.Name }}</div>
               <label class="ui-bookmark">
                 <input
-                  :checked="bookmarks['erp'].has(erp[1].properties.Name)"
                   :key="erpItemRerenderKey"
-                  @change="erpBookmarkToggle(erp[1])"
+                  :checked="bookmarks['erp'].has(erp[1].properties.Name)"
                   type="checkbox"
+                  @change="erpBookmarkToggle(erp[1])"
                 />
                 <div class="bookmark">
                   <svg viewBox="0 0 32 32">
@@ -316,7 +316,7 @@ function toggleButton() {
 
 function distanceButton() {
   distanceButtonIsClicked.value = !toggleButton.value;
-  if (distanceButtonIsClicked) {
+  if (distanceButtonIsClicked.value) {
     priceButtonIsClicked.value = false;
     slotsButtonIsClicked.value = false;
     //Sort carpark array by distance
@@ -342,7 +342,7 @@ function distanceButton() {
 
 function priceButton() {
   priceButtonIsClicked.value = !priceButtonIsClicked.value;
-  if (priceButtonIsClicked) {
+  if (priceButtonIsClicked.value) {
     distanceButtonIsClicked.value = false;
     slotsButtonIsClicked.value = false;
 
@@ -375,7 +375,7 @@ function priceButton() {
 
 function slotsButton() {
   slotsButtonIsClicked.value = !slotsButtonIsClicked.value;
-  if (slotsButtonIsClicked) {
+  if (slotsButtonIsClicked.value) {
     distanceButtonIsClicked.value = false;
     priceButtonIsClicked.value = false;
   }
@@ -423,7 +423,7 @@ function carparkBookmarkToggle(carparkDetails) {
     dbSetUserBookmarks(
       bookmarks.value["carpark"],
       bookmarks.value["erp"],
-      currentUser.value.uid
+      currentUser.value.uid,
     );
   }
   emit("bookmarksChanged");
@@ -447,7 +447,7 @@ function erpBookmarkToggle(erpDetails) {
     dbSetUserBookmarks(
       bookmarks.value["carpark"],
       bookmarks.value["erp"],
-      currentUser.value.uid
+      currentUser.value.uid,
     );
   }
   emit("bookmarksChanged");
@@ -959,7 +959,8 @@ body.dark .mode .sun-moon i.moon {
   position: absolute;
   width: 10px;
   height: 10px;
-  -webkit-box-shadow: 0 30px 0 -4px var(--icon-primary-color),
+  -webkit-box-shadow:
+    0 30px 0 -4px var(--icon-primary-color),
     30px 0 0 -4px var(--icon-primary-color),
     0 -30px 0 -4px var(--icon-primary-color),
     -30px 0 0 -4px var(--icon-primary-color),
@@ -967,7 +968,8 @@ body.dark .mode .sun-moon i.moon {
     -22px -22px 0 -4px var(--icon-primary-color),
     22px -22px 0 -4px var(--icon-primary-color),
     22px 22px 0 -4px var(--icon-primary-color);
-  box-shadow: 0 30px 0 -4px var(--icon-primary-color),
+  box-shadow:
+    0 30px 0 -4px var(--icon-primary-color),
     30px 0 0 -4px var(--icon-primary-color),
     0 -30px 0 -4px var(--icon-primary-color),
     -30px 0 0 -4px var(--icon-primary-color),

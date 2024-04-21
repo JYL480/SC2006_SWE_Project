@@ -5,8 +5,8 @@ module.exports = defineConfig({
   configureWebpack: {
     resolve: {
       alias: {
-        src: path.resolve(__dirname, "src"),    // Allows us to refer to the src directory as `src` directly when importing (instead of using relative path)
-      }
-    }
-  }
-})
+        src: path.resolve(__dirname, "src"), // Allows us to refer to the src directory as `src` directly when importing (instead of using relative path)
+      },
+    },
+  },
+});

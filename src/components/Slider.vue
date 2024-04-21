@@ -1,13 +1,13 @@
 <template>
   <div class="PB-range-slider-div">
     <input
+      id="myRange"
+      v-model="sliderValue"
       type="range"
       min="1"
       max="5"
       value="1"
-      v-model="sliderValue"
       class="PB-range-slider"
-      id="myRange"
       @input="slider"
     />
     <p class="PB-range-slidervalue">{{ sliderValue }}KM</p>
@@ -76,5 +76,4 @@ const slider = () => {
   font-family: "Poppins", sans-serif;
   font-weight: 600;
 }
-
 </style>

@@ -9,29 +9,29 @@
         <form action="#">
           <div class="field input-field">
             <input
+              v-model="inputUserName"
               type="username"
               placeholder="Username"
               class="input"
               :required="true"
-              v-model="inputUserName"
             />
           </div>
           <div class="field input-field">
             <input
+              v-model="inputEmail"
               type="email"
               placeholder="Email"
               class="input"
               :required="true"
-              v-model="inputEmail"
             />
           </div>
           <div class="field input-field">
             <input
+              v-model="password"
               type="password"
               placeholder="Password"
               class="password"
               :required="true"
-              v-model="password"
             />
             <i class="bx bx-hide eye-icon"></i>
             <ul v-if="showPasswordRequirements" class="password-requirements">
@@ -87,7 +87,6 @@ import {
 } from "firebase/auth";
 import { useRouter } from "vue-router";
 import { faS } from "@fortawesome/free-solid-svg-icons";
-import { Application } from "@splinetool/runtime";
 
 // import fetchAndWriteToFile from "../test.js";
 const canvas = ref(null);

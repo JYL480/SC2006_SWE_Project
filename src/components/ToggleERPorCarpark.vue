@@ -1,7 +1,7 @@
 <template>
   <input id="checkbox_toggle" type="checkbox" class="check" />
   <div class="checkbox">
-    <label class="slide" @click="ERPorCarpark" for="checkbox_toggle">
+    <label class="slide" for="checkbox_toggle" @click="ERPorCarpark">
       <label class="toggle" for="checkbox_toggle"></label>
       <label class="text1" for="checkbox_toggle">Car Park</label>
       <label class="text" for="checkbox_toggle">ERP</label>
@@ -50,7 +50,9 @@ const ERPorCarpark = () => {
   cursor: pointer;
   background: linear-gradient(40deg, #fc0404, #fa4f00d2 70%);
   transition: 0.4s;
-  box-shadow: 0px 0px 3px rgb(243, 236, 224), 0px 0px 5px rgb(236, 236, 227);
+  box-shadow:
+    0px 0px 3px rgb(243, 236, 224),
+    0px 0px 5px rgb(236, 236, 227);
 }
 
 .checkbox .slide {
@@ -71,7 +73,9 @@ const ERPorCarpark = () => {
 .check:checked + .checkbox .slide .toggle {
   transform: translateX(113px);
   background: linear-gradient(40deg, #8983f7, #a3dafb 70%);
-  box-shadow: -0px -0px 10px #8983f7, -0px -0px 3px #8983f7;
+  box-shadow:
+    -0px -0px 10px #8983f7,
+    -0px -0px 3px #8983f7;
 }
 
 .check:checked + .checkbox .slide {

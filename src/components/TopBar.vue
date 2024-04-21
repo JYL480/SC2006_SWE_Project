@@ -12,7 +12,7 @@
       <span class="front"> Home </span>
     </button>
   </router-link>
-  <router-link id="link" to="/Register" v-if="!isLoggedIn">
+  <router-link v-if="!isLoggedIn" id="link" to="/Register">
     <button id="button" class="pushable">
       <span class="shadow"></span>
       <span class="edge"></span>
@@ -20,7 +20,7 @@
     </button>
   </router-link>
 
-  <router-link id="link" to="/Login" v-if="!isLoggedIn">
+  <router-link v-if="!isLoggedIn" id="link" to="/Login">
     <button id="button" class="pushable">
       <span class="shadow"></span>
       <span class="edge"></span>
@@ -28,12 +28,12 @@
     </button>
   </router-link>
 
-  <button class="pushable" @click="handleSignOut" v-if="isLoggedIn">
+  <button v-if="isLoggedIn" class="pushable" @click="handleSignOut">
     <span class="shadow"></span>
     <span class="edge"></span>
     <span class="front">Logout</span>
   </button>
-  <span class="displayName" v-if="isLoggedIn">
+  <span v-if="isLoggedIn" class="displayName">
     <span class="front"> Welcome {{ auth.currentUser.displayName }}</span>
   </span>
 

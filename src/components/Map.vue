@@ -3,30 +3,30 @@
 
   <SummarySideBar
     v-model="bookmarks"
-    :carparkArray="CurrentMarkersCar"
-    :erpArray="CurrentMarkersERP"
-    :carparkErpSelection="boolCarOrERP"
-    @emitCarParkIDHovered="emitCarParkIDHovered"
-    @emitMouseCarParkOff="clearHoveredCarParkID"
-    @emitERPIDHovered="emitERPIDHovered"
-    @emitMouseERPOff="clearHoveredERPID"
-    @bookmarksChanged="onBookmarksChanged"
+    :carpark-array="CurrentMarkersCar"
+    :erp-array="CurrentMarkersERP"
+    :carpark-erp-selection="boolCarOrERP"
+    @emit-car-park-i-d-hovered="emitCarParkIDHovered"
+    @emit-mouse-car-park-off="clearHoveredCarParkID"
+    @emit-e-r-p-i-d-hovered="emitERPIDHovered"
+    @emit-mouse-e-r-p-off="clearHoveredERPID"
+    @bookmarks-changed="onBookmarksChanged"
   />
 
   <div id="searchbar">
     <Searchbar @selected-dest="selectedDestination" />
   </div>
 
-  <Slider id="slider" @sliderValue="sliderValue"></Slider>
+  <Slider id="slider" @slider-value="sliderValue"></Slider>
 
-  <ToggleERPorCarpark @ERPorCarpark="ERPorCarpark"></ToggleERPorCarpark>
+  <ToggleERPorCarpark @e-r-por-carpark="ERPorCarpark"></ToggleERPorCarpark>
   <button id="button" class="pushable" @click="getUserLocation">
     <span class="shadow"></span>
     <span class="edge"></span>
     <span class="front"> User Location </span>
   </button>
 
-  <Navbar @bookmark-view-toggled="toggleBookmarkMarkers"/>
+  <Navbar @bookmark-view-toggled="toggleBookmarkMarkers" />
 </template>
 
 <script setup>
@@ -114,7 +114,7 @@ let nameMarketHighlight = ref("");
 // True = carpark display, False, = ERP display
 let boolCarOrERP = ref(true);
 
-const bookmarks = ref({carpark: new Set(), erp: new Set()});
+const bookmarks = ref({ carpark: new Set(), erp: new Set() });
 let isBookmarkDisplay = false; // Whether the current view is showing only bookmarks
 watch(
   currentUser, // Fetch user's bookmarks whenever there is a change in user (while the sidebar is active, else bookmarks will be loaded when mounting the sidebar)
@@ -126,15 +126,15 @@ watch(
       console.log("Clearing Bookmarks (no user logged in)");
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
-function onBookmarksChanged() {   // Update markers whenever bookmarks changes when appropriate
-    if (isBookmarkDisplay) {
-      refreshMarkers(boolCarOrERP.value, nameMarketHighlight.value);  // TODO: Refactor to separate refreshing markers and pin dragging
-    }
+function onBookmarksChanged() {
+  // Update markers whenever bookmarks changes when appropriate
+  if (isBookmarkDisplay) {
+    refreshMarkers(boolCarOrERP.value, nameMarketHighlight.value); // TODO: Refactor to separate refreshing markers and pin dragging
+  }
 }
-
 
 // All the functions
 
@@ -157,7 +157,7 @@ const accessJsonERP = async () => {
     }
     const jsonData = await response.json();
     geojsonFeaturesERP.value = jsonData.features;
-    for (let i=0; i<geojsonFeaturesERP.value.length; i++) {
+    for (let i = 0; i < geojsonFeaturesERP.value.length; i++) {
       geojsonFeaturesERP.value[i].turfpt = turf.point([
         geojsonFeaturesERP.value[i].geometry.coordinates[0][0],
         geojsonFeaturesERP.value[i].geometry.coordinates[1][1],
@@ -176,7 +176,7 @@ const accessJsonCar = async () => {
     }
     const jsonData = await response.json();
     geojsonFeaturesCarPark.value = jsonData;
-    for (let i=0; i<geojsonFeaturesCarPark.value.length; i++) {
+    for (let i = 0; i < geojsonFeaturesCarPark.value.length; i++) {
       geojsonFeaturesCarPark.value[i].turfpt = turf.point([
         geojsonFeaturesCarPark.value[i].Longitude,
         geojsonFeaturesCarPark.value[i].Latitude,
@@ -192,32 +192,40 @@ const accessJsonCar = async () => {
 let currentERPFilterStrategy = erpFilterUserRadius;
 let currentCarparkFilterStrategy = carparkFilterUserRadius;
 /**
- * @param {ERP} erp 
+ * @param {ERP} erp
  */
 function erpFilterUserRadius(erp) {
-  const circle = turf.circle(userLocation.value, radiusInKm.value, radiusOptions);
+  const circle = turf.circle(
+    userLocation.value,
+    radiusInKm.value,
+    radiusOptions,
+  );
   const pt = erp.turfpt;
   return turf.booleanPointInPolygon(pt, circle);
 }
 
 /**
- * @param {ERP} erp 
+ * @param {ERP} erp
  */
 function erpFilterBookmarks(erp) {
   return bookmarks.value["erp"].has(erp["properties"]["Name"]);
 }
 
 /**
- * @param {Carpark} carpark 
+ * @param {Carpark} carpark
  */
 function carparkFilterUserRadius(carpark) {
-  const circle = turf.circle(userLocation.value, radiusInKm.value, radiusOptions);
+  const circle = turf.circle(
+    userLocation.value,
+    radiusInKm.value,
+    radiusOptions,
+  );
   const pt = carpark.turfpt;
   return turf.booleanPointInPolygon(pt, circle);
 }
 
 /**
- * @param {Carpark} carpark 
+ * @param {Carpark} carpark
  */
 function carparkFilterBookmarks(carpark) {
   return bookmarks.value["carpark"].has(carpark["car_park_no"]);
@@ -226,11 +234,11 @@ function carparkFilterBookmarks(carpark) {
 
 /**
  * Adds ERP markers onto the map with distance information
- * @param {Array<ERP>} erpsToMark 
+ * @param {Array<ERP>} erpsToMark
  * @param {import"@turf/turf".Point} Point to calculate distance from
  */
 function addERPMarkersWithDistance(erpsToMark, from) {
-  for (let i=0; i<erpsToMark.length; i++) {
+  for (let i = 0; i < erpsToMark.length; i++) {
     const properties_name = erpsToMark[i].properties.Name;
     const properties_price = erpsToMark[i].properties.price;
     const description = erpsToMark[i].properties.Description;
@@ -270,10 +278,12 @@ function showHideERPMarkers(hide, erpFilterStrategy) {
   }
 
   if (!erpFilterStrategy) {
-    erpFilterStrategy = () => { return true; }
+    erpFilterStrategy = () => {
+      return true;
+    };
   }
 
-  const allERPs = geojsonFeaturesERP.value;    // Get all ERPs
+  const allERPs = geojsonFeaturesERP.value; // Get all ERPs
   const from = turf.point(userLocation.value);
 
   const erpsToMark = allERPs.filter(erpFilterStrategy);
@@ -282,7 +292,7 @@ function showHideERPMarkers(hide, erpFilterStrategy) {
 
 /**
  * Adds carpark markers onto the map with distance information
- * @param {Array<Carpark>} carparksToMark 
+ * @param {Array<Carpark>} carparksToMark
  * @param {import"@turf/turf".Point} Point to calculate distance from
  */
 function addCarParkMarkerWithDistance(carparksToMark, from) {
@@ -334,7 +344,7 @@ function addCarParkMarkerWithDistance(carparksToMark, from) {
  * @param {boolean} show Whether to show the carpark markers or hide them
  * @param {Function} carparkFilterStrategy Strategy for filtering the carpark markers to show (out of all carpark markers)
  */
-function showHideCarparkMarkers (show, carparkFilterStrategy) {
+function showHideCarparkMarkers(show, carparkFilterStrategy) {
   // This if it to remove all the markers, so if true, then add, false then remove.
   // I created 2 currentERP and Carpark arrays. That can save the markers inside.
   // So if need be i can for loop the whole thing and remove.
@@ -347,7 +357,9 @@ function showHideCarparkMarkers (show, carparkFilterStrategy) {
   }
 
   if (!carparkFilterStrategy) {
-    carparkFilterStrategy = () => { return true; }
+    carparkFilterStrategy = () => {
+      return true;
+    };
   }
 
   combineSlotsandJson();
@@ -361,20 +373,19 @@ function showHideCarparkMarkers (show, carparkFilterStrategy) {
 let prevERPFilterStrategy = null;
 let prevCarparkFilterStrategy = null;
 function toggleBookmarkMarkers() {
-    if (isBookmarkDisplay) {
-        console.log("Markers Filter Strategy: Restored");
-        currentERPFilterStrategy = prevERPFilterStrategy;
-        currentCarparkFilterStrategy = prevCarparkFilterStrategy;
-    }
-    else {
-        console.log("Markers Filter Strategy: Bookmark");
-        prevERPFilterStrategy = currentERPFilterStrategy;
-        prevCarparkFilterStrategy = currentCarparkFilterStrategy;
-        currentERPFilterStrategy = erpFilterBookmarks;
-        currentCarparkFilterStrategy = carparkFilterBookmarks;
-    }
-    isBookmarkDisplay = !isBookmarkDisplay;
-    refreshMarkers(boolCarOrERP.value, nameMarketHighlight.value);  // TODO: Refactor to separate refreshing markers and pin dragging
+  if (isBookmarkDisplay) {
+    console.log("Markers Filter Strategy: Restored");
+    currentERPFilterStrategy = prevERPFilterStrategy;
+    currentCarparkFilterStrategy = prevCarparkFilterStrategy;
+  } else {
+    console.log("Markers Filter Strategy: Bookmark");
+    prevERPFilterStrategy = currentERPFilterStrategy;
+    prevCarparkFilterStrategy = currentCarparkFilterStrategy;
+    currentERPFilterStrategy = erpFilterBookmarks;
+    currentCarparkFilterStrategy = carparkFilterBookmarks;
+  }
+  isBookmarkDisplay = !isBookmarkDisplay;
+  refreshMarkers(boolCarOrERP.value, nameMarketHighlight.value); // TODO: Refactor to separate refreshing markers and pin dragging
 }
 
 // To get the person's location now!!
@@ -456,9 +467,10 @@ watch(
   [carIDHovering, mouseOnOrOffBoolCarPark],
   ([newID, newBool], [oldID, oldBool]) => {
     const markerToOpen = CurrentMarkersCar.value.find(
-      ([marker, carPark]) => carPark.car_park_no === newID
+      ([marker, carPark]) => carPark.car_park_no === newID,
     );
-    if (!markerToOpen) {    // Occurs when attempting to close a popup that didn't exist (leaving a sidebar item without entering e.g. when unbookmarking)
+    if (!markerToOpen) {
+      // Occurs when attempting to close a popup that didn't exist (leaving a sidebar item without entering e.g. when unbookmarking)
       return;
     }
     const [marker, carPark, distance] = markerToOpen;
@@ -473,7 +485,7 @@ watch(
         marker.togglePopup();
       }
     }
-  }
+  },
 );
 //======================FOR THE ERP PART NOW ==============================
 
@@ -492,9 +504,10 @@ watch(
   [erpIDHovering, mouseOnOrOffBoolERP],
   ([newID, newBool], [oldID, oldBool]) => {
     const markerToOpen = CurrentMarkersERP.value.find(
-      ([marker, ERP]) => ERP.properties.Name === newID
+      ([marker, ERP]) => ERP.properties.Name === newID,
     );
-    if (!markerToOpen) {    // Occurs when attempting to close a popup that didn't exist (leaving a sidebar item without entering e.g. when unbookmarking)
+    if (!markerToOpen) {
+      // Occurs when attempting to close a popup that didn't exist (leaving a sidebar item without entering e.g. when unbookmarking)
       return;
     }
     // console.log(markerToOpen);
@@ -511,7 +524,7 @@ watch(
         marker.togglePopup();
       }
     }
-  }
+  },
 );
 
 // =======================================================================
@@ -551,7 +564,11 @@ destMarker.on("dragend", () => {
 // To add the radius thing
 const addCircle = () => {
   // Will be updated with the new circle with change coordinates
-  const circle = turf.circle(userLocation.value, radiusInKm.value, radiusOptions);
+  const circle = turf.circle(
+    userLocation.value,
+    radiusInKm.value,
+    radiusOptions,
+  );
 
   // Add the circle source and layer if they don't exist
   if (!map.getSource("circle-source")) {
@@ -594,7 +611,7 @@ watch(
   [userLocation, radiusInKm, boolCarOrERP, nameMarketHighlight],
   (
     [newUserLocation, newRadius, newBool, newName],
-    [oldUserLocation, oldRadius, oldBool, oldName]
+    [oldUserLocation, oldRadius, oldBool, oldName],
   ) => {
     if (
       newUserLocation[0] !== oldUserLocation[0] ||
@@ -609,7 +626,7 @@ watch(
     }
     console.log("Data pulled?");
     fetchDataAndWriteToFile();
-  }
+  },
   // }
 );
 
