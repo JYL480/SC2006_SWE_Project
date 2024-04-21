@@ -1,5 +1,5 @@
 <template>
-  <div class="button-container" id="navbar">
+  <div id="navbar" class="button-container">
     <router-link to="/LandingPage">
       <button class="button">
         <svg
@@ -21,7 +21,14 @@
     </router-link>
 
     <div>
-        <button @click="isBookmarkedDisplay=!isBookmarkedDisplay; emit('bookmarkViewToggled');" class="button" :class="{'depressed-button': isBookmarkedDisplay}">
+      <button
+        class="button"
+        :class="{ 'depressed-button': isBookmarkedDisplay }"
+        @click="
+          isBookmarkedDisplay = !isBookmarkedDisplay;
+          emit('bookmarkViewToggled');
+        "
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
@@ -60,9 +67,9 @@
 </template>
 
 <script setup>
-    import { ref } from "vue";
-    const emit = defineEmits([ "bookmarkViewToggled" ]);    // bookmarkViewToggled to be emitted when user clicked on the bookmark button to view their bookmarks
-    const isBookmarkedDisplay = ref(false);
+import { ref } from "vue";
+const emit = defineEmits(["bookmarkViewToggled"]); // bookmarkViewToggled to be emitted when user clicked on the bookmark button to view their bookmarks
+const isBookmarkedDisplay = ref(false);
 </script>
 
 <style>
@@ -74,7 +81,8 @@
   align-items: center;
   justify-content: space-around;
   border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px,
+  box-shadow:
+    rgba(0, 0, 0, 0.35) 0px 5px 15px,
     rgba(0, 73, 144, 0.5) 5px 10px 15px;
   transition: all 0.5s;
   margin-top: 10px;

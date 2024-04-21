@@ -46,7 +46,7 @@ library.add(
   faLock,
   faEnvelope,
   faGoogle,
-  faFacebook
+  faFacebook,
 );
 
 const firebaseApp = initializeApp(firebaseConfig);
