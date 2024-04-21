@@ -11,7 +11,7 @@ import { getAuth } from "firebase/auth";
 
 const FIREBASETOKEN = process.env.FIREBASETOKEN;
 const firebaseConfig = {
-  apiKey: "AIzaSyDXZBjrWEXvWjrLMxl8hHoMLHWXIAFCY-8",
+  apiKey: "FIREBASETOKEN",
   authDomain: "sc2006mapapp.firebaseapp.com",
   projectId: "sc2006mapapp",
   storageBucket: "sc2006mapapp.appspot.com",
@@ -50,7 +50,7 @@ library.add(
 );
 
 const firebaseApp = initializeApp(firebaseConfig);
-const currentUser = ref(null);  // Always in sync with the current logged-in user, can be imported in other scripts
+const currentUser = ref(null); // Always in sync with the current logged-in user, can be imported in other scripts
 const database = getDatabase(firebaseApp); // Firebase Realtime Database (Not FireStore)
 
 const app = createApp(App);
@@ -59,6 +59,8 @@ app.component("FontAwesomeIcon", FontAwesomeIcon);
 app.use(router);
 app.mount("#app");
 
-getAuth().onAuthStateChanged((user) => { currentUser.value = user; });
+getAuth().onAuthStateChanged((user) => {
+  currentUser.value = user;
+});
 
-export { database, currentUser };   // Provides read-only imports for other scripts with something like `import { variable } from "src/main.js"`
+export { database, currentUser }; // Provides read-only imports for other scripts with something like `import { variable } from "src/main.js"`

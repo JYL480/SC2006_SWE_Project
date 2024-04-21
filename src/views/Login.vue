@@ -22,13 +22,6 @@
               v-model="password"
             />
             <i class="bx bx-hide eye-icon"></i>
-            <ul v-if="showPasswordRequirements" class="password-requirements">
-              <li v-if="!passLength">Minimum 8 characters</li>
-              <li v-if="!lowercaseMet">At least one lowercase letter</li>
-              <li v-if="!uppercaseMet">At least one uppercase letter</li>
-              <li v-if="!numberMet">At least one number</li>
-              <li v-if="!specialCharMet">At least one special character</li>
-            </ul>
           </div>
           <div>
             <p class="error" v-if="errMsg">{{ errMsg }}</p>
@@ -331,12 +324,6 @@ a.google span {
   }
 }
 
-.moved-down {
-  transition: transform 0.2s ease-in-out;
-  transform: translateY(
-    120px
-  ); /* Adjust the translation value for desired movement */
-}
 .password-requirements {
   margin-left: 15px;
 }
