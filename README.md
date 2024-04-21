@@ -2,9 +2,7 @@
 
 ## Visit our Siam Fees on:
 
-```
 https://sc2006mapapp.web.app/#/
-```
 
 ## Project setup
 
